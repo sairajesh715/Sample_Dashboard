@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chocolate Sales Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0a0a12;
+            color: #e8e8ef;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-glow {
+            position: fixed; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(99,102,241,0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 60%, rgba(14,165,233,0.05) 0%, transparent 50%);
+            animation: drift 20s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 20px); }
+        }
+
+        .container {
+            position: relative; z-index: 1;
+            max-width: 1200px; margin: 0 auto; padding: 40px 24px;
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+
+        /* Header */
+        .hero { text-align: center; padding: 60px 0 40px; }
+        .hero .badge {
+            display: inline-block;
+            background: rgba(99,102,241,0.12);
+            color: #818cf8;
+            font-size: 12px; font-weight: 600;
+            padding: 6px 16px; border-radius: 20px;
+            letter-spacing: 1px; text-transform: uppercase;
+            margin-bottom: 20px;
+            border: 1px solid rgba(99,102,241,0.2);
+        }
+        .hero h1 {
+            font-size: 44px; font-weight: 800;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #c7d2fe 0%, #818cf8 50%, #38bdf8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 14px;
+        }
+        .hero p {
+            color: #6b7280; font-size: 16px; max-width: 500px; margin: 0 auto;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 48px 0 40px;
+        }
+        .kpi {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease forwards;
+        }
+        .kpi:nth-child(1) { animation-delay: 0.1s; }
+        .kpi:nth-child(2) { animation-delay: 0.2s; }
+        .kpi:nth-child(3) { animation-delay: 0.3s; }
+        .kpi:nth-child(4) { animation-delay: 0.4s; }
+        .kpi:nth-child(5) { animation-delay: 0.5s; }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .kpi:hover {
+            border-color: rgba(99,102,241,0.3);
+            background: rgba(99,102,241,0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(99,102,241,0.08);
+        }
+        .kpi .icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+        .kpi .icon.indigo { background: rgba(99,102,241,0.15); color: #818cf8; }
+        .kpi .icon.sky { background: rgba(14,165,233,0.15); color: #38bdf8; }
+        .kpi .label {
+            font-size: 12px; font-weight: 500; color: #6b7280;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+        .kpi .value {
+            font-size: 28px; font-weight: 700; color: #e8e8ef;
+        }
+        .kpi .sub {
+            font-size: 12px; color: #4b5563; margin-top: 4px;
+        }
+
+        /* CTA Button */
+        .cta-wrap { text-align: center; margin: 20px 0 60px; }
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            font-size: 16px; font-weight: 600;
+            padding: 16px 36px;
+            border: none; border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+        }
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.45);
+        }
+        .cta-btn svg { width: 20px; height: 20px; }
+
+        .footer {
+            margin-top: auto; text-align: center;
+            padding: 24px 0; color: #374151; font-size: 12px;
+        }
+
+        /* Loading skeleton */
+        .kpi .value.loading {
+            background: linear-gradient(90deg, #1a1a2e 25%, #252540 50%, #1a1a2e 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 6px;
+            color: transparent;
+            user-select: none;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 700px) {
+            .hero h1 { font-size: 28px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .kpi .value { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="container">
+        <div class="hero">
+            <div class="badge">raj_db &bull; Live Data</div>
+            <h1>Chocolate Sales<br>Dashboard</h1>
+            <p>Real-time analytics across 6 countries, 22 products, and 33 salespeople from Jul 2022 to Sep 2023.</p>
+        </div>
+
+        <div class="kpi-grid" id="kpis">
+            <div class="kpi">
+                <div class="icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+                <div class="label">Total Revenue</div>
+                <div class="value loading" id="kpi-revenue">$0.00</div>
+            </div>
+            <div class="kpi">
+                <div class="icon sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="22" height="18" rx="2"/><path d="M1 9h22"/></svg></div>
+                <div class="label">Boxes Sold</div>
+                <div class="value loading" id="kpi-boxes">0</div>
+            </div>
+            <div class="kpi">
+                <div class="icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+                <div class="label">Total Shipments</div>
+                <div class="value loading" id="kpi-shipments">0</div>
+            </div>
+            <div class="kpi">
+                <div class="icon sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+                <div class="label">Salespeople</div>
+                <div class="value loading" id="kpi-people">0</div>
+            </div>
+            <div class="kpi">
+                <div class="icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                <div class="label">Avg / Shipment</div>
+                <div class="value loading" id="kpi-avg">$0</div>
+            </div>
+        </div>
+
+        <div class="cta-wrap">
+            <a href="/dashboard" class="cta-btn">
+                Explore Dashboard
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+        </div>
+
+        <div class="footer">Chocolate Sales Dashboard &bull; Data sourced from MySQL raj_db</div>
+    </div>
+
+    <script>
+        function fmt(n) {
+            if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
+            if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+            return '$' + n;
+        }
+        fetch('/api/summary').then(r => r.json()).then(d => {
+            const set = (id, val) => {
+                const el = document.getElementById(id);
+                el.textContent = val;
+                el.classList.remove('loading');
+            };
+            set('kpi-revenue', fmt(d.total_revenue));
+            set('kpi-boxes', d.total_boxes.toLocaleString());
+            set('kpi-shipments', d.total_shipments.toLocaleString());
+            set('kpi-people', d.total_salespeople);
+            set('kpi-avg', fmt(d.avg_revenue_per_shipment));
+        });
+    </script>
+</body>
+</html>
