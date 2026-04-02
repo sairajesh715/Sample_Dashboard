@@ -305,15 +305,17 @@ function closeModal() { document.getElementById('modal').classList.remove('activ
 document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-function makeClickable(chart, chartType) {
-    chart.options.onClick = (evt, elements) => {
-        if (!elements.length) return;
-        const idx = elements[0].index;
-        const label = chart.data.labels[idx];
-        openDrilldown(chartType, label);
-    };
-    chart.options.onHover = (evt, elements) => {
-        evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+function clickOpts(chartType) {
+    return {
+        onClick: (evt, elements, chart) => {
+            if (!elements.length) return;
+            const idx = elements[0].index;
+            const label = chart.data.labels[idx];
+            openDrilldown(chartType, label);
+        },
+        onHover: (evt, elements) => {
+            evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+        }
     };
 }
 
@@ -353,7 +355,7 @@ fetch('/api/summary').then(r => r.json()).then(d => {
 
 // 1. Monthly Trend
 fetch('/api/revenue-by-month').then(r => r.json()).then(data => {
-    const c = new Chart(document.getElementById('monthlyChart'), {
+    new Chart(document.getElementById('monthlyChart'), {
         type: 'line',
         data: {
             labels: data.labels,
@@ -370,13 +372,13 @@ fetch('/api/revenue-by-month').then(r => r.json()).then(data => {
         options: {
             responsive: true, maintainAspectRatio: false,
             interaction: { intersect: false, mode: 'index' },
+            ...clickOpts('month'),
             scales: {
                 y:  { position: 'left',  ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } },
                 y1: { position: 'right', ticks: { callback: v => v.toLocaleString() }, grid: { drawOnChartArea: false } },
             },
         }
     });
-    makeClickable(c, 'month');
 });
 
 // 2. Country (doughnut)
@@ -385,29 +387,29 @@ fetch('/api/revenue-by-country').then(r => r.json()).then(data => {
         const t = i / Math.max(data.labels.length - 1, 1);
         return `hsl(${234 + t * 30}, ${70 + t * 10}%, ${62 + t * 10}%)`;
     });
-    const c = new Chart(document.getElementById('countryChart'), {
+    new Chart(document.getElementById('countryChart'), {
         type: 'doughnut',
         data: { labels: data.labels, datasets: [{ data: data.values, backgroundColor: shades, borderWidth: 0 }] },
         options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
+            ...clickOpts('country'),
             plugins: { legend: { position: 'right' } } }
     });
-    makeClickable(c, 'country');
 });
 
 // 3. Category (doughnut)
 fetch('/api/revenue-by-category').then(r => r.json()).then(data => {
-    const c = new Chart(document.getElementById('categoryChart'), {
+    new Chart(document.getElementById('categoryChart'), {
         type: 'doughnut',
         data: { labels: data.labels, datasets: [{ data: data.values, backgroundColor: [IND, SKY, '#a78bfa'], borderWidth: 0 }] },
         options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
+            ...clickOpts('category'),
             plugins: { legend: { position: 'right' } } }
     });
-    makeClickable(c, 'category');
 });
 
 // 4. Region (bar)
 fetch('/api/revenue-by-region').then(r => r.json()).then(data => {
-    const c = new Chart(document.getElementById('regionChart'), {
+    new Chart(document.getElementById('regionChart'), {
         type: 'bar',
         data: { labels: data.labels, datasets: [{
             label: 'Revenue', data: data.values,
@@ -415,15 +417,15 @@ fetch('/api/revenue-by-region').then(r => r.json()).then(data => {
             borderRadius: 6, maxBarThickness: 40,
         }] },
         options: { responsive: true, maintainAspectRatio: false,
+            ...clickOpts('region'),
             plugins: { legend: { display: false } },
             scales: { y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
     });
-    makeClickable(c, 'region');
 });
 
 // 5. Top Products (horizontal bar)
 fetch('/api/top-products').then(r => r.json()).then(data => {
-    const c = new Chart(document.getElementById('productsChart'), {
+    new Chart(document.getElementById('productsChart'), {
         type: 'bar',
         data: { labels: data.labels, datasets: [{
             label: 'Revenue', data: data.values,
@@ -431,15 +433,15 @@ fetch('/api/top-products').then(r => r.json()).then(data => {
             borderRadius: 5, maxBarThickness: 24,
         }] },
         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            ...clickOpts('product'),
             plugins: { legend: { display: false } },
             scales: { x: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
     });
-    makeClickable(c, 'product');
 });
 
 // 6. Team (bar)
 fetch('/api/revenue-by-team').then(r => r.json()).then(data => {
-    const c = new Chart(document.getElementById('teamChart'), {
+    new Chart(document.getElementById('teamChart'), {
         type: 'bar',
         data: { labels: data.labels, datasets: [{
             label: 'Revenue', data: data.values,
@@ -447,15 +449,15 @@ fetch('/api/revenue-by-team').then(r => r.json()).then(data => {
             borderRadius: 6, maxBarThickness: 40,
         }] },
         options: { responsive: true, maintainAspectRatio: false,
+            ...clickOpts('team'),
             plugins: { legend: { display: false } },
             scales: { y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
     });
-    makeClickable(c, 'team');
 });
 
 // 7. Salespeople (horizontal bar)
 fetch('/api/top-salespeople').then(r => r.json()).then(data => {
-    const c = new Chart(document.getElementById('salespeopleChart'), {
+    new Chart(document.getElementById('salespeopleChart'), {
         type: 'bar',
         data: { labels: data.labels, datasets: [{
             label: 'Revenue', data: data.values,
@@ -463,10 +465,10 @@ fetch('/api/top-salespeople').then(r => r.json()).then(data => {
             borderRadius: 5, maxBarThickness: 24,
         }] },
         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            ...clickOpts('person'),
             plugins: { legend: { display: false } },
             scales: { x: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
     });
-    makeClickable(c, 'person');
 });
 
 // 8. Region Trend (stacked area)

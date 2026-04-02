@@ -16,18 +16,17 @@
             overflow-x: hidden;
         }
 
-        /* Animated background */
-        .bg-glow {
-            position: fixed; top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle at 30% 40%, rgba(99,102,241,0.06) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 60%, rgba(14,165,233,0.05) 0%, transparent 50%);
-            animation: drift 20s ease-in-out infinite;
-            z-index: 0;
+        /* Analytics background with blur */
+        .bg-analytics {
+            position: fixed; inset: 0; z-index: 0; overflow: hidden;
+            filter: blur(1.5px);
         }
-        @keyframes drift {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-30px, 20px); }
+        .bg-analytics canvas { width: 100%; height: 100%; opacity: 0.12; }
+        .bg-glow {
+            position: fixed; inset: 0; z-index: 0;
+            background: radial-gradient(ellipse at 25% 30%, rgba(99,102,241,0.10) 0%, transparent 55%),
+                        radial-gradient(ellipse at 75% 65%, rgba(14,165,233,0.08) 0%, transparent 55%);
+            backdrop-filter: blur(60px);
         }
 
         .container {
@@ -158,6 +157,7 @@
     </style>
 </head>
 <body>
+    <div class="bg-analytics"><canvas id="bgCanvas"></canvas></div>
     <div class="bg-glow"></div>
     <div class="container">
         <div class="hero">
@@ -205,6 +205,80 @@
     </div>
 
     <script>
+        // ── Analytics background: animated bar/line chart ──
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let W, H, bars = [], points = [];
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+                bars = [];
+                const barCount = Math.floor(W / 60);
+                for (let i = 0; i < barCount; i++) {
+                    bars.push({
+                        x: (i / barCount) * W + 30,
+                        h: Math.random() * H * 0.5 + H * 0.1,
+                        target: Math.random() * H * 0.5 + H * 0.1,
+                        speed: 0.005 + Math.random() * 0.01,
+                    });
+                }
+                points = bars.map((b, i) => ({
+                    x: b.x,
+                    y: H - b.h - Math.random() * 80 - 40,
+                    target: H - b.h - Math.random() * 80 - 40,
+                }));
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                const bw = W / bars.length * 0.4;
+
+                // Bars
+                bars.forEach((b, i) => {
+                    b.h += (b.target - b.h) * b.speed;
+                    if (Math.abs(b.h - b.target) < 1) b.target = Math.random() * H * 0.5 + H * 0.1;
+                    const grad = ctx.createLinearGradient(0, H - b.h, 0, H);
+                    grad.addColorStop(0, i % 2 === 0 ? 'rgba(99,102,241,0.5)' : 'rgba(14,165,233,0.4)');
+                    grad.addColorStop(1, 'rgba(10,10,18,0)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.roundRect(b.x - bw/2, H - b.h, bw, b.h, [4, 4, 0, 0]);
+                    ctx.fill();
+                });
+
+                // Line chart overlay
+                points.forEach((p, i) => {
+                    p.y += (p.target - p.y) * 0.008;
+                    if (Math.abs(p.y - p.target) < 1) p.target = H * 0.2 + Math.random() * H * 0.4;
+                });
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < points.length; i++) {
+                    const cx = (points[i-1].x + points[i].x) / 2;
+                    ctx.quadraticCurveTo(points[i-1].x, points[i-1].y, cx, (points[i-1].y + points[i].y) / 2);
+                }
+                ctx.quadraticCurveTo(points[points.length-2].x, points[points.length-2].y, points[points.length-1].x, points[points.length-1].y);
+                ctx.strokeStyle = 'rgba(129,140,248,0.35)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Dots on line
+                points.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(56,189,248,0.5)';
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+
+        // ── KPI data ──
         function fmt(n) {
             if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
             if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
