@@ -176,6 +176,7 @@ def drilldown():
     rename = {COL_PERSON: "Sales Person", COL_COUNTRY: "Country", COL_PRODUCT: "Product"}
     out = subset[display_cols].rename(columns=rename)
     out = out.sort_values("Amount", ascending=False).head(50)
+    out = out.fillna("")
 
     return jsonify({
         "columns": out.columns.tolist(),

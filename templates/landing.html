@@ -3,299 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chocolate Sales Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Chocolate Sales Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', system-ui, sans-serif;
-            background: #0a0a12;
+            background: #080c14;
             color: #e8e8ef;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Analytics background with blur */
-        .bg-analytics {
-            position: fixed; inset: 0; z-index: 0; overflow: hidden;
-            filter: blur(1.5px);
-        }
-        .bg-analytics canvas { width: 100%; height: 100%; opacity: 0.12; }
-        .bg-glow {
+        /* Constellation canvas */
+        #bgCanvas {
             position: fixed; inset: 0; z-index: 0;
-            background: radial-gradient(ellipse at 25% 30%, rgba(99,102,241,0.10) 0%, transparent 55%),
-                        radial-gradient(ellipse at 75% 65%, rgba(14,165,233,0.08) 0%, transparent 55%);
-            backdrop-filter: blur(60px);
+            width: 100%; height: 100%;
         }
 
-        .container {
+        /* Content */
+        .page {
             position: relative; z-index: 1;
-            max-width: 1200px; margin: 0 auto; padding: 40px 24px;
-            min-height: 100vh; display: flex; flex-direction: column;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center;
+            padding: 48px 24px 60px;
         }
 
-        /* Header */
-        .hero { text-align: center; padding: 60px 0 40px; }
-        .hero .badge {
-            display: inline-block;
-            background: rgba(99,102,241,0.12);
-            color: #818cf8;
-            font-size: 12px; font-weight: 600;
-            padding: 6px 16px; border-radius: 20px;
-            letter-spacing: 1px; text-transform: uppercase;
-            margin-bottom: 20px;
-            border: 1px solid rgba(99,102,241,0.2);
+        /* Badge */
+        .badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: rgba(0,220,180,0.07);
+            border: 1px solid rgba(0,220,180,0.25);
+            color: #00dbb4;
+            font-size: 11px; font-weight: 700;
+            padding: 7px 18px; border-radius: 20px;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            margin-bottom: 28px;
         }
+        .badge .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #00dbb4;
+            box-shadow: 0 0 6px #00dbb4;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+        /* Hero text */
+        .hero { text-align: center; max-width: 700px; }
         .hero h1 {
-            font-size: 44px; font-weight: 800;
-            line-height: 1.15;
-            background: linear-gradient(135deg, #c7d2fe 0%, #818cf8 50%, #38bdf8 100%);
+            font-size: 68px; font-weight: 900; line-height: 1.05;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .hero h1 span {
+            background: linear-gradient(90deg, #00dbb4, #38bdf8);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 14px;
         }
         .hero p {
-            color: #6b7280; font-size: 16px; max-width: 500px; margin: 0 auto;
+            font-size: 16px; color: #6b7280; margin-bottom: 28px; line-height: 1.6;
         }
 
-        /* KPI Grid */
-        .kpi-grid {
+        /* Feature pills */
+        .pills {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .pill {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 24px;
+            padding: 8px 16px;
+            font-size: 13px; font-weight: 500; color: #a0a8b8;
+        }
+        .pill .pi { font-size: 14px; }
+
+        /* KPI cards row */
+        .kpi-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin: 48px 0 40px;
-        }
-        .kpi {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeUp 0.5s ease forwards;
-        }
-        .kpi:nth-child(1) { animation-delay: 0.1s; }
-        .kpi:nth-child(2) { animation-delay: 0.2s; }
-        .kpi:nth-child(3) { animation-delay: 0.3s; }
-        .kpi:nth-child(4) { animation-delay: 0.4s; }
-        .kpi:nth-child(5) { animation-delay: 0.5s; }
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .kpi:hover {
-            border-color: rgba(99,102,241,0.3);
-            background: rgba(99,102,241,0.05);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(99,102,241,0.08);
-        }
-        .kpi .icon {
-            width: 40px; height: 40px;
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%; max-width: 780px;
             margin-bottom: 16px;
         }
-        .kpi .icon.indigo { background: rgba(99,102,241,0.15); color: #818cf8; }
-        .kpi .icon.sky { background: rgba(14,165,233,0.15); color: #38bdf8; }
-        .kpi .label {
-            font-size: 12px; font-weight: 500; color: #6b7280;
+        .kpi-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 22px 18px 16px;
+            text-align: left;
+            transition: all 0.25s;
+        }
+        .kpi-card:hover {
+            border-color: rgba(0,219,180,0.2);
+            background: rgba(0,219,180,0.04);
+        }
+        .kpi-card .emoji { font-size: 22px; margin-bottom: 10px; display: block; }
+        .kpi-card .val {
+            font-size: 28px; font-weight: 800; color: #fff;
+            margin-bottom: 4px;
+        }
+        .kpi-card .lbl {
+            font-size: 11px; font-weight: 600; color: #4b5a6e;
             text-transform: uppercase; letter-spacing: 0.8px;
-            margin-bottom: 6px;
         }
-        .kpi .value {
-            font-size: 28px; font-weight: 700; color: #e8e8ef;
+
+        /* Mini bar chart */
+        .chart-preview {
+            width: 100%; max-width: 780px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 16px 20px 12px;
+            margin-bottom: 12px;
         }
-        .kpi .sub {
-            font-size: 12px; color: #4b5563; margin-top: 4px;
+        #miniChart { width: 100%; height: 80px; display: block; }
+        .chart-meta {
+            font-size: 12px; color: #3d4a5c; margin-top: 6px; text-align: center;
+            letter-spacing: 0.3px;
         }
 
         /* CTA Button */
-        .cta-wrap { text-align: center; margin: 20px 0 60px; }
         .cta-btn {
             display: inline-flex; align-items: center; gap: 10px;
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
-            color: #fff;
-            font-size: 16px; font-weight: 600;
-            padding: 16px 36px;
-            border: none; border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+            background: linear-gradient(90deg, #00dbb4, #38bdf8);
+            color: #080c14;
+            font-size: 16px; font-weight: 700;
+            padding: 17px 44px;
+            border: none; border-radius: 50px;
+            cursor: pointer; text-decoration: none;
+            box-shadow: 0 0 40px rgba(0,219,180,0.25);
+            transition: all 0.3s;
+            margin-top: 32px;
         }
         .cta-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(99,102,241,0.45);
+            box-shadow: 0 0 60px rgba(0,219,180,0.4);
         }
-        .cta-btn svg { width: 20px; height: 20px; }
+        .cta-btn svg { width: 18px; height: 18px; }
 
-        .footer {
-            margin-top: auto; text-align: center;
-            padding: 24px 0; color: #374151; font-size: 12px;
-        }
-
-        /* Loading skeleton */
-        .kpi .value.loading {
-            background: linear-gradient(90deg, #1a1a2e 25%, #252540 50%, #1a1a2e 75%);
+        /* Shimmer for loading values */
+        .shimmer {
+            display: inline-block;
+            background: linear-gradient(90deg, #151c28 25%, #1e2a3a 50%, #151c28 75%);
             background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 6px;
-            color: transparent;
-            user-select: none;
+            animation: shim 1.5s infinite;
+            border-radius: 6px; color: transparent !important;
+            min-width: 80px;
         }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
+        @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
         @media (max-width: 700px) {
-            .hero h1 { font-size: 28px; }
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .kpi .value { font-size: 22px; }
+            .hero h1 { font-size: 38px; }
+            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .kpi-card .val { font-size: 22px; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-analytics"><canvas id="bgCanvas"></canvas></div>
-    <div class="bg-glow"></div>
-    <div class="container">
-        <div class="hero">
-            <div class="badge">raj_db &bull; Live Data</div>
-            <h1>Chocolate Sales<br>Dashboard</h1>
-            <p>Real-time analytics across 6 countries, 22 products, and 33 salespeople from Jul 2022 to Sep 2023.</p>
-        </div>
+<canvas id="bgCanvas"></canvas>
+<div class="page">
+    <div class="badge"><span class="dot"></span> Live Analytics Platform</div>
 
-        <div class="kpi-grid" id="kpis">
-            <div class="kpi">
-                <div class="icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-                <div class="label">Total Revenue</div>
-                <div class="value loading" id="kpi-revenue">$0.00</div>
-            </div>
-            <div class="kpi">
-                <div class="icon sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="22" height="18" rx="2"/><path d="M1 9h22"/></svg></div>
-                <div class="label">Boxes Sold</div>
-                <div class="value loading" id="kpi-boxes">0</div>
-            </div>
-            <div class="kpi">
-                <div class="icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-                <div class="label">Total Shipments</div>
-                <div class="value loading" id="kpi-shipments">0</div>
-            </div>
-            <div class="kpi">
-                <div class="icon sky"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-                <div class="label">Salespeople</div>
-                <div class="value loading" id="kpi-people">0</div>
-            </div>
-            <div class="kpi">
-                <div class="icon indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-                <div class="label">Avg / Shipment</div>
-                <div class="value loading" id="kpi-avg">$0</div>
-            </div>
-        </div>
-
-        <div class="cta-wrap">
-            <a href="/dashboard" class="cta-btn">
-                Explore Dashboard
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-        </div>
-
-        <div class="footer">Chocolate Sales Dashboard &bull; Data sourced from MySQL raj_db</div>
+    <div class="hero">
+        <h1>Chocolate Sales<br><span>Intelligence</span></h1>
+        <p>Real-time sales intelligence across 6 countries, 22 products &amp; <span id="sp-count">25</span> top performers</p>
     </div>
 
-    <script>
-        // ── Analytics background: animated bar/line chart ──
-        (function() {
-            const canvas = document.getElementById('bgCanvas');
-            const ctx = canvas.getContext('2d');
-            let W, H, bars = [], points = [];
-            function resize() {
-                W = canvas.width = window.innerWidth;
-                H = canvas.height = window.innerHeight;
-                bars = [];
-                const barCount = Math.floor(W / 60);
-                for (let i = 0; i < barCount; i++) {
-                    bars.push({
-                        x: (i / barCount) * W + 30,
-                        h: Math.random() * H * 0.5 + H * 0.1,
-                        target: Math.random() * H * 0.5 + H * 0.1,
-                        speed: 0.005 + Math.random() * 0.01,
-                    });
-                }
-                points = bars.map((b, i) => ({
-                    x: b.x,
-                    y: H - b.h - Math.random() * 80 - 40,
-                    target: H - b.h - Math.random() * 80 - 40,
-                }));
-            }
-            resize();
-            window.addEventListener('resize', resize);
+    <div class="pills">
+        <div class="pill"><span class="pi">📊</span> 8 Interactive Charts</div>
+        <div class="pill"><span class="pi">🔍</span> Drill-Down Analysis</div>
+        <div class="pill"><span class="pi">🤖</span> AI Chatbot</div>
+        <div class="pill"><span class="pi">📥</span> CSV Export</div>
+    </div>
 
-            function draw() {
-                ctx.clearRect(0, 0, W, H);
-                const bw = W / bars.length * 0.4;
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <span class="emoji">💰</span>
+            <div class="val shimmer" id="k-rev">$43.6M</div>
+            <div class="lbl">Total Revenue</div>
+        </div>
+        <div class="kpi-card">
+            <span class="emoji">📦</span>
+            <div class="val shimmer" id="k-boxes">2.9M</div>
+            <div class="lbl">Boxes Shipped</div>
+        </div>
+        <div class="kpi-card">
+            <span class="emoji">🚚</span>
+            <div class="val shimmer" id="k-ship">7,617</div>
+            <div class="lbl">Shipments</div>
+        </div>
+        <div class="kpi-card">
+            <span class="emoji">🌍</span>
+            <div class="val">6</div>
+            <div class="lbl">Countries</div>
+        </div>
+    </div>
 
-                // Bars
-                bars.forEach((b, i) => {
-                    b.h += (b.target - b.h) * b.speed;
-                    if (Math.abs(b.h - b.target) < 1) b.target = Math.random() * H * 0.5 + H * 0.1;
-                    const grad = ctx.createLinearGradient(0, H - b.h, 0, H);
-                    grad.addColorStop(0, i % 2 === 0 ? 'rgba(99,102,241,0.5)' : 'rgba(14,165,233,0.4)');
-                    grad.addColorStop(1, 'rgba(10,10,18,0)');
-                    ctx.fillStyle = grad;
-                    ctx.beginPath();
-                    ctx.roundRect(b.x - bw/2, H - b.h, bw, b.h, [4, 4, 0, 0]);
-                    ctx.fill();
-                });
+    <div class="chart-preview">
+        <canvas id="miniChart"></canvas>
+        <div class="chart-meta">Jul 2022 → Sep 2023 &nbsp;·&nbsp; 15 months &nbsp;·&nbsp; 6 Countries &nbsp;·&nbsp; 22 Products</div>
+    </div>
 
-                // Line chart overlay
-                points.forEach((p, i) => {
-                    p.y += (p.target - p.y) * 0.008;
-                    if (Math.abs(p.y - p.target) < 1) p.target = H * 0.2 + Math.random() * H * 0.4;
-                });
-                ctx.beginPath();
-                ctx.moveTo(points[0].x, points[0].y);
-                for (let i = 1; i < points.length; i++) {
-                    const cx = (points[i-1].x + points[i].x) / 2;
-                    ctx.quadraticCurveTo(points[i-1].x, points[i-1].y, cx, (points[i-1].y + points[i].y) / 2);
-                }
-                ctx.quadraticCurveTo(points[points.length-2].x, points[points.length-2].y, points[points.length-1].x, points[points.length-1].y);
-                ctx.strokeStyle = 'rgba(129,140,248,0.35)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+    <a href="/dashboard" class="cta-btn">
+        Explore Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+</div>
 
-                // Dots on line
-                points.forEach(p => {
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(56,189,248,0.5)';
-                    ctx.fill();
-                });
+<script>
+// ── Constellation / Particle Network Background ──
+(function () {
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, nodes = [];
+    const NODE_COUNT = 90;
+    const MAX_DIST = 160;
 
-                requestAnimationFrame(draw);
-            }
-            draw();
-        })();
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
 
-        // ── KPI data ──
-        function fmt(n) {
-            if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
-            if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
-            return '$' + n;
+    function initNodes() {
+        nodes = [];
+        for (let i = 0; i < NODE_COUNT; i++) {
+            nodes.push({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                vx: (Math.random() - 0.5) * 0.35,
+                vy: (Math.random() - 0.5) * 0.25,
+                r: Math.random() * 2 + 1,
+                // teal or sky tint
+                teal: Math.random() > 0.45,
+            });
         }
-        fetch('/api/summary').then(r => r.json()).then(d => {
-            const set = (id, val) => {
-                const el = document.getElementById(id);
-                el.textContent = val;
-                el.classList.remove('loading');
-            };
-            set('kpi-revenue', fmt(d.total_revenue));
-            set('kpi-boxes', d.total_boxes.toLocaleString());
-            set('kpi-shipments', d.total_shipments.toLocaleString());
-            set('kpi-people', d.total_salespeople);
-            set('kpi-avg', fmt(d.avg_revenue_per_shipment));
+    }
+
+    resize();
+    initNodes();
+    window.addEventListener('resize', () => { resize(); });
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // Move nodes
+        nodes.forEach(n => {
+            n.x += n.vx;
+            n.y += n.vy;
+            if (n.x < 0) n.x = W;
+            if (n.x > W) n.x = 0;
+            if (n.y < 0) n.y = H;
+            if (n.y > H) n.y = 0;
         });
-    </script>
+
+        // Draw edges
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const dx = nodes[i].x - nodes[j].x;
+                const dy = nodes[i].y - nodes[j].y;
+                const d = Math.sqrt(dx * dx + dy * dy);
+                if (d < MAX_DIST) {
+                    const alpha = (1 - d / MAX_DIST) * 0.18;
+                    ctx.beginPath();
+                    ctx.moveTo(nodes[i].x, nodes[i].y);
+                    ctx.lineTo(nodes[j].x, nodes[j].y);
+                    ctx.strokeStyle = `rgba(0,219,180,${alpha})`;
+                    ctx.lineWidth = 0.7;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Draw nodes
+        nodes.forEach(n => {
+            const color = n.teal ? '0,219,180' : '56,189,248';
+            // Glow
+            const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 4);
+            g.addColorStop(0, `rgba(${color},0.5)`);
+            g.addColorStop(1, `rgba(${color},0)`);
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r * 4, 0, Math.PI * 2);
+            ctx.fillStyle = g;
+            ctx.fill();
+            // Core dot
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${color},0.75)`;
+            ctx.fill();
+        });
+
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+// ── Mini bar chart ──
+function drawMiniChart(labels, values) {
+    const canvas = document.getElementById('miniChart');
+    canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+    canvas.height = 80 * window.devicePixelRatio;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    const W = canvas.offsetWidth, H = 80;
+    const n = values.length;
+    const max = Math.max(...values);
+    const bw = (W / n) * 0.55;
+    const gap = W / n;
+
+    values.forEach((v, i) => {
+        const bh = (v / max) * (H - 12);
+        const x = i * gap + gap * 0.225;
+        const y = H - bh;
+        // Gradient bar
+        const grad = ctx.createLinearGradient(0, y, 0, H);
+        grad.addColorStop(0, i % 2 === 0 ? 'rgba(0,219,180,0.8)' : 'rgba(56,189,248,0.7)');
+        grad.addColorStop(1, i % 2 === 0 ? 'rgba(0,219,180,0.1)' : 'rgba(56,189,248,0.1)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(x, y, bw, bh, [3, 3, 0, 0]) : ctx.rect(x, y, bw, bh);
+        ctx.fill();
+    });
+}
+
+// ── KPI data ──
+function fmt(n) {
+    if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+    return '$' + n;
+}
+
+fetch('/api/summary').then(r => r.json()).then(d => {
+    const set = (id, val) => {
+        const el = document.getElementById(id);
+        el.textContent = val;
+        el.classList.remove('shimmer');
+    };
+    set('k-rev', fmt(d.total_revenue));
+    set('k-boxes', (d.total_boxes / 1e6).toFixed(1) + 'M');
+    set('k-ship', d.total_shipments.toLocaleString());
+    document.getElementById('sp-count').textContent = d.total_salespeople;
+});
+
+fetch('/api/revenue-by-month').then(r => r.json()).then(d => {
+    drawMiniChart(d.labels, d.revenue);
+});
+</script>
 </body>
 </html>

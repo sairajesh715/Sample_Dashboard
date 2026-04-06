@@ -277,7 +277,7 @@ function openDrilldown(chart, value) {
     document.getElementById('modal-title').textContent = value + ' — Detail';
 
     fetch('/api/drilldown?chart=' + encodeURIComponent(chart) + '&value=' + encodeURIComponent(value))
-        .then(r => r.json())
+        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(data => {
             modalData = data;
             document.getElementById('modal-info').textContent =
@@ -292,12 +292,16 @@ function openDrilldown(chart, value) {
                         html += '<td style="text-align:right;font-variant-numeric:tabular-nums">' +
                             (typeof cell === 'number' ? cell.toLocaleString() : cell) + '</td>';
                     else
-                        html += '<td>' + cell + '</td>';
+                        html += '<td>' + (cell === null ? '' : cell) + '</td>';
                 });
                 html += '</tr>';
             });
             html += '</tbody></table>';
             document.getElementById('modal-body').innerHTML = html;
+        })
+        .catch(err => {
+            document.getElementById('modal-body').innerHTML =
+                '<div style="padding:40px;text-align:center;color:#f87171">Error loading data: ' + err.message + '</div>';
         });
 }
 
