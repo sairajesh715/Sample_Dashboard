@@ -149,11 +149,11 @@ def monthly_trend_by_region():
 
 @app.route("/api/drilldown")
 def drilldown():
-    """Return detailed rows when user clicks a chart data point."""
+    """Return date-grouped daily summary when user clicks a chart data point."""
     chart = request.args.get("chart", "")
     value = request.args.get("value", "")
     if not chart or not value:
-        return jsonify({"rows": [], "columns": []})
+        return jsonify({"rows": [], "dates": [], "revenues": [], "boxes": []})
 
     filters = {
         "country": (COL_COUNTRY, value),
@@ -166,23 +166,39 @@ def drilldown():
     }
 
     if chart not in filters:
-        return jsonify({"rows": [], "columns": []})
+        return jsonify({"rows": [], "dates": [], "revenues": [], "boxes": []})
 
     col, val = filters[chart]
     subset = DF[DF[col] == val].copy()
-    subset["Date"] = subset["Date"].dt.strftime("%Y-%m-%d")
+    subset["DateStr"] = subset["Date"].dt.strftime("%Y-%m-%d")
 
-    display_cols = ["Date", COL_PERSON, COL_COUNTRY, COL_PRODUCT, "Category", "Team", "Amount", "Boxes"]
-    rename = {COL_PERSON: "Sales Person", COL_COUNTRY: "Country", COL_PRODUCT: "Product"}
-    out = subset[display_cols].rename(columns=rename)
-    out = out.sort_values("Amount", ascending=False).head(50)
-    out = out.fillna("")
+    # Group by date
+    daily = (
+        subset.groupby("DateStr")
+        .agg(Revenue=("Amount", "sum"), Boxes=("Boxes", "sum"), Shipments=("Amount", "count"))
+        .reset_index()
+        .sort_values("DateStr")
+    )
+    daily = daily.rename(columns={"DateStr": "Date"})
+
+    rows = []
+    for _, r in daily.iterrows():
+        rows.append({
+            "date": r["Date"],
+            "revenue": int(r["Revenue"]),
+            "boxes": int(r["Boxes"]),
+            "shipments": int(r["Shipments"]),
+        })
 
     return jsonify({
-        "columns": out.columns.tolist(),
-        "rows": out.values.tolist(),
-        "total_rows": len(subset),
-        "shown": min(50, len(subset)),
+        "label": value,
+        "chart_type": chart,
+        "total_days": len(daily),
+        "total_revenue": int(subset["Amount"].sum()),
+        "dates": daily["Date"].tolist(),
+        "revenues": daily["Revenue"].tolist(),
+        "boxes_list": daily["Boxes"].tolist(),
+        "rows": rows,
     })
 
 

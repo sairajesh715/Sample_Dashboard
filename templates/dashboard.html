@@ -87,56 +87,125 @@
         .chart-wrap { position: relative; height: 280px; }
         .chart-wrap.tall { height: 340px; }
 
-        /* Drill-down Modal */
+        /* ── Drill-down Modal ── */
         .modal-overlay {
             display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            background: rgba(0,0,8,0.75); backdrop-filter: blur(6px);
             z-index: 100; align-items: center; justify-content: center;
+            padding: 20px;
         }
         .modal-overlay.active { display: flex; }
         .modal {
-            background: #12121e; border: 1px solid var(--border);
-            border-radius: 18px; width: 90%; max-width: 900px;
-            max-height: 80vh; display: flex; flex-direction: column;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-            animation: modalIn 0.25s ease;
+            background: #0d1117;
+            border: 1px solid rgba(0,219,180,0.18);
+            border-radius: 20px;
+            width: 100%; max-width: 960px;
+            max-height: 90vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 0 80px rgba(0,219,180,0.06), 0 32px 80px rgba(0,0,0,0.6);
+            animation: modalIn 0.28s cubic-bezier(.16,1,.3,1);
+            overflow: hidden;
         }
         @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+            from { opacity: 0; transform: scale(0.94) translateY(16px); }
+            to   { opacity: 1; transform: scale(1)    translateY(0); }
         }
+
+        /* Modal header */
         .modal-header {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 20px 24px; border-bottom: 1px solid var(--border);
+            padding: 20px 24px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 16px;
         }
-        .modal-header h2 { font-size: 16px; font-weight: 700; }
-        .modal-header .info { font-size: 12px; color: var(--text-dim); }
-        .modal-close {
-            width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
-            background: transparent; color: var(--text-dim); cursor: pointer;
+        .modal-header-left { display: flex; align-items: center; gap: 14px; }
+        .modal-icon {
+            width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(0,219,180,0.15), rgba(56,189,248,0.15));
+            border: 1px solid rgba(0,219,180,0.2);
             display: flex; align-items: center; justify-content: center;
-            font-size: 18px; transition: all 0.2s;
+            font-size: 20px;
         }
-        .modal-close:hover { background: rgba(239,68,68,0.1); color: #f87171; border-color: rgba(239,68,68,0.3); }
-        .modal-body { overflow: auto; padding: 0; flex: 1; }
-        .modal-body table {
-            width: 100%; border-collapse: collapse; font-size: 13px;
+        .modal-title-wrap .modal-title { font-size: 18px; font-weight: 700; color: #fff; }
+        .modal-title-wrap .modal-sub  { font-size: 12px; color: #4b6072; margin-top: 2px; }
+        .modal-header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .badge-count {
+            font-size: 12px; font-weight: 600; color: #8899aa;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+            padding: 5px 12px; border-radius: 20px;
         }
-        .modal-body th {
-            position: sticky; top: 0; background: #181828;
-            padding: 12px 16px; text-align: left;
-            font-weight: 600; color: var(--indigo-light);
-            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border);
+        .btn-export-modal {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(90deg, #00dbb4, #38bdf8);
+            color: #060c14; font-size: 13px; font-weight: 700;
+            padding: 8px 18px; border-radius: 9px; border: none; cursor: pointer;
+            transition: all 0.2s;
         }
-        .modal-body td {
-            padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.03);
-            color: var(--text); white-space: nowrap;
+        .btn-export-modal:hover { opacity: 0.88; }
+        .btn-export-modal svg { width: 13px; height: 13px; }
+        .modal-close-btn {
+            width: 34px; height: 34px; border-radius: 9px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+            color: #6b7280; cursor: pointer; font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
         }
-        .modal-body tr:hover td { background: rgba(99,102,241,0.04); }
-        .modal-footer {
-            padding: 14px 24px; border-top: 1px solid var(--border);
-            display: flex; gap: 10px; justify-content: flex-end;
+        .modal-close-btn:hover { background: rgba(239,68,68,0.12); color: #f87171; border-color: rgba(239,68,68,0.25); }
+
+        /* Chart area */
+        .modal-chart-area {
+            padding: 20px 24px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .modal-chart-wrap { position: relative; height: 200px; }
+
+        /* Table */
+        .modal-table-wrap { overflow: auto; flex: 1; }
+        .modal-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 13.5px;
+        }
+        .modal-table thead th {
+            position: sticky; top: 0;
+            background: #0d1117;
+            padding: 13px 18px;
+            font-size: 12px; font-weight: 700;
+            letter-spacing: 0.5px; text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            white-space: nowrap;
+        }
+        .modal-table thead th:nth-child(1) { color: #4b6072; width: 52px; text-align: center; }
+        .modal-table thead th:nth-child(2) { color: #8899aa; }
+        .modal-table thead th:nth-child(3) { color: #00dbb4; }
+        .modal-table thead th:nth-child(4) { color: #818cf8; }
+        .modal-table thead th:nth-child(5) { color: #38bdf8; }
+
+        .modal-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.15s; }
+        .modal-table tbody tr:hover { background: rgba(0,219,180,0.04); }
+        .modal-table tbody td {
+            padding: 14px 18px; color: #c8d4e0; vertical-align: middle; white-space: nowrap;
+        }
+        .modal-table tbody td:nth-child(1) { text-align: center; font-size: 18px; }
+        .modal-table tbody td:nth-child(2) { font-weight: 600; color: #e0eaf4; font-size: 14px; }
+
+        /* Revenue bar cell */
+        .rev-cell { display: flex; align-items: center; gap: 10px; }
+        .rev-bar-bg {
+            flex: 1; height: 28px; border-radius: 6px;
+            background: rgba(0,219,180,0.08);
+            position: relative; overflow: hidden;
+            max-width: 260px; min-width: 80px;
+        }
+        .rev-bar-fill {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(0,219,180,0.55), rgba(56,189,248,0.35));
+            border-radius: 6px;
+            transition: width 0.6s ease;
+        }
+        .rev-bar-label {
+            position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+            font-size: 13px; font-weight: 700; color: #e0f7f4;
+            white-space: nowrap;
         }
 
         /* Loading */
@@ -232,20 +301,42 @@
     <!-- Drill-down Modal -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
+            <!-- Header -->
             <div class="modal-header">
-                <div>
-                    <h2 id="modal-title">Detail View</h2>
-                    <div class="info" id="modal-info"></div>
+                <div class="modal-header-left">
+                    <div class="modal-icon" id="modal-icon">📅</div>
+                    <div class="modal-title-wrap">
+                        <div class="modal-title" id="modal-title">Daily Trend</div>
+                        <div class="modal-sub" id="modal-sub">Day-by-day performance</div>
+                    </div>
                 </div>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <div class="modal-header-right">
+                    <div class="badge-count" id="modal-badge">— records</div>
+                    <button class="btn-export-modal" onclick="exportModalCSV()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export CSV
+                    </button>
+                    <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+                </div>
             </div>
-            <div class="modal-body" id="modal-body"></div>
-            <div class="modal-footer">
-                <button class="btn" onclick="exportModalCSV()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Export Table
-                </button>
-                <button class="btn" onclick="closeModal()">Close</button>
+            <!-- Trend Chart -->
+            <div class="modal-chart-area">
+                <div class="modal-chart-wrap"><canvas id="modalChart"></canvas></div>
+            </div>
+            <!-- Table -->
+            <div class="modal-table-wrap" id="modal-table-wrap">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Revenue ($)</th>
+                            <th>Boxes</th>
+                            <th>Shipments</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-tbody"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -267,45 +358,123 @@ function fmt(n) {
 }
 
 // ── Modal state ──
-let modalData = { columns: [], rows: [] };
+let modalData = null;
+let modalChartInst = null;
 
-function openDrilldown(chart, value) {
-    const m = document.getElementById('modal');
-    document.getElementById('modal-title', 'Loading...');
-    document.getElementById('modal-body').innerHTML = '<div style="padding:40px;text-align:center;color:#6b7280">Loading data...</div>';
-    m.classList.add('active');
-    document.getElementById('modal-title').textContent = value + ' — Detail';
+const CHART_ICONS = {
+    month: '📅', country: '🌍', category: '🍫', product: '🍬',
+    person: '👤', team: '🏆', region: '🗺️',
+};
+const CHART_LABELS = {
+    month: 'Daily Trend', country: 'Country Breakdown', category: 'Category Breakdown',
+    product: 'Product Breakdown', person: 'Salesperson Breakdown',
+    team: 'Team Breakdown', region: 'Region Breakdown',
+};
+const MEDALS = ['🥇','🥈','🥉'];
 
-    fetch('/api/drilldown?chart=' + encodeURIComponent(chart) + '&value=' + encodeURIComponent(value))
+function fmtFull(n) {
+    return '$' + Number(n).toLocaleString();
+}
+
+function openDrilldown(chartType, value) {
+    document.getElementById('modal').classList.add('active');
+    // Set header
+    document.getElementById('modal-icon').textContent = CHART_ICONS[chartType] || '📊';
+    document.getElementById('modal-title').textContent = CHART_LABELS[chartType] || 'Detail';
+    document.getElementById('modal-sub').textContent = 'Day-by-day performance for ' + value;
+    document.getElementById('modal-badge').textContent = 'Loading…';
+    document.getElementById('modal-tbody').innerHTML =
+        '<tr><td colspan="5" style="text-align:center;padding:40px;color:#4b6072">Loading data…</td></tr>';
+
+    // Clear previous chart
+    if (modalChartInst) { modalChartInst.destroy(); modalChartInst = null; }
+
+    fetch('/api/drilldown?chart=' + encodeURIComponent(chartType) + '&value=' + encodeURIComponent(value))
         .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(data => {
             modalData = data;
-            document.getElementById('modal-info').textContent =
-                'Showing ' + data.shown + ' of ' + data.total_rows + ' records (top by amount)';
-            let html = '<table><thead><tr>';
-            data.columns.forEach(c => html += '<th>' + c + '</th>');
-            html += '</tr></thead><tbody>';
-            data.rows.forEach(row => {
-                html += '<tr>';
-                row.forEach((cell, i) => {
-                    if (data.columns[i] === 'Amount' || data.columns[i] === 'Boxes')
-                        html += '<td style="text-align:right;font-variant-numeric:tabular-nums">' +
-                            (typeof cell === 'number' ? cell.toLocaleString() : cell) + '</td>';
-                    else
-                        html += '<td>' + (cell === null ? '' : cell) + '</td>';
-                });
-                html += '</tr>';
+            document.getElementById('modal-badge').textContent = data.total_days + ' records';
+
+            // ── Trend chart ──
+            const ctx = document.getElementById('modalChart').getContext('2d');
+            modalChartInst = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.dates,
+                    datasets: [
+                        {
+                            label: 'Revenue ($)',
+                            data: data.revenues,
+                            borderColor: '#00dbb4',
+                            backgroundColor: 'rgba(0,219,180,0.08)',
+                            fill: true, tension: 0.4,
+                            pointRadius: 3, pointHoverRadius: 7,
+                            borderWidth: 2.5, yAxisID: 'y',
+                        },
+                        {
+                            label: 'Boxes',
+                            data: data.boxes_list,
+                            borderColor: '#a78bfa',
+                            backgroundColor: 'rgba(167,139,250,0.06)',
+                            fill: true, tension: 0.4,
+                            pointRadius: 3, pointHoverRadius: 7,
+                            borderWidth: 2, yAxisID: 'y1',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { intersect: false, mode: 'index' },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, font: { size: 12 }, color: '#8899aa' }
+                        },
+                    },
+                    scales: {
+                        x: { ticks: { color: '#4b6072', font: { size: 10 }, maxTicksLimit: 12 }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                        y:  { position: 'left',  ticks: { color: '#4b6072', callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                        y1: { position: 'right', ticks: { color: '#4b6072', callback: v => v.toLocaleString() }, grid: { drawOnChartArea: false } },
+                    }
+                }
             });
-            html += '</tbody></table>';
-            document.getElementById('modal-body').innerHTML = html;
+
+            // ── Table ──
+            const maxRev = Math.max(...data.rows.map(r => r.revenue));
+            const tbody = document.getElementById('modal-tbody');
+            tbody.innerHTML = '';
+            data.rows.forEach((row, i) => {
+                const rank = i < 3 ? MEDALS[i] : (i + 1);
+                const pct = maxRev > 0 ? (row.revenue / maxRev * 100).toFixed(1) : 0;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${rank}</td>
+                    <td>${row.date}</td>
+                    <td>
+                        <div class="rev-cell">
+                            <div class="rev-bar-bg">
+                                <div class="rev-bar-fill" style="width:${pct}%"></div>
+                                <span class="rev-bar-label">${fmtFull(row.revenue)}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${Number(row.boxes).toLocaleString()}</td>
+                    <td>${Number(row.shipments).toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
         })
         .catch(err => {
-            document.getElementById('modal-body').innerHTML =
-                '<div style="padding:40px;text-align:center;color:#f87171">Error loading data: ' + err.message + '</div>';
+            document.getElementById('modal-tbody').innerHTML =
+                `<tr><td colspan="5" style="text-align:center;padding:40px;color:#f87171">Error: ${err.message}</td></tr>`;
+            document.getElementById('modal-badge').textContent = 'Error';
         });
 }
 
-function closeModal() { document.getElementById('modal').classList.remove('active'); }
+function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+    if (modalChartInst) { modalChartInst.destroy(); modalChartInst = null; }
+}
 document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
@@ -517,15 +686,12 @@ function exportCSV() {
 }
 
 function exportModalCSV() {
-    if (!modalData.columns.length) return;
-    let csv = modalData.columns.join(',') + '\n';
+    if (!modalData || !modalData.rows.length) return;
+    let csv = 'Date,Revenue,Boxes,Shipments\n';
     modalData.rows.forEach(row => {
-        csv += row.map(cell => {
-            const s = String(cell);
-            return s.includes(',') ? '"' + s + '"' : s;
-        }).join(',') + '\n';
+        csv += `${row.date},${row.revenue},${row.boxes},${row.shipments}\n`;
     });
-    downloadCSV(csv, 'drilldown_export.csv');
+    downloadCSV(csv, 'drilldown_' + (modalData.label || 'export').replace(/\s+/g,'_') + '.csv');
 }
 
 function downloadCSV(csv, filename) {
