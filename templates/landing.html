@@ -1,355 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chocolate Sales Intelligence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: #080c14;
-            color: #e8e8ef;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR Analytics — People Intelligence Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Constellation canvas */
-        #bgCanvas {
-            position: fixed; inset: 0; z-index: 0;
-            width: 100%; height: 100%;
-        }
+    :root {
+      --purple: #7c3aed;
+      --cyan:   #06b6d4;
+      --amber:  #f59e0b;
+      --pink:   #ec4899;
+      --green:  #10b981;
+      --bg:     #050b1a;
+    }
 
-        /* Content */
-        .page {
-            position: relative; z-index: 1;
-            min-height: 100vh;
-            display: flex; flex-direction: column;
-            align-items: center;
-            padding: 48px 24px 60px;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #e2e8f0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
 
-        /* Badge */
-        .badge {
-            display: inline-flex; align-items: center; gap: 7px;
-            background: rgba(0,220,180,0.07);
-            border: 1px solid rgba(0,220,180,0.25);
-            color: #00dbb4;
-            font-size: 11px; font-weight: 700;
-            padding: 7px 18px; border-radius: 20px;
-            letter-spacing: 1.5px; text-transform: uppercase;
-            margin-bottom: 28px;
-        }
-        .badge .dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: #00dbb4;
-            box-shadow: 0 0 6px #00dbb4;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    #neural-canvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
 
-        /* Hero text */
-        .hero { text-align: center; max-width: 700px; }
-        .hero h1 {
-            font-size: 68px; font-weight: 900; line-height: 1.05;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-        .hero h1 span {
-            background: linear-gradient(90deg, #00dbb4, #38bdf8);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: 16px; color: #6b7280; margin-bottom: 28px; line-height: 1.6;
-        }
+    .bg-radials {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 50% at 15% 50%,  rgba(124,58,237,.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 85% 20%,  rgba(6,182,212,.14)  0%, transparent 70%),
+        radial-gradient(ellipse 40% 35% at 60% 85%,  rgba(245,158,11,.10) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 25% at 90% 75%,  rgba(236,72,153,.08) 0%, transparent 60%);
+    }
 
-        /* Feature pills */
-        .pills {
-            display: flex; flex-wrap: wrap; gap: 10px;
-            justify-content: center;
-            margin-bottom: 40px;
-        }
-        .pill {
-            display: inline-flex; align-items: center; gap: 7px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.09);
-            border-radius: 24px;
-            padding: 8px 16px;
-            font-size: 13px; font-weight: 500; color: #a0a8b8;
-        }
-        .pill .pi { font-size: 14px; }
+    .blob {
+      position: fixed; border-radius: 50%;
+      filter: blur(90px); opacity: .13;
+      z-index: 0; pointer-events: none;
+      animation: blobFloat 10s ease-in-out infinite;
+    }
+    .blob-1 { width:450px;height:450px;background:var(--purple);top:-120px;left:-120px;animation-delay:0s; }
+    .blob-2 { width:320px;height:320px;background:var(--cyan);  bottom:-80px;right:-80px;animation-delay:-4s; }
+    .blob-3 { width:260px;height:260px;background:var(--amber); top:50%;right:8%;animation-delay:-7s; }
+    .blob-4 { width:200px;height:200px;background:var(--pink);  top:20%;left:60%;animation-delay:-3s; }
 
-        /* KPI cards row */
-        .kpi-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            width: 100%; max-width: 780px;
-            margin-bottom: 16px;
-        }
-        .kpi-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            padding: 22px 18px 16px;
-            text-align: left;
-            transition: all 0.25s;
-        }
-        .kpi-card:hover {
-            border-color: rgba(0,219,180,0.2);
-            background: rgba(0,219,180,0.04);
-        }
-        .kpi-card .emoji { font-size: 22px; margin-bottom: 10px; display: block; }
-        .kpi-card .val {
-            font-size: 28px; font-weight: 800; color: #fff;
-            margin-bottom: 4px;
-        }
-        .kpi-card .lbl {
-            font-size: 11px; font-weight: 600; color: #4b5a6e;
-            text-transform: uppercase; letter-spacing: 0.8px;
-        }
+    @keyframes blobFloat {
+      0%,100%{transform:translate(0,0) scale(1)}
+      33%    {transform:translate(25px,-25px) scale(1.06)}
+      66%    {transform:translate(-18px,18px) scale(.94)}
+    }
 
-        /* Mini bar chart */
-        .chart-preview {
-            width: 100%; max-width: 780px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 14px;
-            padding: 16px 20px 12px;
-            margin-bottom: 12px;
-        }
-        #miniChart { width: 100%; height: 80px; display: block; }
-        .chart-meta {
-            font-size: 12px; color: #3d4a5c; margin-top: 6px; text-align: center;
-            letter-spacing: 0.3px;
-        }
+    .hero {
+      position: relative; z-index: 2;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 3rem 1.5rem 2rem;
+    }
 
-        /* CTA Button */
-        .cta-btn {
-            display: inline-flex; align-items: center; gap: 10px;
-            background: linear-gradient(90deg, #00dbb4, #38bdf8);
-            color: #080c14;
-            font-size: 16px; font-weight: 700;
-            padding: 17px 44px;
-            border: none; border-radius: 50px;
-            cursor: pointer; text-decoration: none;
-            box-shadow: 0 0 40px rgba(0,219,180,0.25);
-            transition: all 0.3s;
-            margin-top: 32px;
-        }
-        .cta-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 60px rgba(0,219,180,0.4);
-        }
-        .cta-btn svg { width: 18px; height: 18px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(124,58,237,.18);
+      border: 1px solid rgba(124,58,237,.4);
+      border-radius: 100px;
+      padding: .4rem 1.1rem;
+      font-size: .75rem; font-weight: 700;
+      color: #a78bfa;
+      letter-spacing: .1em; text-transform: uppercase;
+      margin-bottom: 1.75rem;
+      backdrop-filter: blur(12px);
+      animation: fadeDown .6s ease both;
+    }
+    .badge-dot {
+      width:7px;height:7px;border-radius:50%;
+      background:var(--purple);box-shadow:0 0 8px var(--purple);
+      animation:dotPulse 2s infinite;
+    }
+    @keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.6)}}
 
-        /* Shimmer for loading values */
-        .shimmer {
-            display: inline-block;
-            background: linear-gradient(90deg, #151c28 25%, #1e2a3a 50%, #151c28 75%);
-            background-size: 200% 100%;
-            animation: shim 1.5s infinite;
-            border-radius: 6px; color: transparent !important;
-            min-width: 80px;
-        }
-        @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    h1 {
+      font-size: clamp(2.8rem, 9vw, 5.5rem);
+      font-weight: 900; line-height: 1.08; letter-spacing: -.02em;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #fff 0%, #c4b5fd 30%, #67e8f9 60%, #fcd34d 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: fadeDown .7s ease .1s both;
+    }
 
-        @media (max-width: 700px) {
-            .hero h1 { font-size: 38px; }
-            .kpi-row { grid-template-columns: repeat(2, 1fr); }
-            .kpi-card .val { font-size: 22px; }
-        }
-    </style>
+    .subtitle {
+      font-size: clamp(.95rem, 2.5vw, 1.2rem);
+      color: #94a3b8; max-width: 580px; line-height: 1.75;
+      margin-bottom: 3rem;
+      animation: fadeDown .7s ease .2s both;
+    }
+
+    .stats-row {
+      display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 3rem;
+      animation: fadeDown .7s ease .3s both;
+    }
+
+    .stat-tile {
+      position: relative;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(20px);
+      border-radius: 18px;
+      padding: 1.4rem 1.8rem;
+      min-width: 150px; text-align: center;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+      overflow: hidden;
+    }
+    .stat-tile::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.05));
+      opacity:0; transition:opacity .3s; border-radius:inherit;
+    }
+    .stat-tile:hover{transform:translateY(-5px);border-color:rgba(124,58,237,.45);box-shadow:0 20px 40px rgba(124,58,237,.2);}
+    .stat-tile:hover::after{opacity:1;}
+    .stat-val {
+      font-size:2.2rem;font-weight:800;
+      background:linear-gradient(135deg,#a78bfa,#22d3ee);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .stat-lbl{font-size:.72rem;color:#475569;text-transform:uppercase;letter-spacing:.1em;margin-top:.2rem;}
+
+    .cta-wrap { animation: fadeDown .7s ease .4s both; }
+
+    .cta-btn {
+      display:inline-flex;align-items:center;gap:.8rem;
+      background:linear-gradient(135deg,var(--purple),var(--cyan));
+      color:#fff;text-decoration:none;font-weight:700;font-size:1.1rem;
+      padding:1.1rem 2.8rem;border-radius:50px;
+      position:relative;overflow:hidden;
+      box-shadow:0 0 35px rgba(124,58,237,.45),0 0 70px rgba(6,182,212,.2);
+      transition:all .35s;
+    }
+    .cta-btn::before{
+      content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+      transition:left .55s;
+    }
+    .cta-btn:hover::before{left:100%;}
+    .cta-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 0 55px rgba(124,58,237,.65),0 0 90px rgba(6,182,212,.3);}
+    .arrow{font-size:1.2rem;transition:transform .3s;}
+    .cta-btn:hover .arrow{transform:translateX(5px);}
+
+    .features {
+      position:relative;z-index:2;
+      display:flex;gap:1.25rem;flex-wrap:wrap;
+      justify-content:center;max-width:1100px;
+      margin:0 auto;padding:3rem 1.5rem 5rem;
+      animation:fadeUp .8s ease .5s both;
+    }
+    .feat {
+      flex:1;min-width:190px;max-width:240px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:20px;padding:1.8rem 1.4rem;
+      text-align:center;backdrop-filter:blur(10px);
+      transition:all .35s;
+    }
+    .feat:hover{background:rgba(255,255,255,.06);border-color:rgba(124,58,237,.35);transform:translateY(-7px);box-shadow:0 20px 40px rgba(0,0,0,.3);}
+    .feat-icon{font-size:2.4rem;margin-bottom:.9rem;}
+    .feat-title{font-size:.95rem;font-weight:700;color:#e2e8f0;margin-bottom:.4rem;}
+    .feat-desc{font-size:.8rem;color:#475569;line-height:1.65;}
+
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+    @keyframes fadeUp  {from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none}}
+
+    @media(max-width:600px){
+      .stats-row{gap:.75rem;}
+      .stat-tile{min-width:130px;padding:1rem 1.2rem;}
+      .stat-val{font-size:1.7rem;}
+    }
+  </style>
 </head>
 <body>
-<canvas id="bgCanvas"></canvas>
-<div class="page">
-    <div class="badge"><span class="dot"></span> Live Analytics Platform</div>
+  <canvas id="neural-canvas"></canvas>
+  <div class="bg-radials"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
 
-    <div class="hero">
-        <h1>Chocolate Sales<br><span>Intelligence</span></h1>
-        <p>Real-time sales intelligence across 6 countries, 22 products &amp; <span id="sp-count">25</span> top performers</p>
+  <section class="hero">
+    <div class="badge"><span class="badge-dot"></span>HR Analytics Platform &nbsp;·&nbsp; AI-Powered Insights</div>
+    <h1>People Intelligence<br>Dashboard</h1>
+    <p class="subtitle">
+      Transform raw workforce data into crystal-clear insights. Monitor attrition,
+      track performance, analyse salary equity, and measure employee satisfaction —
+      all in one stunning analytics hub.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-tile"><div class="stat-val" id="s-emp">—</div><div class="stat-lbl">Total Employees</div></div>
+      <div class="stat-tile"><div class="stat-val" id="s-dept">—</div><div class="stat-lbl">Departments</div></div>
+      <div class="stat-tile"><div class="stat-val" id="s-attr">—</div><div class="stat-lbl">Attrition Rate</div></div>
+      <div class="stat-tile"><div class="stat-val" id="s-sal">—</div><div class="stat-lbl">Avg. Salary</div></div>
     </div>
 
-    <div class="pills">
-        <div class="pill"><span class="pi">📊</span> 8 Interactive Charts</div>
-        <div class="pill"><span class="pi">🔍</span> Drill-Down Analysis</div>
-        <div class="pill"><span class="pi">🤖</span> AI Chatbot</div>
-        <div class="pill"><span class="pi">📥</span> CSV Export</div>
+    <div class="cta-wrap">
+      <a href="/dashboard" class="cta-btn">Explore Dashboard <span class="arrow">→</span></a>
     </div>
+  </section>
 
-    <div class="kpi-row">
-        <div class="kpi-card">
-            <span class="emoji">💰</span>
-            <div class="val shimmer" id="k-rev">$43.6M</div>
-            <div class="lbl">Total Revenue</div>
-        </div>
-        <div class="kpi-card">
-            <span class="emoji">📦</span>
-            <div class="val shimmer" id="k-boxes">2.9M</div>
-            <div class="lbl">Boxes Shipped</div>
-        </div>
-        <div class="kpi-card">
-            <span class="emoji">🚚</span>
-            <div class="val shimmer" id="k-ship">7,617</div>
-            <div class="lbl">Shipments</div>
-        </div>
-        <div class="kpi-card">
-            <span class="emoji">🌍</span>
-            <div class="val">6</div>
-            <div class="lbl">Countries</div>
-        </div>
-    </div>
+  <div class="features">
+    <div class="feat"><div class="feat-icon">📊</div><div class="feat-title">14 Live Charts</div><div class="feat-desc">Comprehensive visualisations covering every dimension of your workforce</div></div>
+    <div class="feat"><div class="feat-icon">📉</div><div class="feat-title">Attrition Intelligence</div><div class="feat-desc">Pinpoint flight-risk patterns by department, age group &amp; satisfaction</div></div>
+    <div class="feat"><div class="feat-icon">💰</div><div class="feat-title">Salary Analytics</div><div class="feat-desc">Benchmark compensation across departments and identify pay equity gaps</div></div>
+    <div class="feat"><div class="feat-icon">⭐</div><div class="feat-title">Performance Pulse</div><div class="feat-desc">Track ratings, satisfaction scores, and work-life balance at a glance</div></div>
+    <div class="feat"><div class="feat-icon">📅</div><div class="feat-title">Hiring Trends</div><div class="feat-desc">Monthly recruitment timeline to measure growth velocity and seasonality</div></div>
+  </div>
 
-    <div class="chart-preview">
-        <canvas id="miniChart"></canvas>
-        <div class="chart-meta">Jul 2022 → Sep 2023 &nbsp;·&nbsp; 15 months &nbsp;·&nbsp; 6 Countries &nbsp;·&nbsp; 22 Products</div>
-    </div>
+  <script>
+  /* ─── Neural Network Canvas ─── */
+  const canvas = document.getElementById('neural-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, pts;
 
-    <a href="/dashboard" class="cta-btn">
-        Explore Dashboard
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </a>
-</div>
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 
-<script>
-// ── Constellation / Particle Network Background ──
-(function () {
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let W, H, nodes = [];
-    const NODE_COUNT = 90;
-    const MAX_DIST = 160;
-
-    function resize() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
+  class Dot {
+    constructor() { this.init(); }
+    init() {
+      this.x  = Math.random() * W;
+      this.y  = Math.random() * H;
+      this.vx = (Math.random() - .5) * .55;
+      this.vy = (Math.random() - .5) * .55;
+      this.r  = Math.random() * 2.2 + .8;
+      this.hue = 240 + Math.random() * 80;
     }
-
-    function initNodes() {
-        nodes = [];
-        for (let i = 0; i < NODE_COUNT; i++) {
-            nodes.push({
-                x: Math.random() * W,
-                y: Math.random() * H,
-                vx: (Math.random() - 0.5) * 0.35,
-                vy: (Math.random() - 0.5) * 0.25,
-                r: Math.random() * 2 + 1,
-                // teal or sky tint
-                teal: Math.random() > 0.45,
-            });
-        }
+    step() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > W) this.vx *= -1;
+      if (this.y < 0 || this.y > H) this.vy *= -1;
     }
-
-    resize();
-    initNodes();
-    window.addEventListener('resize', () => { resize(); });
-
-    function draw() {
-        ctx.clearRect(0, 0, W, H);
-
-        // Move nodes
-        nodes.forEach(n => {
-            n.x += n.vx;
-            n.y += n.vy;
-            if (n.x < 0) n.x = W;
-            if (n.x > W) n.x = 0;
-            if (n.y < 0) n.y = H;
-            if (n.y > H) n.y = 0;
-        });
-
-        // Draw edges
-        for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-                const dx = nodes[i].x - nodes[j].x;
-                const dy = nodes[i].y - nodes[j].y;
-                const d = Math.sqrt(dx * dx + dy * dy);
-                if (d < MAX_DIST) {
-                    const alpha = (1 - d / MAX_DIST) * 0.18;
-                    ctx.beginPath();
-                    ctx.moveTo(nodes[i].x, nodes[i].y);
-                    ctx.lineTo(nodes[j].x, nodes[j].y);
-                    ctx.strokeStyle = `rgba(0,219,180,${alpha})`;
-                    ctx.lineWidth = 0.7;
-                    ctx.stroke();
-                }
-            }
-        }
-
-        // Draw nodes
-        nodes.forEach(n => {
-            const color = n.teal ? '0,219,180' : '56,189,248';
-            // Glow
-            const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 4);
-            g.addColorStop(0, `rgba(${color},0.5)`);
-            g.addColorStop(1, `rgba(${color},0)`);
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, n.r * 4, 0, Math.PI * 2);
-            ctx.fillStyle = g;
-            ctx.fill();
-            // Core dot
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${color},0.75)`;
-            ctx.fill();
-        });
-
-        requestAnimationFrame(draw);
+    draw() {
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = `hsla(${this.hue},80%,72%,.85)`; ctx.fill();
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r*3.5, 0, Math.PI*2);
+      ctx.fillStyle = `hsla(${this.hue},80%,60%,.08)`;  ctx.fill();
     }
-    draw();
-})();
+  }
 
-// ── Mini bar chart ──
-function drawMiniChart(labels, values) {
-    const canvas = document.getElementById('miniChart');
-    canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-    canvas.height = 80 * window.devicePixelRatio;
-    const ctx = canvas.getContext('2d');
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    const W = canvas.offsetWidth, H = 80;
-    const n = values.length;
-    const max = Math.max(...values);
-    const bw = (W / n) * 0.55;
-    const gap = W / n;
+  function buildPts() { const n = Math.min(110, Math.floor(W*H/10000)); pts = Array.from({length:n}, ()=>new Dot()); }
 
-    values.forEach((v, i) => {
-        const bh = (v / max) * (H - 12);
-        const x = i * gap + gap * 0.225;
-        const y = H - bh;
-        // Gradient bar
-        const grad = ctx.createLinearGradient(0, y, 0, H);
-        grad.addColorStop(0, i % 2 === 0 ? 'rgba(0,219,180,0.8)' : 'rgba(56,189,248,0.7)');
-        grad.addColorStop(1, i % 2 === 0 ? 'rgba(0,219,180,0.1)' : 'rgba(56,189,248,0.1)');
-        ctx.fillStyle = grad;
+  function drawEdges() {
+    const MAX = 155;
+    for (let i=0;i<pts.length;i++) for (let j=i+1;j<pts.length;j++) {
+      const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.hypot(dx,dy);
+      if (d<MAX) {
         ctx.beginPath();
-        ctx.roundRect ? ctx.roundRect(x, y, bw, bh, [3, 3, 0, 0]) : ctx.rect(x, y, bw, bh);
-        ctx.fill();
-    });
-}
+        ctx.strokeStyle=`hsla(${(pts[i].hue+pts[j].hue)/2},70%,65%,${(1-d/MAX)*.42})`;
+        ctx.lineWidth=.7;
+        ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.stroke();
+      }
+    }
+  }
 
-// ── KPI data ──
-function fmt(n) {
-    if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
-    if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
-    return '$' + n;
-}
+  function frame() { ctx.clearRect(0,0,W,H); drawEdges(); pts.forEach(p=>{p.step();p.draw();}); requestAnimationFrame(frame); }
+  resize(); buildPts(); frame();
+  window.addEventListener('resize', ()=>{ resize(); buildPts(); });
 
-fetch('/api/summary').then(r => r.json()).then(d => {
-    const set = (id, val) => {
-        const el = document.getElementById(id);
-        el.textContent = val;
-        el.classList.remove('shimmer');
-    };
-    set('k-rev', fmt(d.total_revenue));
-    set('k-boxes', (d.total_boxes / 1e6).toFixed(1) + 'M');
-    set('k-ship', d.total_shipments.toLocaleString());
-    document.getElementById('sp-count').textContent = d.total_salespeople;
-});
+  /* ─── Live KPI Counters ─── */
+  async function loadKPIs() {
+    try {
+      const d = await fetch('/api/hr/summary').then(r=>r.json());
+      counter('s-emp',  d.total_employees, 0, '');
+      counter('s-dept', d.dept_count,      0, '');
+      counter('s-attr', d.attrition_rate,  1, '%');
+      counterK('s-sal', d.avg_salary);
+    } catch(e) {}
+  }
 
-fetch('/api/revenue-by-month').then(r => r.json()).then(d => {
-    drawMiniChart(d.labels, d.revenue);
-});
-</script>
+  function counter(id, target, dec, sfx) {
+    const el=document.getElementById(id); let cur=0, step=target/60;
+    const t=setInterval(()=>{ cur=Math.min(cur+step,target); el.textContent=cur.toFixed(dec)+sfx; if(cur>=target)clearInterval(t); }, 16);
+  }
+  function counterK(id, target) {
+    const el=document.getElementById(id); let cur=0, step=target/60;
+    const t=setInterval(()=>{ cur=Math.min(cur+step,target); el.textContent='$'+(cur>=1000?(cur/1000).toFixed(0)+'K':Math.floor(cur)); if(cur>=target)clearInterval(t); }, 16);
+  }
+
+  loadKPIs();
+  </script>
 </body>
 </html>

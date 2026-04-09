@@ -1,0 +1,341 @@
+EmployeeID,Name,Age,Gender,Department,JobTitle,Education,EducationField,MaritalStatus,Salary,YearsAtCompany,YearsInCurrentRole,YearsSinceLastPromotion,JobSatisfaction,WorkLifeBalance,PerformanceRating,Attrition,HireDate,OverTime,BusinessTravel,DistanceFromHome,NumCompaniesWorked,StockOptionLevel
+1001,Robert Johnson,39,Male,Engineering,Lead Engineer,3,Life Sciences,Single,106048,10,1,0,2,2,3,No,2016-02-14,No,Travel_Frequently,13,8,1
+1002,Jessica Garcia,34,Male,Engineering,Senior Engineer,4,Technical Degree,Single,70851,7,2,5,2,3,3,No,2018-06-14,Yes,Travel_Frequently,17,0,2
+1003,William Williams,41,Female,Engineering,Senior Engineer,2,Other,Single,119615,8,2,1,2,3,4,No,2018-02-07,No,Non-Travel,7,6,0
+1004,Dorothy Hernandez,48,Male,Engineering,Lead Engineer,3,Technical Degree,Married,116566,10,2,3,2,4,3,No,2015-10-08,No,Travel_Frequently,21,0,0
+1005,Amit Martinez,34,Male,Engineering,Junior Engineer,3,Marketing,Single,78675,0,0,0,4,4,3,No,2025-10-30,No,Travel_Frequently,38,6,2
+1006,Vikram Hill,34,Male,Engineering,Senior Engineer,3,Life Sciences,Married,88131,6,3,6,1,1,2,No,2019-10-08,No,Travel_Frequently,17,8,2
+1007,Kimberly Allen,48,Female,Engineering,Junior Engineer,4,Medical,Divorced,140381,0,0,0,4,3,3,Yes,2025-04-26,Yes,Travel_Frequently,33,9,0
+1008,Michelle Thomas,42,Male,Engineering,Software Engineer,5,Life Sciences,Single,139514,5,4,1,3,3,2,No,2021-01-18,No,Non-Travel,47,7,2
+1009,Fatima Nair,32,Female,Engineering,Engineering Manager,4,Other,Divorced,86828,12,1,4,4,2,3,No,2013-07-14,No,Travel_Rarely,43,5,1
+1010,Linda Anderson,40,Male,Engineering,Senior Engineer,2,Life Sciences,Single,99451,8,2,1,1,3,3,No,2017-08-23,Yes,Travel_Frequently,16,4,1
+1011,Isabella Ramirez,32,Male,Engineering,Software Engineer,4,Technical Degree,Married,144847,3,3,0,2,3,3,No,2022-07-08,Yes,Travel_Frequently,42,1,0
+1012,Barbara Lewis,32,Female,Engineering,Lead Engineer,3,Human Resources,Single,84322,11,0,0,2,3,3,No,2014-10-21,Yes,Non-Travel,49,3,0
+1013,Andrew Ramirez,37,Male,Engineering,Senior Engineer,5,Other,Divorced,122565,7,4,7,2,1,3,No,2018-08-08,No,Non-Travel,13,4,0
+1014,Maria Garcia,22,Female,Engineering,Junior Engineer,4,Medical,Single,77989,0,0,0,1,3,3,Yes,2025-06-17,No,Travel_Frequently,16,6,0
+1015,Ryan Thomas,22,Male,Engineering,Lead Engineer,4,Marketing,Married,75209,9,1,4,3,3,3,No,2016-12-06,No,Travel_Rarely,21,1,0
+1016,Andrew Hernandez,31,Female,Engineering,Lead Engineer,3,Technical Degree,Divorced,79602,9,5,4,3,2,3,No,2016-06-27,Yes,Travel_Frequently,42,8,0
+1017,Anthony Gupta,27,Female,Engineering,Senior Engineer,5,Marketing,Single,83577,8,5,4,2,2,2,No,2017-11-09,No,Travel_Frequently,32,4,3
+1018,Vikram Scott,38,Female,Engineering,Junior Engineer,1,Life Sciences,Single,106265,0,0,0,3,2,4,No,2026-02-21,Yes,Travel_Frequently,3,5,1
+1019,Jessica Thompson,28,Male,Engineering,Junior Engineer,3,Human Resources,Married,110404,2,2,2,4,4,1,No,2023-09-02,No,Non-Travel,11,2,2
+1020,Jessica Harris,24,Female,Engineering,Junior Engineer,4,Life Sciences,Married,113540,0,0,0,3,3,3,Yes,2026-01-08,Yes,Travel_Rarely,23,4,2
+1021,Ahmed Perez,47,Male,Engineering,Software Engineer,3,Life Sciences,Single,95313,3,2,2,2,1,4,No,2022-12-17,No,Travel_Frequently,17,0,0
+1022,Deepa Smith,34,Female,Engineering,Senior Engineer,3,Human Resources,Divorced,111114,6,5,3,4,2,4,Yes,2019-10-17,Yes,Travel_Rarely,28,1,3
+1023,Thomas Gonzalez,36,Male,Engineering,Software Engineer,4,Technical Degree,Divorced,86334,5,3,2,3,3,3,No,2020-05-26,No,Travel_Frequently,37,4,1
+1024,Nancy Kumar,24,Male,Engineering,Junior Engineer,4,Life Sciences,Married,126346,0,0,0,3,3,3,No,2025-11-05,No,Non-Travel,49,3,1
+1025,Matthew Gupta,31,Male,Engineering,Software Engineer,3,Other,Married,76057,3,3,3,3,4,2,No,2022-12-30,No,Non-Travel,10,0,2
+1026,Amit Rodriguez,36,Female,Engineering,Engineering Manager,3,Technical Degree,Divorced,98683,12,4,5,4,3,2,No,2014-02-17,Yes,Travel_Rarely,40,8,1
+1027,Donald Moore,26,Female,Engineering,Senior Engineer,3,Technical Degree,Single,132216,8,5,4,4,4,3,No,2017-08-26,No,Non-Travel,18,5,1
+1028,Linda Wilson,39,Male,Engineering,Senior Engineer,3,Technical Degree,Married,100311,8,4,0,2,2,3,No,2018-03-01,Yes,Travel_Frequently,25,7,0
+1029,Jing Johnson,31,Female,Engineering,Software Engineer,3,Technical Degree,Married,124921,5,5,5,4,4,4,No,2020-11-09,No,Travel_Frequently,11,7,3
+1030,Kimberly Harris,33,Male,Engineering,Lead Engineer,4,Marketing,Single,121645,9,3,5,3,2,3,No,2016-07-12,No,Travel_Rarely,49,6,0
+1031,Jennifer Nair,31,Female,Engineering,Senior Engineer,1,Life Sciences,Single,131644,6,1,0,3,4,3,No,2019-12-03,No,Travel_Frequently,10,3,0
+1032,Christopher Martin,50,Male,Engineering,Lead Engineer,3,Life Sciences,Divorced,98569,10,0,4,2,3,3,No,2016-02-13,No,Travel_Frequently,44,6,1
+1033,Jennifer Thompson,35,Male,Engineering,Lead Engineer,2,Human Resources,Married,101830,11,5,5,4,4,3,No,2015-01-01,Yes,Non-Travel,33,5,0
+1034,Paul Flores,27,Male,Engineering,Senior Engineer,4,Human Resources,Married,117472,6,3,6,4,3,3,No,2019-08-04,No,Travel_Frequently,38,4,1
+1035,Betty Young,42,Male,Engineering,Software Engineer,3,Medical,Married,129087,3,2,3,3,3,3,No,2023-02-25,Yes,Travel_Rarely,39,4,1
+1036,Susan Jackson,26,Male,Engineering,Senior Engineer,3,Medical,Married,123271,8,5,3,4,3,3,No,2018-01-04,No,Travel_Rarely,43,9,1
+1037,Sarah Reddy,37,Male,Engineering,Senior Engineer,3,Human Resources,Divorced,142140,8,1,3,4,2,3,No,2017-07-14,Yes,Non-Travel,48,7,0
+1038,Jennifer Brown,22,Male,Engineering,Lead Engineer,4,Human Resources,Married,83176,9,5,2,2,3,3,No,2016-07-17,No,Travel_Frequently,49,7,0
+1039,Priya Young,25,Male,Engineering,Junior Engineer,3,Life Sciences,Divorced,132746,0,0,0,2,1,4,No,2025-06-20,No,Non-Travel,10,9,3
+1040,Vikram Martin,37,Male,Engineering,Junior Engineer,4,Human Resources,Divorced,124548,1,0,1,4,2,3,No,2024-12-03,No,Non-Travel,41,3,0
+1041,Andrew Sharma,41,Male,Engineering,Junior Engineer,2,Technical Degree,Single,142350,1,1,1,1,3,3,Yes,2025-01-19,Yes,Travel_Rarely,41,9,1
+1042,Andrew Lewis,37,Male,Engineering,Software Engineer,4,Life Sciences,Married,99466,3,3,3,4,4,2,No,2022-09-05,Yes,Travel_Frequently,26,4,1
+1043,John Nair,35,Male,Engineering,Senior Engineer,4,Other,Married,75224,7,4,0,4,3,1,No,2018-08-30,Yes,Non-Travel,31,8,1
+1044,Christopher Perez,33,Female,Engineering,Software Engineer,4,Technical Degree,Divorced,127132,4,3,4,3,2,3,No,2022-01-08,Yes,Travel_Frequently,26,8,0
+1045,Raj Brown,24,Male,Engineering,Junior Engineer,5,Medical,Divorced,85194,1,1,1,3,3,4,No,2024-10-30,No,Travel_Frequently,29,0,0
+1046,Michelle Scott,30,Female,Engineering,Senior Engineer,4,Life Sciences,Divorced,127424,8,3,1,3,1,3,No,2018-02-03,No,Non-Travel,8,7,3
+1047,Aria Gonzalez,32,Male,Engineering,Lead Engineer,3,Human Resources,Divorced,108254,10,5,2,2,4,4,No,2016-01-24,Yes,Non-Travel,18,6,1
+1048,Ahmed Walker,44,Male,Engineering,Engineering Manager,3,Marketing,Married,70336,12,4,6,2,3,4,No,2013-07-27,No,Travel_Rarely,21,3,3
+1049,Lisa Young,38,Male,Engineering,Software Engineer,1,Life Sciences,Single,123841,3,3,3,4,3,4,No,2022-06-22,No,Non-Travel,29,1,1
+1050,Arjun Shah,22,Female,Engineering,Senior Engineer,4,Life Sciences,Married,123736,7,5,6,4,1,4,No,2019-04-04,Yes,Travel_Rarely,41,7,2
+1051,Rahul Hernandez,38,Male,Engineering,Junior Engineer,5,Other,Married,107667,0,0,0,4,3,2,No,2025-05-28,No,Travel_Rarely,4,4,1
+1052,Donald Young,32,Male,Engineering,Senior Engineer,3,Human Resources,Single,124008,6,1,6,4,2,2,No,2020-01-27,No,Travel_Frequently,17,7,0
+1053,Steven Robinson,30,Female,Engineering,Junior Engineer,2,Marketing,Single,141643,0,0,0,3,3,3,No,2025-08-14,No,Non-Travel,16,6,1
+1054,Michael Hill,40,Female,Engineering,Lead Engineer,1,Other,Married,108696,9,2,3,4,3,1,No,2016-11-11,No,Travel_Frequently,23,3,1
+1055,Thomas Garcia,44,Female,Engineering,Lead Engineer,4,Marketing,Married,87927,9,5,6,4,3,3,No,2016-12-04,No,Non-Travel,13,2,2
+1056,Sofia Davis,43,Male,Engineering,Software Engineer,4,Technical Degree,Single,105720,5,1,3,2,4,3,No,2020-07-13,No,Travel_Frequently,47,6,3
+1057,Mia Miller,29,Male,Engineering,Engineering Manager,1,Other,Single,121717,12,3,0,3,3,3,No,2013-07-01,No,Travel_Frequently,36,5,3
+1058,Fang Davis,33,Male,Engineering,Software Engineer,5,Life Sciences,Single,130852,3,3,2,3,3,2,No,2022-05-14,No,Travel_Rarely,30,5,1
+1059,Emily Williams,38,Female,Engineering,Lead Engineer,4,Other,Married,124935,11,1,7,4,4,3,No,2014-04-21,No,Travel_Rarely,16,5,0
+1060,Sandra Shah,43,Male,Engineering,Lead Engineer,2,Other,Divorced,117012,10,0,0,2,4,4,Yes,2015-10-06,No,Travel_Rarely,16,2,2
+1061,James Moore,32,Female,Engineering,Software Engineer,3,Medical,Single,142641,3,3,3,2,4,3,No,2023-03-06,Yes,Non-Travel,8,0,0
+1062,Noah Allen,34,Male,Engineering,Software Engineer,3,Human Resources,Single,72068,5,3,3,1,4,3,No,2020-12-10,No,Travel_Frequently,3,8,1
+1063,Kathleen Hill,27,Male,Engineering,Lead Engineer,4,Medical,Single,132781,10,1,4,3,2,3,No,2016-03-27,No,Travel_Frequently,41,9,1
+1064,Sandra Ramirez,26,Female,Engineering,Software Engineer,3,Technical Degree,Single,139541,5,3,5,3,3,4,No,2020-09-27,Yes,Travel_Rarely,26,6,2
+1065,Richard Reddy,42,Male,Engineering,Software Engineer,3,Other,Married,103408,5,1,0,2,4,2,Yes,2020-09-04,No,Travel_Frequently,36,8,1
+1066,Sandra Martinez,46,Male,Engineering,Junior Engineer,4,Other,Married,125435,1,1,1,4,4,3,No,2024-09-11,No,Travel_Rarely,36,5,0
+1067,Paul Johnson,35,Male,Engineering,Software Engineer,4,Medical,Married,126244,4,4,4,4,4,3,Yes,2021-06-21,No,Travel_Rarely,23,0,0
+1068,Sofia Hernandez,44,Female,Engineering,Junior Engineer,2,Marketing,Married,79120,2,2,2,3,1,3,No,2023-06-25,Yes,Travel_Frequently,39,1,2
+1069,Maria Davis,38,Female,Engineering,Junior Engineer,4,Marketing,Married,76522,2,0,2,2,3,3,No,2024-01-20,No,Travel_Frequently,44,9,1
+1070,Donna Lee,30,Male,Engineering,Lead Engineer,5,Life Sciences,Single,121807,10,3,6,1,2,4,No,2015-11-06,No,Non-Travel,9,6,1
+1071,Vikram Torres,38,Male,Engineering,Software Engineer,2,Technical Degree,Divorced,116421,3,3,3,4,1,1,No,2022-07-28,No,Travel_Rarely,8,6,0
+1072,Ana Garcia,48,Female,Engineering,Software Engineer,4,Technical Degree,Married,130305,5,5,5,4,2,4,No,2021-01-13,Yes,Non-Travel,22,2,0
+1073,Charles Taylor,35,Male,Engineering,Lead Engineer,5,Medical,Single,95415,10,4,2,3,3,4,No,2016-02-13,No,Travel_Frequently,5,2,3
+1074,Ryan Martinez,48,Male,Engineering,Lead Engineer,4,Technical Degree,Single,143889,10,3,7,3,4,3,No,2015-08-03,No,Travel_Frequently,20,4,1
+1075,Carlos Harris,22,Male,Engineering,Software Engineer,3,Technical Degree,Divorced,130521,5,4,0,1,4,2,No,2020-07-25,No,Travel_Rarely,37,3,1
+1076,Jennifer Thomas,42,Male,Engineering,Senior Engineer,3,Other,Married,78109,7,3,2,4,4,4,No,2018-07-29,Yes,Travel_Rarely,24,4,1
+1077,Lisa Perez,36,Female,Engineering,Engineering Manager,4,Life Sciences,Divorced,76863,12,5,2,3,1,2,No,2013-10-21,No,Travel_Rarely,20,6,0
+1078,Ana Garcia,33,Male,Engineering,Lead Engineer,4,Other,Divorced,119372,11,3,5,3,2,3,No,2015-02-28,No,Non-Travel,24,4,0
+1079,Fatima Reddy,36,Female,Engineering,Software Engineer,3,Human Resources,Single,133736,3,3,3,4,2,3,No,2022-10-18,No,Travel_Frequently,9,9,1
+1080,Sneha Anderson,22,Female,Engineering,Junior Engineer,4,Human Resources,Single,91697,2,2,2,1,3,3,No,2024-01-08,No,Non-Travel,24,9,3
+1081,Mei White,34,Female,Sales,Account Manager,3,Human Resources,Single,110916,7,5,1,4,4,4,No,2018-11-18,Yes,Travel_Rarely,6,2,0
+1082,Carlos White,38,Female,Sales,Account Manager,5,Medical,Married,57021,8,0,5,2,3,3,Yes,2018-01-26,Yes,Non-Travel,2,5,3
+1083,Sneha Flores,47,Male,Sales,Sales Manager,2,Life Sciences,Single,64142,11,0,4,2,4,3,No,2014-05-15,Yes,Non-Travel,10,8,3
+1084,Fang Hill,31,Male,Sales,Sales Manager,3,Human Resources,Single,82762,9,5,3,2,2,3,Yes,2016-07-15,No,Travel_Frequently,10,4,1
+1085,Carlos Scott,29,Male,Sales,Sales Manager,3,Life Sciences,Married,99600,9,3,0,3,3,3,No,2016-10-13,No,Travel_Frequently,25,5,0
+1086,Isabella Wright,31,Female,Sales,Sales Rep,3,Marketing,Divorced,90193,0,0,0,3,2,3,Yes,2025-10-09,No,Travel_Frequently,31,2,2
+1087,Fatima Walker,43,Male,Sales,Sales Rep,1,Marketing,Single,71422,1,1,1,2,1,4,No,2024-08-18,No,Travel_Rarely,23,0,2
+1088,Fang White,38,Male,Sales,Senior Sales Rep,3,Human Resources,Married,93237,5,0,5,3,3,4,Yes,2020-11-22,Yes,Non-Travel,28,9,3
+1089,Ethan Lewis,31,Male,Sales,Sales Rep,2,Life Sciences,Divorced,58447,2,2,2,3,3,3,No,2023-07-05,No,Travel_Rarely,41,0,0
+1090,Noah White,40,Male,Sales,Sales Manager,5,Technical Degree,Divorced,65969,10,0,2,2,3,4,Yes,2015-09-17,Yes,Travel_Frequently,29,5,1
+1091,Luis Harris,36,Female,Sales,VP Sales,3,Human Resources,Single,114397,12,2,4,3,2,4,Yes,2014-03-04,Yes,Travel_Frequently,29,3,3
+1092,Ryan Kumar,43,Female,Sales,Senior Sales Rep,3,Marketing,Divorced,109382,4,0,4,2,1,2,No,2021-04-20,No,Travel_Rarely,11,2,2
+1093,Thomas Flores,30,Male,Sales,Account Manager,4,Life Sciences,Single,71342,8,2,6,2,3,3,No,2017-12-18,No,Travel_Frequently,47,7,1
+1094,Betty Iyer,33,Female,Sales,VP Sales,2,Medical,Married,54666,12,4,0,3,1,3,Yes,2013-09-15,No,Non-Travel,34,2,1
+1095,Emily Rodriguez,32,Female,Sales,Sales Rep,3,Other,Married,74552,2,2,1,4,4,4,No,2023-10-27,Yes,Travel_Frequently,42,2,1
+1096,Kimberly Shah,24,Male,Sales,Sales Manager,4,Medical,Divorced,89252,9,3,0,3,4,1,No,2017-01-23,Yes,Travel_Rarely,41,8,0
+1097,Charles Lee,38,Male,Sales,Senior Sales Rep,3,Other,Married,98227,4,4,4,1,1,3,Yes,2021-08-06,No,Travel_Rarely,9,5,1
+1098,Dorothy Hernandez,38,Male,Sales,Sales Rep,3,Marketing,Divorced,61059,1,1,1,2,2,3,No,2024-10-28,No,Non-Travel,49,2,1
+1099,Michael Brown,36,Male,Sales,Account Manager,3,Marketing,Married,85441,8,4,7,1,3,3,No,2017-08-15,Yes,Travel_Rarely,35,0,2
+1100,Barbara Harris,34,Female,Sales,Account Manager,4,Human Resources,Married,92943,6,4,4,3,3,3,No,2020-02-02,Yes,Travel_Frequently,44,9,0
+1101,Robert Rodriguez,24,Male,Sales,Sales Rep,3,Other,Married,89444,1,1,1,3,2,3,Yes,2024-09-20,No,Non-Travel,39,8,0
+1102,John White,32,Male,Sales,Sales Manager,4,Marketing,Divorced,84221,9,0,6,3,3,3,No,2016-10-30,No,Travel_Frequently,20,0,1
+1103,Charles Singh,33,Female,Sales,Senior Sales Rep,4,Medical,Single,74824,4,4,1,3,2,3,No,2021-05-10,No,Non-Travel,2,7,1
+1104,Luis Wilson,29,Female,Sales,Sales Rep,3,Human Resources,Married,98788,2,2,2,3,3,4,No,2023-09-11,No,Travel_Frequently,25,5,3
+1105,Dorothy Moore,34,Male,Sales,Account Manager,4,Human Resources,Married,91437,7,1,4,4,3,4,No,2018-07-13,Yes,Travel_Rarely,46,3,1
+1106,Arjun Thompson,39,Male,Sales,Account Manager,5,Medical,Married,118464,7,0,4,4,2,2,No,2018-10-31,No,Travel_Frequently,6,5,3
+1107,Donald Thomas,51,Female,Sales,Sales Manager,3,Life Sciences,Divorced,73047,10,4,3,3,4,3,No,2015-12-02,Yes,Travel_Frequently,15,0,0
+1108,Mei Shah,37,Male,Sales,Senior Sales Rep,1,Medical,Married,63018,5,2,4,3,4,3,No,2020-08-12,No,Travel_Frequently,4,1,1
+1109,Arjun Young,38,Female,Sales,Senior Sales Rep,5,Medical,Divorced,49888,3,2,0,2,4,2,No,2022-07-11,No,Non-Travel,20,9,1
+1110,Aiden Hernandez,35,Male,Sales,Senior Sales Rep,3,Other,Married,116211,5,5,4,4,2,3,No,2020-11-16,Yes,Travel_Frequently,12,0,2
+1111,Richard Lopez,22,Female,Sales,VP Sales,3,Medical,Married,70318,12,2,3,4,4,4,Yes,2013-11-12,No,Non-Travel,17,6,0
+1112,Pooja Martin,35,Female,Sales,VP Sales,4,Medical,Married,84576,12,5,4,3,2,3,No,2013-11-27,Yes,Travel_Frequently,8,4,1
+1113,Ahmed Kumar,36,Female,Sales,Senior Sales Rep,2,Medical,Single,107676,3,3,1,4,3,3,No,2022-12-19,No,Travel_Frequently,29,8,2
+1114,Anthony Gupta,55,Male,Sales,Sales Rep,5,Human Resources,Married,116781,1,0,1,2,3,2,No,2024-06-25,No,Non-Travel,30,2,1
+1115,Barbara Williams,34,Male,Sales,Account Manager,4,Technical Degree,Married,105604,7,5,1,3,1,3,Yes,2018-06-27,Yes,Travel_Frequently,4,1,3
+1116,Liam Lewis,38,Male,Sales,Account Manager,4,Technical Degree,Married,68590,7,0,2,4,4,3,No,2019-03-26,No,Travel_Frequently,23,1,0
+1117,Liam Anderson,35,Female,Sales,Account Manager,4,Medical,Married,74188,8,2,2,4,4,3,No,2017-09-22,No,Travel_Rarely,13,1,0
+1118,Dorothy Reddy,26,Female,Sales,Sales Manager,3,Life Sciences,Married,47050,10,3,3,1,3,3,No,2015-09-10,No,Travel_Frequently,14,0,0
+1119,Luis Anderson,45,Female,Sales,Senior Sales Rep,4,Technical Degree,Married,86799,4,2,0,4,4,3,No,2021-12-12,No,Travel_Frequently,38,2,1
+1120,Liam Lopez,42,Male,Sales,Account Manager,5,Human Resources,Married,90143,6,1,3,3,4,3,Yes,2019-07-01,No,Travel_Rarely,46,2,2
+1121,Mia Garcia,42,Male,Sales,Sales Rep,3,Human Resources,Divorced,99592,0,0,0,2,2,3,No,2025-06-26,No,Travel_Rarely,25,9,1
+1122,Matthew Reddy,28,Female,Sales,Sales Rep,3,Life Sciences,Divorced,118249,1,1,1,2,4,3,Yes,2025-01-03,No,Travel_Frequently,39,3,1
+1123,Richard Verma,47,Male,Sales,Senior Sales Rep,3,Technical Degree,Married,82101,3,1,3,3,3,3,No,2022-07-02,No,Travel_Rarely,27,0,1
+1124,Dorothy Young,24,Male,Sales,Senior Sales Rep,5,Human Resources,Divorced,117523,3,3,3,3,3,2,No,2023-01-26,Yes,Travel_Rarely,49,7,3
+1125,Linda King,40,Male,Sales,Sales Manager,2,Life Sciences,Single,91160,10,5,0,4,3,4,No,2015-08-04,No,Non-Travel,27,2,2
+1126,Jing Johnson,53,Female,Sales,Senior Sales Rep,3,Life Sciences,Divorced,46198,3,3,3,3,1,3,No,2023-03-07,No,Non-Travel,2,8,2
+1127,Ana Taylor,28,Male,Sales,Account Manager,4,Marketing,Married,101436,8,3,1,4,2,2,Yes,2017-11-16,Yes,Travel_Rarely,26,7,1
+1128,Linda Patel,31,Male,Sales,Sales Manager,4,Life Sciences,Divorced,55566,11,1,1,4,4,2,No,2014-12-18,No,Travel_Rarely,28,5,1
+1129,Emily Wright,36,Female,Sales,Sales Rep,3,Human Resources,Divorced,75115,1,0,1,4,4,3,Yes,2024-07-13,Yes,Travel_Rarely,2,3,1
+1130,Aria Nair,31,Female,Sales,VP Sales,3,Other,Single,55084,12,5,1,3,3,4,No,2013-04-13,No,Travel_Frequently,48,5,0
+1131,Sneha Young,23,Female,Sales,Account Manager,4,Medical,Married,89642,6,4,6,3,3,4,No,2019-12-14,Yes,Travel_Rarely,12,9,1
+1132,Ryan White,36,Male,Sales,Sales Rep,4,Life Sciences,Single,77302,1,0,1,1,2,3,No,2024-05-28,No,Travel_Rarely,24,4,0
+1133,Kathleen Harris,27,Male,Sales,Sales Rep,3,Life Sciences,Married,118005,1,1,1,3,1,3,No,2025-01-04,Yes,Non-Travel,47,8,3
+1134,Joshua Walker,39,Female,Sales,Senior Sales Rep,2,Life Sciences,Married,94903,3,2,3,2,2,2,No,2022-06-22,Yes,Travel_Frequently,41,7,1
+1135,Deepa Shah,28,Male,Sales,Senior Sales Rep,1,Human Resources,Single,84932,3,2,3,3,4,3,No,2022-08-19,No,Travel_Frequently,45,3,1
+1136,Arjun White,48,Female,Sales,Sales Rep,4,Life Sciences,Divorced,83200,2,1,2,3,4,4,No,2023-09-19,Yes,Travel_Frequently,50,8,0
+1137,Fang Rodriguez,29,Female,Sales,Sales Manager,3,Other,Married,72479,11,1,4,2,3,4,No,2014-08-19,No,Travel_Frequently,10,6,2
+1138,Noah Sharma,33,Female,Sales,Sales Rep,4,Human Resources,Divorced,107814,1,1,1,3,4,4,Yes,2024-08-23,No,Non-Travel,50,3,1
+1139,Jessica Smith,42,Female,Sales,Senior Sales Rep,3,Life Sciences,Married,50806,5,1,3,3,3,4,No,2021-01-15,Yes,Travel_Rarely,24,6,1
+1140,Charles Thompson,26,Female,Sales,Sales Manager,3,Marketing,Married,64758,10,3,3,1,2,3,Yes,2015-06-15,No,Travel_Frequently,31,5,1
+1141,Nancy Reddy,37,Male,HR,HR Business Partner,3,Medical,Divorced,49402,7,1,2,4,2,4,No,2018-04-20,No,Travel_Rarely,36,6,3
+1142,Aria Smith,46,Female,HR,HR Specialist,4,Other,Single,57215,3,1,3,3,1,3,No,2022-09-15,Yes,Travel_Frequently,5,9,0
+1143,Arjun Nguyen,23,Male,HR,HR Business Partner,3,Life Sciences,Married,57915,8,2,7,2,4,3,No,2018-01-06,No,Travel_Frequently,12,4,3
+1144,Karen Torres,37,Female,HR,HR Manager,2,Technical Degree,Married,65524,9,1,7,3,2,3,No,2017-02-27,No,Travel_Frequently,35,2,1
+1145,Aria Scott,38,Male,HR,HR Business Partner,4,Human Resources,Divorced,65616,7,3,6,3,4,4,No,2018-11-15,No,Travel_Frequently,32,6,2
+1146,Amit Torres,42,Male,HR,HR Business Partner,1,Other,Married,82053,7,4,1,4,2,3,No,2018-08-04,No,Travel_Frequently,8,4,2
+1147,Dorothy Martin,26,Female,HR,HR Specialist,4,Life Sciences,Married,47726,5,2,5,3,2,3,No,2020-07-07,No,Non-Travel,29,1,2
+1148,Anthony Brown,25,Female,HR,HR Specialist,4,Human Resources,Married,83530,3,3,3,4,3,3,No,2022-12-24,No,Travel_Frequently,35,2,1
+1149,Raj Brown,40,Male,HR,HR Manager,5,Marketing,Divorced,62520,11,1,2,3,4,4,No,2014-11-14,Yes,Non-Travel,10,5,2
+1150,Susan Sanchez,38,Male,HR,HR Director,4,Human Resources,Divorced,54317,12,2,5,2,3,3,No,2013-05-01,No,Travel_Rarely,32,5,1
+1151,Sandra Young,38,Female,HR,HR Director,4,Marketing,Married,75044,12,2,5,3,4,4,No,2014-02-24,No,Travel_Frequently,37,2,1
+1152,Rahul Robinson,38,Female,HR,HR Business Partner,1,Life Sciences,Married,94955,7,1,2,1,4,3,No,2018-10-18,Yes,Travel_Frequently,20,2,2
+1153,Ashley Ramirez,30,Female,HR,HR Specialist,2,Other,Single,61409,4,4,1,3,3,2,No,2022-02-22,No,Non-Travel,14,7,0
+1154,Barbara Anderson,37,Female,HR,HR Manager,1,Technical Degree,Single,74167,9,5,1,3,4,4,No,2016-12-17,No,Non-Travel,21,5,2
+1155,Nancy Lewis,38,Female,HR,HR Coordinator,4,Marketing,Divorced,94358,2,1,2,3,3,2,No,2023-09-27,No,Travel_Rarely,40,7,2
+1156,David Thomas,30,Male,HR,HR Coordinator,4,Human Resources,Divorced,53071,1,1,1,3,4,3,No,2025-02-17,Yes,Travel_Frequently,2,4,0
+1157,Fang Patel,50,Male,HR,HR Manager,3,Human Resources,Single,70673,9,4,0,1,4,4,Yes,2016-07-25,No,Travel_Rarely,21,2,1
+1158,Sandra Williams,39,Male,HR,HR Manager,3,Life Sciences,Married,89757,9,4,4,3,4,2,Yes,2016-09-08,No,Travel_Frequently,46,8,2
+1159,Lisa Wright,26,Male,HR,HR Business Partner,3,Marketing,Married,86978,6,4,1,3,2,3,No,2019-04-17,No,Travel_Rarely,45,6,2
+1160,Mary Gupta,41,Male,HR,HR Specialist,2,Medical,Divorced,73474,3,0,2,3,1,3,Yes,2023-03-12,No,Travel_Rarely,23,8,1
+1161,Vikram Moore,28,Male,HR,HR Manager,4,Human Resources,Single,53318,11,2,1,4,3,2,No,2014-12-01,No,Travel_Rarely,30,8,1
+1162,Jennifer Smith,42,Male,HR,HR Business Partner,3,Medical,Single,55309,7,3,5,2,3,3,No,2018-06-25,Yes,Travel_Rarely,10,2,3
+1163,Barbara Torres,45,Female,HR,HR Coordinator,4,Marketing,Single,91794,0,0,0,3,3,3,No,2025-06-30,No,Non-Travel,15,8,3
+1164,Joshua Reddy,29,Female,HR,HR Business Partner,4,Human Resources,Single,63501,6,3,5,3,2,3,No,2020-03-06,No,Travel_Frequently,32,3,2
+1165,Liam Reddy,43,Male,HR,HR Business Partner,1,Other,Married,71872,8,0,3,3,3,3,No,2017-12-07,Yes,Travel_Frequently,16,6,1
+1166,David Nguyen,39,Female,Finance,Financial Analyst,1,Life Sciences,Divorced,72193,0,0,0,2,4,3,No,2026-01-27,No,Non-Travel,38,9,0
+1167,Ashley Jones,42,Male,Finance,Controller,4,Medical,Single,94208,10,4,1,4,3,4,No,2016-02-05,Yes,Non-Travel,7,2,1
+1168,Joshua Gupta,51,Male,Finance,Senior Analyst,5,Other,Divorced,106961,5,0,3,2,3,3,Yes,2020-09-14,Yes,Travel_Rarely,10,1,2
+1169,Dorothy Miller,34,Male,Finance,Senior Analyst,3,Technical Degree,Single,99169,5,1,1,4,1,3,No,2020-09-20,No,Non-Travel,4,3,0
+1170,Rahul Rodriguez,29,Female,Finance,Finance Manager,4,Life Sciences,Married,71015,6,0,0,2,4,1,No,2019-10-03,Yes,Travel_Rarely,4,2,3
+1171,Robert Flores,28,Male,Finance,Finance Manager,4,Human Resources,Divorced,110165,6,1,4,2,2,2,No,2019-09-21,Yes,Travel_Rarely,27,8,1
+1172,Liam Gupta,29,Male,Finance,Financial Analyst,3,Marketing,Married,114949,1,1,1,4,3,3,No,2024-11-17,No,Travel_Rarely,37,8,1
+1173,Ashley Hernandez,35,Male,Finance,Senior Analyst,1,Life Sciences,Single,88707,4,4,3,4,2,4,No,2022-01-08,No,Travel_Rarely,35,0,2
+1174,Isabella Nguyen,38,Female,Finance,Senior Analyst,3,Life Sciences,Divorced,110911,3,3,3,4,4,2,No,2022-06-20,No,Travel_Frequently,37,2,1
+1175,Margaret Rodriguez,38,Female,Finance,Senior Analyst,3,Marketing,Divorced,83010,3,1,3,1,2,3,Yes,2022-08-01,No,Non-Travel,2,2,1
+1176,Karen Hernandez,42,Female,Finance,Financial Analyst,5,Other,Married,107826,2,2,2,3,4,3,No,2024-02-13,Yes,Travel_Frequently,21,2,2
+1177,James Sharma,36,Female,Finance,Finance Manager,3,Human Resources,Married,106769,8,4,0,3,2,3,No,2017-04-21,No,Non-Travel,39,5,3
+1178,Susan Gupta,47,Female,Finance,Controller,5,Other,Divorced,73645,9,5,5,2,4,3,No,2016-12-19,No,Travel_Rarely,1,4,0
+1179,Liam Thompson,33,Male,Finance,Controller,4,Human Resources,Married,74160,11,0,7,1,3,3,No,2015-03-09,Yes,Travel_Frequently,42,3,0
+1180,Susan Perez,57,Male,Finance,Financial Analyst,3,Human Resources,Divorced,101774,1,1,0,2,3,4,Yes,2025-03-23,Yes,Travel_Rarely,42,2,1
+1181,Andrew Martin,41,Male,Finance,Finance Manager,3,Medical,Single,103397,6,0,6,2,3,3,No,2020-01-21,No,Travel_Frequently,36,7,0
+1182,David Walker,29,Male,Finance,Senior Analyst,4,Life Sciences,Married,98607,5,3,5,3,3,2,No,2021-04-09,Yes,Travel_Rarely,43,4,0
+1183,Linda Martinez,27,Male,Finance,Finance Manager,3,Other,Divorced,109996,8,0,1,3,2,3,No,2017-09-25,Yes,Travel_Frequently,23,8,1
+1184,Donald Walker,39,Male,Finance,CFO,4,Marketing,Single,67993,12,3,0,4,3,3,No,2013-06-15,No,Travel_Frequently,37,8,2
+1185,Deepa Gonzalez,34,Male,Finance,Controller,3,Other,Single,118856,10,4,4,4,4,4,No,2015-05-30,Yes,Travel_Rarely,47,1,0
+1186,Joseph Clark,41,Female,Finance,Finance Manager,3,Medical,Single,96202,8,4,1,4,1,3,No,2017-09-20,No,Non-Travel,37,1,2
+1187,Priya Williams,39,Female,Finance,Finance Manager,3,Technical Degree,Married,94620,8,5,3,3,3,1,Yes,2017-10-17,Yes,Non-Travel,48,7,3
+1188,Joshua Reddy,35,Male,Finance,Senior Analyst,3,Technical Degree,Married,99722,5,2,5,4,4,3,No,2021-03-31,No,Travel_Frequently,42,1,0
+1189,Karen Iyer,29,Female,Finance,Senior Analyst,4,Human Resources,Divorced,127698,3,0,2,4,3,2,No,2022-09-14,Yes,Non-Travel,13,0,0
+1190,Mia Young,23,Female,Finance,Finance Manager,3,Human Resources,Married,86097,7,1,7,4,3,3,Yes,2019-03-17,Yes,Travel_Frequently,36,5,1
+1191,Anthony Moore,32,Male,Finance,Senior Analyst,3,Other,Married,63597,4,4,0,2,3,4,No,2021-04-23,No,Travel_Frequently,1,7,3
+1192,Liam Thompson,42,Female,Finance,Controller,3,Technical Degree,Married,61109,10,1,7,3,4,3,No,2016-01-14,No,Travel_Rarely,44,8,2
+1193,Jessica Walker,37,Male,Finance,Finance Manager,5,Life Sciences,Married,127045,6,2,5,4,4,3,No,2019-06-16,No,Travel_Rarely,17,4,0
+1194,Ananya Sanchez,26,Female,Finance,Finance Manager,4,Technical Degree,Divorced,112965,8,0,3,3,3,3,No,2017-12-09,No,Travel_Rarely,47,3,1
+1195,Thomas Reddy,37,Female,Finance,Controller,3,Marketing,Divorced,106988,10,4,2,4,4,4,Yes,2015-08-12,Yes,Travel_Frequently,22,1,0
+1196,Barbara Walker,39,Male,Finance,Senior Analyst,3,Medical,Divorced,103426,3,0,3,3,3,2,No,2022-11-04,Yes,Travel_Frequently,20,6,0
+1197,David Young,28,Female,Finance,Financial Analyst,3,Marketing,Divorced,104914,2,1,2,3,4,3,No,2024-01-30,Yes,Travel_Frequently,4,0,1
+1198,Mei Harris,37,Female,Finance,Senior Analyst,3,Life Sciences,Single,80766,3,3,3,4,2,3,No,2023-01-14,No,Travel_Frequently,24,0,2
+1199,Michelle Hernandez,36,Male,Finance,CFO,4,Life Sciences,Single,60540,12,2,4,2,3,3,No,2013-07-15,Yes,Travel_Rarely,47,8,1
+1200,Priya Johnson,26,Female,Finance,Senior Analyst,3,Medical,Single,77536,5,5,2,4,3,2,No,2020-08-31,No,Non-Travel,47,0,1
+1201,Jessica Shah,38,Male,Marketing,Marketing Coordinator,3,Life Sciences,Single,54897,2,2,1,3,4,3,Yes,2024-02-06,No,Travel_Rarely,29,6,0
+1202,Karen Clark,40,Female,Marketing,Marketing Specialist,4,Life Sciences,Divorced,76934,4,4,1,3,3,3,No,2021-08-11,No,Travel_Rarely,8,1,1
+1203,Mei Perez,44,Female,Marketing,Marketing Manager,5,Medical,Single,118569,9,0,1,3,3,2,No,2016-12-30,No,Non-Travel,37,7,0
+1204,Daniel Williams,44,Male,Marketing,Marketing Coordinator,5,Marketing,Married,63276,1,1,1,3,3,4,Yes,2024-07-22,Yes,Travel_Rarely,48,1,0
+1205,Susan White,24,Male,Marketing,CMO,4,Marketing,Single,68139,12,0,6,2,3,3,No,2014-03-20,No,Travel_Rarely,30,4,2
+1206,Mei Torres,28,Female,Marketing,Marketing Manager,2,Other,Married,71860,11,1,6,3,1,4,No,2014-08-11,Yes,Travel_Rarely,40,0,2
+1207,Ana Iyer,40,Male,Marketing,Marketing Manager,2,Other,Divorced,113979,11,5,3,3,1,3,No,2015-02-05,Yes,Travel_Frequently,22,8,1
+1208,Michael Smith,40,Male,Marketing,Marketing Manager,3,Other,Single,82581,11,4,7,3,3,2,No,2014-05-31,No,Travel_Rarely,11,1,2
+1209,Sneha Garcia,40,Male,Marketing,Marketing Specialist,2,Technical Degree,Married,86458,5,2,1,2,3,3,No,2020-12-08,Yes,Travel_Rarely,48,0,0
+1210,Amit Perez,62,Female,Marketing,Brand Manager,4,Marketing,Single,50022,6,1,6,4,4,3,No,2020-03-23,No,Travel_Rarely,36,9,1
+1211,Donna Scott,40,Male,Marketing,Marketing Manager,2,Human Resources,Married,109314,11,5,1,4,2,3,No,2014-05-11,No,Non-Travel,11,7,0
+1212,Jessica Nair,45,Male,Marketing,Marketing Manager,3,Technical Degree,Single,75679,11,5,1,4,3,3,No,2014-09-15,No,Travel_Rarely,30,9,3
+1213,Daniel Verma,43,Male,Marketing,Marketing Coordinator,3,Medical,Single,56366,2,2,2,3,3,4,No,2023-07-29,No,Travel_Frequently,25,6,3
+1214,Joshua Sharma,41,Male,Marketing,Marketing Manager,5,Human Resources,Married,94939,11,5,3,3,2,3,No,2014-12-06,No,Non-Travel,14,9,2
+1215,Joseph Nair,33,Female,Marketing,Marketing Manager,5,Marketing,Divorced,67389,10,3,6,3,4,3,No,2015-10-18,No,Travel_Frequently,48,8,0
+1216,Steven Martinez,42,Female,Marketing,Brand Manager,3,Life Sciences,Divorced,53312,6,2,3,1,1,3,No,2020-04-04,No,Travel_Frequently,3,5,2
+1217,Michael Harris,29,Female,Marketing,Marketing Coordinator,4,Technical Degree,Married,79400,1,1,1,3,2,4,No,2024-05-29,No,Travel_Frequently,4,0,2
+1218,Margaret Iyer,34,Female,Marketing,Marketing Specialist,4,Other,Single,108073,3,2,3,4,3,3,No,2022-05-28,No,Non-Travel,44,1,0
+1219,Lisa Williams,32,Male,Marketing,Marketing Coordinator,3,Medical,Married,55326,2,2,0,3,2,3,No,2023-07-21,Yes,Travel_Frequently,40,4,1
+1220,Priya Garcia,36,Male,Marketing,Marketing Manager,3,Marketing,Single,91662,9,1,5,4,3,4,No,2016-07-04,Yes,Travel_Rarely,24,4,0
+1221,Jennifer Singh,54,Female,Marketing,CMO,2,Marketing,Married,51153,12,0,6,3,2,3,No,2013-05-31,No,Travel_Rarely,35,4,0
+1222,Nancy Iyer,22,Male,Marketing,Brand Manager,3,Human Resources,Divorced,116680,8,0,1,1,4,2,No,2017-10-02,No,Non-Travel,43,3,2
+1223,Susan Jones,41,Male,Marketing,Brand Manager,4,Life Sciences,Single,107047,6,2,1,4,4,2,No,2020-02-17,No,Travel_Frequently,15,4,1
+1224,Jennifer Sharma,23,Male,Marketing,Brand Manager,1,Life Sciences,Married,91471,7,4,1,3,3,3,No,2018-05-24,No,Travel_Rarely,44,4,1
+1225,Charles Martin,32,Male,Marketing,Marketing Specialist,3,Other,Divorced,54039,4,4,4,3,2,3,No,2021-08-29,No,Non-Travel,36,8,0
+1226,Raj Shah,44,Female,Marketing,Marketing Coordinator,3,Human Resources,Single,101653,0,0,0,4,3,3,No,2026-04-07,No,Non-Travel,40,4,0
+1227,William Taylor,36,Female,Marketing,Marketing Coordinator,4,Life Sciences,Single,57128,2,2,2,4,4,3,No,2023-05-02,No,Travel_Rarely,23,2,1
+1228,Noah Lee,27,Male,Marketing,Marketing Specialist,5,Technical Degree,Single,59149,3,0,3,3,3,3,No,2023-02-18,Yes,Non-Travel,15,6,0
+1229,David Moore,30,Female,Marketing,Marketing Specialist,4,Medical,Divorced,93458,5,1,4,3,3,3,No,2021-02-01,No,Travel_Frequently,41,1,2
+1230,Lisa White,41,Female,Marketing,Marketing Coordinator,4,Technical Degree,Single,103101,0,0,0,2,1,3,No,2025-07-24,No,Non-Travel,30,8,1
+1231,Daniel Torres,30,Male,Marketing,Brand Manager,4,Human Resources,Divorced,81310,6,1,6,4,3,2,No,2019-10-07,No,Travel_Rarely,3,3,2
+1232,Jennifer Williams,37,Male,Marketing,Marketing Specialist,1,Other,Married,80673,3,0,3,2,4,3,No,2023-03-09,No,Travel_Frequently,17,9,1
+1233,Priya Thompson,36,Female,Marketing,Marketing Coordinator,4,Marketing,Married,97880,2,2,0,4,1,3,No,2023-09-30,No,Travel_Frequently,9,7,0
+1234,Aiden Verma,30,Female,Marketing,Marketing Coordinator,2,Life Sciences,Married,77723,1,1,1,2,3,4,No,2024-07-20,No,Travel_Rarely,14,9,0
+1235,Kimberly Lopez,53,Male,Marketing,Brand Manager,4,Human Resources,Married,66762,6,4,0,2,3,1,Yes,2020-03-30,No,Travel_Frequently,47,4,3
+1236,Betty Flores,41,Female,Marketing,Marketing Specialist,4,Other,Divorced,111789,3,2,2,2,4,3,No,2022-08-24,No,Travel_Frequently,44,5,3
+1237,Lisa Hill,22,Male,Marketing,Marketing Manager,3,Life Sciences,Single,99572,9,3,0,2,2,4,No,2016-06-13,No,Travel_Frequently,33,1,0
+1238,Ana Ramirez,37,Female,Marketing,Marketing Manager,4,Medical,Married,50157,10,3,5,4,3,3,Yes,2016-02-05,No,Travel_Frequently,48,9,0
+1239,James Torres,30,Male,Marketing,Marketing Coordinator,5,Human Resources,Single,80475,2,2,0,1,3,3,Yes,2023-12-01,Yes,Travel_Rarely,42,3,1
+1240,Arjun Nair,42,Male,Marketing,Marketing Specialist,3,Medical,Married,70287,5,4,5,3,2,3,No,2020-09-13,No,Non-Travel,24,8,1
+1241,Christopher Miller,29,Female,Operations,Operations Analyst,4,Medical,Divorced,90737,4,3,4,4,4,3,No,2021-11-04,No,Travel_Frequently,40,0,0
+1242,Robert Verma,35,Female,Operations,Process Manager,2,Technical Degree,Married,93952,10,4,4,4,3,2,Yes,2016-04-09,Yes,Travel_Frequently,39,0,3
+1243,Luis Sharma,40,Male,Operations,Operations Coordinator,3,Medical,Divorced,40701,2,1,0,3,4,3,No,2023-05-18,Yes,Travel_Rarely,16,0,3
+1244,Andrew Verma,42,Female,Operations,Operations Coordinator,4,Human Resources,Divorced,63142,1,1,1,3,2,1,No,2024-11-19,No,Travel_Rarely,15,9,3
+1245,Maria Taylor,26,Female,Operations,Operations Manager,3,Human Resources,Divorced,57111,7,2,7,3,3,3,Yes,2018-09-17,Yes,Travel_Rarely,37,7,2
+1246,Mark Singh,33,Female,Operations,COO,4,Other,Single,70071,12,2,6,4,4,3,No,2013-10-21,Yes,Travel_Rarely,34,8,0
+1247,Paul Lopez,32,Male,Operations,Operations Analyst,4,Other,Divorced,66144,4,1,4,4,1,4,No,2021-12-04,No,Travel_Frequently,13,3,2
+1248,Fang Flores,30,Male,Operations,Operations Analyst,3,Life Sciences,Divorced,94718,4,0,4,3,2,2,No,2021-12-26,No,Travel_Rarely,40,5,1
+1249,Mei Wright,50,Male,Operations,Process Manager,5,Life Sciences,Divorced,90086,9,2,6,2,2,3,No,2016-11-22,Yes,Travel_Frequently,50,2,1
+1250,Kimberly Lopez,39,Male,Operations,Operations Coordinator,4,Human Resources,Married,60686,1,1,1,1,2,3,No,2024-04-17,Yes,Travel_Rarely,40,5,1
+1251,Ashley Miller,25,Male,Operations,Operations Manager,4,Other,Married,85921,7,1,6,3,3,3,No,2018-09-06,No,Travel_Rarely,13,2,2
+1252,Jing Martin,43,Male,Operations,Process Manager,3,Marketing,Divorced,40638,11,4,0,3,4,4,No,2015-01-26,No,Travel_Rarely,7,2,0
+1253,John Clark,52,Female,Operations,Operations Analyst,3,Life Sciences,Married,46311,4,4,3,3,3,3,No,2021-08-10,No,Travel_Frequently,37,8,0
+1254,Charles Hernandez,44,Male,Operations,COO,3,Other,Married,84118,12,3,6,4,3,2,No,2013-11-18,No,Non-Travel,6,2,1
+1255,Luis Lewis,23,Female,Operations,Operations Analyst,3,Technical Degree,Single,86558,5,1,0,3,2,3,No,2020-10-30,No,Non-Travel,47,3,1
+1256,Arjun King,32,Female,Operations,Process Manager,2,Life Sciences,Single,53800,11,2,2,2,1,4,Yes,2014-04-19,No,Non-Travel,42,6,1
+1257,Wei Robinson,46,Male,Operations,Operations Analyst,2,Human Resources,Married,48284,3,3,3,4,1,3,No,2022-11-16,No,Non-Travel,45,8,0
+1258,Ashley Garcia,30,Female,Operations,Process Manager,4,Technical Degree,Married,81671,9,2,6,3,3,3,No,2016-08-21,No,Travel_Rarely,10,4,0
+1259,Donna Hill,39,Male,Operations,Operations Manager,3,Medical,Single,70749,8,4,5,3,3,4,No,2018-02-01,Yes,Non-Travel,27,8,1
+1260,Paul Jackson,42,Female,Operations,Operations Analyst,3,Other,Divorced,82335,3,3,3,3,2,3,No,2023-01-17,Yes,Travel_Rarely,13,1,0
+1261,John Lopez,28,Female,Operations,Operations Analyst,3,Life Sciences,Married,80483,4,2,2,4,3,3,No,2022-02-13,Yes,Travel_Frequently,29,0,0
+1262,David Nair,35,Male,Operations,Operations Coordinator,3,Medical,Single,62407,2,2,2,4,3,3,Yes,2024-04-02,No,Non-Travel,35,7,0
+1263,Margaret Robinson,22,Female,Operations,Operations Analyst,5,Other,Single,47992,4,4,3,4,3,4,No,2021-09-27,Yes,Travel_Rarely,25,4,3
+1264,Sandra Davis,27,Female,Operations,Operations Coordinator,5,Medical,Divorced,88806,2,2,2,3,2,3,No,2023-05-23,Yes,Non-Travel,11,4,1
+1265,Fang Garcia,33,Male,Operations,Operations Manager,4,Other,Divorced,42752,6,2,0,3,3,2,No,2019-12-08,No,Non-Travel,23,2,2
+1266,John Sharma,26,Male,Operations,COO,3,Technical Degree,Married,55248,12,5,2,3,3,3,No,2014-02-17,No,Travel_Rarely,3,7,2
+1267,Christopher Jones,49,Female,Operations,Operations Manager,3,Human Resources,Single,72118,8,3,4,2,3,3,No,2017-11-12,Yes,Travel_Rarely,35,5,1
+1268,Ahmed Harris,24,Male,Operations,COO,3,Medical,Divorced,88080,12,5,7,1,4,4,No,2013-05-21,Yes,Travel_Frequently,10,9,0
+1269,Jing Gonzalez,32,Male,Operations,Operations Manager,3,Life Sciences,Single,46308,6,4,6,1,4,2,Yes,2019-05-18,No,Travel_Frequently,32,8,1
+1270,David Robinson,37,Male,Operations,Process Manager,4,Other,Single,54465,9,2,6,1,4,3,No,2016-12-01,No,Travel_Rarely,46,0,2
+1271,Aria Gonzalez,47,Male,Operations,Operations Analyst,4,Medical,Divorced,44612,4,4,3,1,2,3,Yes,2021-07-14,Yes,Travel_Frequently,41,2,1
+1272,Betty Scott,24,Female,Operations,Operations Manager,4,Technical Degree,Divorced,90219,8,2,2,3,3,3,No,2017-09-11,No,Travel_Frequently,39,7,3
+1273,Fatima Wilson,45,Female,Operations,Operations Analyst,4,Technical Degree,Divorced,61276,5,5,4,3,3,4,No,2020-07-03,Yes,Travel_Rarely,29,7,3
+1274,Ryan Johnson,36,Female,Operations,Operations Coordinator,1,Other,Married,79043,0,0,0,2,4,1,No,2026-03-23,No,Non-Travel,3,7,1
+1275,Barbara Verma,28,Male,Operations,Operations Coordinator,3,Marketing,Married,78152,2,1,2,2,3,3,No,2023-11-26,No,Travel_Frequently,45,9,2
+1276,Deepa Clark,39,Female,Operations,Operations Coordinator,4,Life Sciences,Single,42449,1,1,0,3,1,2,No,2024-06-09,No,Travel_Frequently,50,6,0
+1277,Sneha Nair,37,Male,Operations,Operations Manager,2,Human Resources,Divorced,77022,8,4,1,3,2,2,No,2018-03-21,No,Non-Travel,28,4,2
+1278,Thomas Nair,31,Male,Operations,Operations Coordinator,4,Medical,Married,71185,2,2,2,1,3,2,No,2024-02-02,No,Travel_Rarely,26,9,0
+1279,Noah Thompson,36,Male,Operations,Process Manager,3,Medical,Married,44695,9,2,0,3,3,3,No,2016-07-17,Yes,Travel_Rarely,11,5,1
+1280,Joseph Reddy,32,Female,Operations,COO,1,Life Sciences,Single,68866,12,4,2,4,2,3,No,2013-08-29,No,Travel_Rarely,1,5,1
+1281,Charles Sharma,36,Male,Operations,Operations Coordinator,3,Other,Divorced,41490,1,0,1,4,2,3,No,2024-11-04,No,Travel_Frequently,43,8,0
+1282,Noah Miller,41,Male,Operations,Operations Coordinator,4,Life Sciences,Married,91720,2,2,2,2,3,4,No,2024-03-10,Yes,Non-Travel,25,8,3
+1283,Dorothy King,48,Male,Operations,Operations Coordinator,3,Marketing,Married,79131,1,1,1,2,3,3,Yes,2024-10-30,No,Travel_Frequently,11,0,1
+1284,Patricia Scott,26,Female,Operations,Operations Analyst,5,Marketing,Single,55479,5,1,5,4,2,2,No,2020-10-11,Yes,Travel_Rarely,43,2,0
+1285,Aiden Lewis,53,Female,Operations,Operations Manager,4,Human Resources,Single,80137,6,1,2,3,3,3,No,2019-07-19,No,Travel_Frequently,35,3,2
+1286,Christopher Lee,22,Female,IT,System Administrator,5,Life Sciences,Divorced,133656,4,4,1,3,4,4,No,2021-04-23,No,Non-Travel,21,2,2
+1287,Lisa Iyer,34,Female,IT,IT Director,5,Medical,Single,119269,12,1,2,3,4,4,No,2013-10-31,No,Non-Travel,49,9,1
+1288,Wei Gupta,40,Female,IT,IT Manager,3,Other,Married,95432,9,1,6,1,1,4,No,2016-06-25,Yes,Travel_Rarely,31,2,0
+1289,Daniel Lewis,38,Male,IT,System Administrator,5,Human Resources,Married,66967,3,3,3,4,2,3,No,2023-03-25,Yes,Travel_Rarely,16,6,1
+1290,Robert King,31,Female,IT,IT Support,4,Life Sciences,Married,114856,0,0,0,3,4,3,No,2025-06-02,No,Non-Travel,34,8,1
+1291,Andrew Robinson,34,Female,IT,IT Manager,4,Medical,Married,132649,11,2,0,4,2,3,No,2015-03-23,No,Travel_Frequently,34,2,1
+1292,Sneha Johnson,32,Male,IT,IT Manager,2,Medical,Married,130622,10,4,3,4,4,3,No,2015-08-24,Yes,Travel_Rarely,6,4,1
+1293,Maria Flores,31,Female,IT,IT Manager,2,Medical,Married,81193,10,4,6,4,3,2,No,2015-04-13,No,Non-Travel,50,2,3
+1294,Sneha Jackson,42,Female,IT,IT Manager,4,Other,Single,86249,9,0,2,2,3,3,No,2016-05-09,Yes,Non-Travel,1,9,2
+1295,Raj Lewis,38,Male,IT,IT Support,3,Life Sciences,Divorced,130358,0,0,0,1,4,3,No,2025-08-18,No,Non-Travel,36,4,1
+1296,Aiden Garcia,30,Male,IT,IT Analyst,2,Life Sciences,Single,84432,8,3,2,3,2,1,No,2017-12-26,No,Non-Travel,44,4,1
+1297,Mia Harris,43,Female,IT,IT Manager,3,Life Sciences,Married,138685,11,4,1,3,3,4,No,2014-04-19,Yes,Travel_Rarely,31,2,0
+1298,Susan Walker,38,Female,IT,System Administrator,3,Other,Divorced,133766,4,4,4,2,1,3,No,2021-10-24,No,Travel_Rarely,39,5,0
+1299,Ashley Gupta,42,Male,IT,IT Manager,4,Marketing,Single,82001,9,0,1,3,3,3,No,2016-05-27,No,Non-Travel,30,1,2
+1300,Steven Jones,41,Female,IT,System Administrator,1,Marketing,Married,119269,3,3,3,3,4,3,No,2022-05-30,No,Non-Travel,8,5,1
+1301,Robert Shah,29,Female,IT,IT Manager,4,Medical,Married,68816,11,1,7,2,4,4,No,2014-06-25,No,Travel_Frequently,22,7,2
+1302,Isabella Jones,31,Female,IT,IT Analyst,3,Medical,Married,104235,6,0,5,3,3,1,No,2020-03-13,No,Travel_Rarely,41,8,2
+1303,Fang Thomas,41,Male,IT,IT Manager,4,Marketing,Married,80315,9,2,3,4,3,3,No,2016-06-05,Yes,Travel_Frequently,20,2,0
+1304,Ana Martin,40,Female,IT,IT Director,3,Marketing,Single,77137,12,0,2,1,3,3,No,2014-03-24,Yes,Non-Travel,47,0,1
+1305,Luis Iyer,35,Male,IT,IT Manager,5,Other,Divorced,105760,11,2,0,3,3,2,Yes,2014-07-19,No,Travel_Frequently,49,4,1
+1306,Mary Flores,36,Male,IT,System Administrator,3,Human Resources,Divorced,102560,3,0,3,3,3,2,No,2022-10-28,Yes,Travel_Frequently,23,8,1
+1307,Michael Miller,46,Female,IT,IT Support,3,Technical Degree,Single,97089,2,0,2,3,4,3,Yes,2023-04-15,Yes,Travel_Rarely,12,9,2
+1308,Pooja Torres,31,Female,IT,IT Manager,3,Medical,Single,111612,10,5,7,4,3,3,No,2015-04-24,No,Non-Travel,30,4,1
+1309,Aiden Lee,40,Male,IT,IT Manager,2,Technical Degree,Married,94333,11,0,1,4,2,3,No,2014-08-17,Yes,Travel_Rarely,8,5,1
+1310,Joshua Wright,34,Female,IT,IT Support,3,Technical Degree,Married,81697,2,2,2,3,3,2,Yes,2023-11-17,No,Non-Travel,40,3,1
+1311,Donald Lopez,34,Male,IT,IT Analyst,4,Other,Divorced,92294,7,0,7,3,4,3,No,2018-09-27,No,Non-Travel,38,9,1
+1312,Kathleen Young,44,Female,IT,IT Analyst,3,Other,Divorced,88091,8,0,1,3,3,3,No,2018-02-21,No,Non-Travel,9,9,3
+1313,Joshua Torres,42,Female,IT,IT Manager,3,Other,Married,84558,10,3,5,2,3,3,No,2016-04-11,Yes,Non-Travel,38,0,1
+1314,Joseph Jackson,42,Female,IT,IT Analyst,2,Life Sciences,Single,103559,8,3,6,4,4,1,No,2017-09-17,No,Travel_Frequently,21,6,1
+1315,Thomas Rodriguez,46,Male,IT,IT Analyst,3,Life Sciences,Single,87729,6,5,0,2,3,4,No,2019-07-06,No,Non-Travel,47,7,1
+1316,Vikram Scott,36,Male,IT,IT Support,4,Technical Degree,Married,119507,2,2,2,4,3,4,No,2024-02-26,No,Non-Travel,28,9,0
+1317,Joseph Nguyen,41,Female,IT,IT Analyst,3,Technical Degree,Divorced,100291,7,0,2,3,3,4,No,2018-12-11,No,Travel_Frequently,47,8,3
+1318,Fatima Nguyen,33,Male,IT,IT Director,3,Marketing,Divorced,75254,12,0,5,3,2,3,No,2013-11-20,No,Travel_Frequently,50,0,1
+1319,Joshua Verma,38,Female,IT,IT Analyst,3,Human Resources,Married,108452,8,0,7,4,4,3,No,2017-08-14,Yes,Travel_Frequently,11,9,0
+1320,Steven Smith,34,Male,IT,System Administrator,2,Other,Single,128538,4,4,2,3,4,3,No,2021-05-26,Yes,Travel_Frequently,48,2,1
+1321,Lisa Young,36,Male,Legal,Associate Counsel,3,Technical Degree,Married,171851,5,1,5,2,3,1,No,2021-01-11,No,Travel_Frequently,41,2,0
+1322,Ahmed Anderson,40,Male,Legal,Legal Manager,4,Technical Degree,Divorced,114654,11,5,6,2,2,3,No,2014-10-18,Yes,Travel_Rarely,17,2,1
+1323,Isabella Ramirez,29,Male,Legal,Senior Counsel,3,Human Resources,Divorced,138827,6,2,5,3,3,4,No,2020-04-04,Yes,Travel_Rarely,18,1,0
+1324,Betty Lee,52,Male,Legal,Legal Manager,4,Human Resources,Single,168511,9,5,0,4,3,2,No,2016-09-23,Yes,Non-Travel,1,6,0
+1325,Sandra Hill,27,Male,Legal,Legal Coordinator,4,Other,Single,108759,1,1,1,2,1,3,No,2024-04-24,Yes,Non-Travel,39,2,1
+1326,Emily Iyer,26,Female,Legal,General Counsel,4,Technical Degree,Divorced,104217,12,5,5,3,2,3,No,2013-05-16,No,Travel_Rarely,11,1,0
+1327,Arjun Lopez,45,Male,Legal,Legal Coordinator,3,Other,Married,87872,0,0,0,4,2,2,No,2025-09-26,No,Travel_Frequently,50,6,0
+1328,Fang Martinez,42,Female,Legal,Legal Manager,3,Other,Divorced,173768,10,0,0,1,1,3,Yes,2016-02-17,No,Travel_Frequently,25,4,0
+1329,William Wright,40,Female,Legal,Associate Counsel,4,Medical,Single,147552,5,3,5,4,3,3,No,2020-09-22,No,Non-Travel,37,8,3
+1330,Amit Nair,41,Female,Legal,Associate Counsel,2,Marketing,Divorced,132509,5,1,2,4,3,3,No,2020-10-22,No,Travel_Frequently,3,6,1
+1331,Matthew Johnson,35,Male,Legal,Associate Counsel,4,Other,Divorced,93994,4,1,4,3,2,3,No,2021-04-19,No,Travel_Rarely,5,8,1
+1332,Sandra Shah,28,Female,Legal,Senior Counsel,5,Other,Divorced,138891,7,3,2,1,3,3,No,2018-07-12,No,Travel_Frequently,38,3,3
+1333,Michael Martin,36,Male,Legal,Legal Coordinator,3,Life Sciences,Married,82498,0,0,0,4,1,3,Yes,2026-01-27,Yes,Travel_Frequently,5,1,0
+1334,Fatima Rodriguez,30,Male,Legal,Legal Manager,3,Marketing,Single,106560,9,0,2,4,4,3,No,2016-05-31,Yes,Travel_Rarely,5,1,0
+1335,Liam Iyer,43,Male,Legal,General Counsel,3,Medical,Single,128487,12,3,1,3,4,1,No,2013-09-12,Yes,Non-Travel,1,2,3
+1336,Luis Lewis,34,Female,Legal,Legal Manager,3,Technical Degree,Single,117189,11,1,0,4,4,3,No,2014-05-14,Yes,Travel_Frequently,12,7,1
+1337,Noah Nair,29,Female,Legal,Legal Coordinator,3,Human Resources,Divorced,119478,1,1,1,1,2,2,Yes,2024-05-23,No,Travel_Frequently,43,3,0
+1338,Noah Jackson,33,Female,Legal,Associate Counsel,4,Medical,Married,169816,3,2,3,4,3,2,Yes,2023-02-12,No,Travel_Frequently,49,7,0
+1339,Kathleen Clark,39,Female,Legal,Legal Manager,2,Medical,Divorced,103053,11,5,5,1,3,2,No,2015-03-17,Yes,Non-Travel,50,1,1
+1340,Amit Lopez,31,Female,Legal,Legal Coordinator,3,Technical Degree,Married,106208,1,1,1,2,3,3,Yes,2024-12-09,No,Travel_Frequently,13,5,3

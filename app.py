@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify
 
 app = Flask(__name__)
 
@@ -8,26 +8,24 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 
 def load_data():
-    geo = pd.read_csv(os.path.join(DATA_DIR, "geo.csv"))
-    people = pd.read_csv(os.path.join(DATA_DIR, "people.csv"))
-    products = pd.read_csv(os.path.join(DATA_DIR, "products.csv"))
-    shipments = pd.read_csv(os.path.join(DATA_DIR, "shipments.csv"))
+    df = pd.read_csv(os.path.join(DATA_DIR, "hr_data.csv"))
+    df["HireDate"] = pd.to_datetime(df["HireDate"])
+    df["HireMonth"] = df["HireDate"].dt.to_period("M").astype(str)
 
-    df = shipments.merge(people, left_on="Sales Person", right_on="SP ID", how="left")
-    df = df.merge(geo, left_on="Geo", right_on="GeoID", how="left")
-    df = df.merge(products, left_on="Product", right_on="Product ID", how="left")
-    df["Date"] = pd.to_datetime(df["Date"])
-    df["Month"] = df["Date"].dt.to_period("M").astype(str)
+    age_bins   = [20, 25, 30, 35, 40, 45, 50, 56, 65]
+    age_labels = ["20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-55", "56+"]
+    df["AgeGroup"] = pd.cut(df["Age"], bins=age_bins, labels=age_labels, right=False)
+
+    ten_bins   = [0, 2, 5, 8, 12, 50]
+    ten_labels = ["0-1 yr", "2-4 yr", "5-7 yr", "8-11 yr", "12+ yr"]
+    df["TenureGroup"] = pd.cut(df["YearsAtCompany"], bins=ten_bins, labels=ten_labels, right=False)
     return df
 
 
 DF = load_data()
 
-# Resolve column names after merge
-COL_COUNTRY = "Geo_y" if "Geo_y" in DF.columns else "Geo"
-COL_PRODUCT = "Product_y" if "Product_y" in DF.columns else "Product"
-COL_PERSON = "Sales Person_y" if "Sales Person_y" in DF.columns else "Sales Person"
 
+# ── Pages ────────────────────────────────────────────────────────────────────
 
 @app.route("/")
 def index():
@@ -39,167 +37,153 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-@app.route("/api/summary")
-def summary():
-    total_revenue = int(DF["Amount"].sum())
-    total_boxes = int(DF["Boxes"].sum())
-    total_shipments = len(DF)
-    total_salespeople = DF[COL_PERSON].nunique()
-    avg_revenue_per_shipment = round(total_revenue / total_shipments, 2)
-    top_product = DF.groupby(COL_PRODUCT)["Amount"].sum().idxmax()
-    top_country = DF.groupby(COL_COUNTRY)["Amount"].sum().idxmax()
+# ── KPI Summary ───────────────────────────────────────────────────────────────
+
+@app.route("/api/hr/summary")
+def hr_summary():
+    total      = len(DF)
+    attrition  = int((DF["Attrition"] == "Yes").sum())
+    male       = int((DF["Gender"] == "Male").sum())
+    female     = int((DF["Gender"] == "Female").sum())
     return jsonify({
-        "total_revenue": total_revenue,
-        "total_boxes": total_boxes,
-        "total_shipments": total_shipments,
-        "total_salespeople": total_salespeople,
-        "avg_revenue_per_shipment": avg_revenue_per_shipment,
-        "top_product": top_product,
-        "top_country": top_country,
+        "total_employees":  total,
+        "active_employees": total - attrition,
+        "attrition_count":  attrition,
+        "attrition_rate":   round(attrition / total * 100, 1),
+        "avg_salary":       int(DF["Salary"].mean()),
+        "avg_age":          round(DF["Age"].mean(), 1),
+        "male_count":       male,
+        "female_count":     female,
+        "avg_tenure":       round(DF["YearsAtCompany"].mean(), 1),
+        "dept_count":       int(DF["Department"].nunique()),
     })
 
 
-@app.route("/api/revenue-by-month")
-def revenue_by_month():
-    grouped = DF.groupby("Month").agg({"Amount": "sum", "Boxes": "sum"}).reset_index()
-    grouped = grouped.sort_values("Month")
-    return jsonify({
-        "labels": grouped["Month"].tolist(),
-        "revenue": grouped["Amount"].tolist(),
-        "boxes": grouped["Boxes"].tolist(),
-    })
+# ── Workforce Overview ────────────────────────────────────────────────────────
+
+@app.route("/api/hr/headcount-by-dept")
+def headcount_by_dept():
+    g = DF.groupby("Department").size().reset_index(name="count")
+    g = g.sort_values("count", ascending=False)
+    return jsonify({"labels": g["Department"].tolist(), "values": g["count"].tolist()})
 
 
-@app.route("/api/revenue-by-country")
-def revenue_by_country():
-    grouped = DF.groupby(COL_COUNTRY)["Amount"].sum().reset_index()
-    grouped.columns = ["country", "revenue"]
-    grouped = grouped.sort_values("revenue", ascending=False)
-    return jsonify({
-        "labels": grouped["country"].tolist(),
-        "values": grouped["revenue"].tolist(),
-    })
+@app.route("/api/hr/gender-distribution")
+def gender_distribution():
+    g = DF["Gender"].value_counts().reset_index()
+    g.columns = ["gender", "count"]
+    return jsonify({"labels": g["gender"].tolist(), "values": g["count"].tolist()})
 
 
-@app.route("/api/revenue-by-category")
-def revenue_by_category():
-    grouped = DF.groupby("Category")["Amount"].sum().reset_index()
-    grouped = grouped.sort_values("Amount", ascending=False)
-    return jsonify({
-        "labels": grouped["Category"].tolist(),
-        "values": grouped["Amount"].tolist(),
-    })
+# ── Demographics ──────────────────────────────────────────────────────────────
+
+@app.route("/api/hr/age-distribution")
+def age_distribution():
+    g = DF.groupby("AgeGroup", observed=False).size().reset_index(name="count")
+    return jsonify({"labels": g["AgeGroup"].astype(str).tolist(), "values": g["count"].tolist()})
 
 
-@app.route("/api/top-products")
-def top_products():
-    grouped = DF.groupby(COL_PRODUCT)["Amount"].sum().reset_index()
-    grouped.columns = ["product", "revenue"]
-    grouped = grouped.sort_values("revenue", ascending=False).head(10)
-    return jsonify({
-        "labels": grouped["product"].tolist(),
-        "values": grouped["revenue"].tolist(),
-    })
+@app.route("/api/hr/education-distribution")
+def education_distribution():
+    mapping = {1: "Below College", 2: "College", 3: "Bachelor", 4: "Master", 5: "Doctorate"}
+    g = DF["Education"].value_counts().sort_index().reset_index()
+    g.columns = ["level", "count"]
+    g["label"] = g["level"].map(mapping)
+    return jsonify({"labels": g["label"].tolist(), "values": g["count"].tolist()})
 
 
-@app.route("/api/top-salespeople")
-def top_salespeople():
-    grouped = DF.groupby(COL_PERSON)["Amount"].sum().reset_index()
-    grouped.columns = ["person", "revenue"]
-    grouped = grouped.sort_values("revenue", ascending=False).head(10)
-    return jsonify({
-        "labels": grouped["person"].tolist(),
-        "values": grouped["revenue"].tolist(),
-    })
+@app.route("/api/hr/tenure-distribution")
+def tenure_distribution():
+    g = DF.groupby("TenureGroup", observed=False).size().reset_index(name="count")
+    return jsonify({"labels": g["TenureGroup"].astype(str).tolist(), "values": g["count"].tolist()})
 
 
-@app.route("/api/revenue-by-team")
-def revenue_by_team():
-    grouped = DF.groupby("Team")["Amount"].sum().reset_index()
-    grouped = grouped.sort_values("Amount", ascending=False)
-    return jsonify({
-        "labels": grouped["Team"].tolist(),
-        "values": grouped["Amount"].tolist(),
-    })
+# ── Attrition Analysis ────────────────────────────────────────────────────────
+
+@app.route("/api/hr/attrition-by-dept")
+def attrition_by_dept():
+    total = DF.groupby("Department").size()
+    left  = DF[DF["Attrition"] == "Yes"].groupby("Department").size().reindex(total.index, fill_value=0)
+    rate  = (left / total * 100).round(1).reset_index()
+    rate.columns = ["Department", "Rate"]
+    rate  = rate.sort_values("Rate", ascending=False)
+    return jsonify({"labels": rate["Department"].tolist(), "values": rate["Rate"].tolist()})
 
 
-@app.route("/api/revenue-by-region")
-def revenue_by_region():
-    grouped = DF.groupby("Region")["Amount"].sum().reset_index()
-    grouped = grouped.sort_values("Amount", ascending=False)
-    return jsonify({
-        "labels": grouped["Region"].tolist(),
-        "values": grouped["Amount"].tolist(),
-    })
+@app.route("/api/hr/attrition-by-age")
+def attrition_by_age():
+    total = DF.groupby("AgeGroup", observed=False).size()
+    left  = DF[DF["Attrition"] == "Yes"].groupby("AgeGroup", observed=False).size()
+    rate  = (left / total * 100).round(1).reset_index()
+    rate.columns = ["AgeGroup", "Rate"]
+    rate["AgeGroup"] = rate["AgeGroup"].astype(str)
+    return jsonify({"labels": rate["AgeGroup"].tolist(), "values": rate["Rate"].tolist()})
 
 
-@app.route("/api/monthly-trend-by-region")
-def monthly_trend_by_region():
-    grouped = DF.groupby(["Month", "Region"])["Amount"].sum().reset_index()
-    grouped = grouped.sort_values("Month")
-    regions = grouped["Region"].unique().tolist()
-    months = sorted(grouped["Month"].unique().tolist())
-    datasets = {}
-    for region in regions:
-        region_data = grouped[grouped["Region"] == region]
-        region_dict = dict(zip(region_data["Month"], region_data["Amount"]))
-        datasets[region] = [int(region_dict.get(m, 0)) for m in months]
-    return jsonify({"labels": months, "datasets": datasets})
+# ── Recruitment ───────────────────────────────────────────────────────────────
+
+@app.route("/api/hr/monthly-hiring")
+def monthly_hiring():
+    g = DF.groupby("HireMonth").size().reset_index(name="count")
+    g = g.sort_values("HireMonth")
+    return jsonify({"labels": g["HireMonth"].tolist(), "values": g["count"].tolist()})
 
 
-@app.route("/api/drilldown")
-def drilldown():
-    """Return date-grouped daily summary when user clicks a chart data point."""
-    chart = request.args.get("chart", "")
-    value = request.args.get("value", "")
-    if not chart or not value:
-        return jsonify({"rows": [], "dates": [], "revenues": [], "boxes": []})
+# ── Performance & Satisfaction ────────────────────────────────────────────────
 
-    filters = {
-        "country": (COL_COUNTRY, value),
-        "category": ("Category", value),
-        "product": (COL_PRODUCT, value),
-        "person": (COL_PERSON, value),
-        "team": ("Team", value),
-        "region": ("Region", value),
-        "month": ("Month", value),
-    }
+@app.route("/api/hr/performance-distribution")
+def performance_distribution():
+    mapping = {1: "Low", 2: "Good", 3: "Excellent", 4: "Outstanding"}
+    g = DF["PerformanceRating"].value_counts().sort_index().reset_index()
+    g.columns = ["rating", "count"]
+    g["label"] = g["rating"].map(mapping)
+    return jsonify({"labels": g["label"].tolist(), "values": g["count"].tolist()})
 
-    if chart not in filters:
-        return jsonify({"rows": [], "dates": [], "revenues": [], "boxes": []})
 
-    col, val = filters[chart]
-    subset = DF[DF[col] == val].copy()
-    subset["DateStr"] = subset["Date"].dt.strftime("%Y-%m-%d")
+@app.route("/api/hr/worklife-balance")
+def worklife_balance():
+    mapping = {1: "Low", 2: "Fair", 3: "Good", 4: "Excellent"}
+    g = DF["WorkLifeBalance"].value_counts().sort_index().reset_index()
+    g.columns = ["level", "count"]
+    g["label"] = g["level"].map(mapping)
+    return jsonify({"labels": g["label"].tolist(), "values": g["count"].tolist()})
 
-    # Group by date
-    daily = (
-        subset.groupby("DateStr")
-        .agg(Revenue=("Amount", "sum"), Boxes=("Boxes", "sum"), Shipments=("Amount", "count"))
-        .reset_index()
-        .sort_values("DateStr")
-    )
-    daily = daily.rename(columns={"DateStr": "Date"})
 
-    rows = []
-    for _, r in daily.iterrows():
-        rows.append({
-            "date": r["Date"],
-            "revenue": int(r["Revenue"]),
-            "boxes": int(r["Boxes"]),
-            "shipments": int(r["Shipments"]),
-        })
+@app.route("/api/hr/overtime-distribution")
+def overtime_distribution():
+    g = DF["OverTime"].value_counts().reset_index()
+    g.columns = ["overtime", "count"]
+    return jsonify({"labels": g["overtime"].tolist(), "values": g["count"].tolist()})
 
-    return jsonify({
-        "label": value,
-        "chart_type": chart,
-        "total_days": len(daily),
-        "total_revenue": int(subset["Amount"].sum()),
-        "dates": daily["Date"].tolist(),
-        "revenues": daily["Revenue"].tolist(),
-        "boxes_list": daily["Boxes"].tolist(),
-        "rows": rows,
-    })
+
+@app.route("/api/hr/satisfaction-by-dept")
+def satisfaction_by_dept():
+    mapping   = {1: "Low", 2: "Medium", 3: "High", 4: "Very High"}
+    g         = DF.groupby(["Department", "JobSatisfaction"]).size().reset_index(name="count")
+    depts     = sorted(DF["Department"].unique().tolist())
+    datasets  = {}
+    for level, label in mapping.items():
+        sub  = g[g["JobSatisfaction"] == level]
+        d    = dict(zip(sub["Department"], sub["count"]))
+        datasets[label] = [int(d.get(dept, 0)) for dept in depts]
+    return jsonify({"labels": depts, "datasets": datasets})
+
+
+# ── Compensation & Work Patterns ──────────────────────────────────────────────
+
+@app.route("/api/hr/salary-by-dept")
+def salary_by_dept():
+    g = DF.groupby("Department")["Salary"].mean().round(0).reset_index()
+    g.columns = ["dept", "avg_salary"]
+    g = g.sort_values("avg_salary", ascending=False)
+    return jsonify({"labels": g["dept"].tolist(), "values": g["avg_salary"].astype(int).tolist()})
+
+
+@app.route("/api/hr/travel-distribution")
+def travel_distribution():
+    g = DF["BusinessTravel"].value_counts().reset_index()
+    g.columns = ["travel", "count"]
+    return jsonify({"labels": g["travel"].tolist(), "values": g["count"].tolist()})
 
 
 if __name__ == "__main__":

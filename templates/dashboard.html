@@ -1,707 +1,775 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Chocolate Sales</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <style>
-        :root {
-            --indigo: #6366f1; --indigo-light: #818cf8; --indigo-bg: rgba(99,102,241,0.12);
-            --sky: #0ea5e9; --sky-light: #38bdf8; --sky-bg: rgba(14,165,233,0.12);
-            --bg: #0a0a12; --card: rgba(255,255,255,0.03); --border: rgba(255,255,255,0.06);
-            --text: #e8e8ef; --text-dim: #6b7280; --text-muted: #4b5563;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR Analytics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-        /* Header */
-        .topbar {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 32px;
-            background: rgba(255,255,255,0.02);
-            border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 50;
-            backdrop-filter: blur(20px);
-        }
-        .topbar .left { display: flex; align-items: center; gap: 14px; }
-        .topbar .logo {
-            width: 32px; height: 32px; border-radius: 8px;
-            background: linear-gradient(135deg, var(--indigo), var(--sky));
-            display: flex; align-items: center; justify-content: center;
-        }
-        .topbar .logo svg { width: 18px; height: 18px; color: #fff; }
-        .topbar h1 { font-size: 16px; font-weight: 700; color: var(--text); }
-        .topbar .actions { display: flex; gap: 10px; }
-        .btn {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 500;
-            border: 1px solid var(--border); background: var(--card);
-            color: var(--text-dim); cursor: pointer; transition: all 0.2s;
-            text-decoration: none;
-        }
-        .btn:hover { border-color: rgba(99,102,241,0.3); color: var(--indigo-light); background: var(--indigo-bg); }
-        .btn svg { width: 14px; height: 14px; }
-        .btn.primary {
-            background: linear-gradient(135deg, var(--indigo), #4f46e5);
-            border-color: transparent; color: #fff;
-        }
-        .btn.primary:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.3); }
+    :root {
+      --bg:       #050b1a;
+      --nav-h:    64px;
+      --card-bg:  rgba(8,18,40,.75);
+      --border:   rgba(255,255,255,.07);
+      --purple:   #7c3aed;
+      --cyan:     #06b6d4;
+      --amber:    #f59e0b;
+      --green:    #10b981;
+      --red:      #ef4444;
+      --pink:     #ec4899;
+      --orange:   #f97316;
+      --text:     #e2e8f0;
+      --muted:    #64748b;
+    }
 
-        .main { max-width: 1440px; margin: 0 auto; padding: 24px 32px 60px; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; overflow-x: hidden;
+    }
 
-        /* KPI Row */
-        .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
-        .kpi-card {
-            background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-            padding: 18px 20px; display: flex; align-items: flex-start; gap: 14px;
-            transition: all 0.25s;
-        }
-        .kpi-card:hover { border-color: rgba(99,102,241,0.25); transform: translateY(-2px); }
-        .kpi-icon {
-            width: 36px; height: 36px; border-radius: 9px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .kpi-icon svg { width: 16px; height: 16px; }
-        .kpi-icon.i { background: var(--indigo-bg); color: var(--indigo-light); }
-        .kpi-icon.s { background: var(--sky-bg); color: var(--sky-light); }
-        .kpi-info .label { font-size: 11px; font-weight: 500; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.6px; }
-        .kpi-info .val { font-size: 22px; font-weight: 700; margin-top: 2px; }
+    /* ── Canvas background ── */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      width:100%; height:100%; opacity:.35;
+    }
+    .bg-grad {
+      position:fixed; inset:0; z-index:1; pointer-events:none;
+      background:
+        radial-gradient(ellipse 55% 45% at 10% 40%, rgba(124,58,237,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 45% 35% at 90% 15%, rgba(6,182,212,.10)  0%, transparent 70%),
+        radial-gradient(ellipse 35% 30% at 70% 90%, rgba(245,158,11,.08) 0%, transparent 60%);
+    }
 
-        /* Chart grid */
-        .chart-row { display: grid; gap: 16px; margin-bottom: 16px; }
-        .chart-row.two { grid-template-columns: 1fr 1fr; }
-        .chart-row.three { grid-template-columns: 1fr 1fr 1fr; }
-        .chart-row.full { grid-template-columns: 1fr; }
-        .chart-card {
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 14px; padding: 22px 24px;
-        }
-        .chart-card h3 {
-            font-size: 13px; font-weight: 600; color: var(--text-dim);
-            text-transform: uppercase; letter-spacing: 0.5px;
-            margin-bottom: 16px;
-        }
-        .chart-wrap { position: relative; height: 280px; }
-        .chart-wrap.tall { height: 340px; }
+    /* ── Navbar ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      height: var(--nav-h);
+      background: rgba(5,11,26,.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 2rem; gap: 1rem;
+    }
+    .nav-logo {
+      display:flex; align-items:center; gap:.6rem;
+      font-size:1.1rem; font-weight:800; color:var(--text);
+      text-decoration:none;
+    }
+    .nav-logo-icon {
+      width:34px;height:34px;border-radius:10px;
+      background:linear-gradient(135deg,var(--purple),var(--cyan));
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;
+    }
+    .nav-title-sub { font-size:.7rem; color:var(--muted); font-weight:400; letter-spacing:.05em; }
+    .nav-spacer { flex:1; }
+    .nav-pill {
+      display:flex;align-items:center;gap:.4rem;
+      background:rgba(124,58,237,.15);
+      border:1px solid rgba(124,58,237,.3);
+      border-radius:100px;padding:.35rem .9rem;
+      font-size:.72rem;font-weight:600;color:#a78bfa;
+    }
+    .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .back-btn {
+      display:flex;align-items:center;gap:.4rem;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      border-radius:8px;padding:.35rem .8rem;
+      font-size:.78rem;color:var(--muted);
+      text-decoration:none;transition:all .2s;
+    }
+    .back-btn:hover{background:rgba(255,255,255,.1);color:var(--text);}
 
-        /* ── Drill-down Modal ── */
-        .modal-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,8,0.75); backdrop-filter: blur(6px);
-            z-index: 100; align-items: center; justify-content: center;
-            padding: 20px;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal {
-            background: #0d1117;
-            border: 1px solid rgba(0,219,180,0.18);
-            border-radius: 20px;
-            width: 100%; max-width: 960px;
-            max-height: 90vh;
-            display: flex; flex-direction: column;
-            box-shadow: 0 0 80px rgba(0,219,180,0.06), 0 32px 80px rgba(0,0,0,0.6);
-            animation: modalIn 0.28s cubic-bezier(.16,1,.3,1);
-            overflow: hidden;
-        }
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.94) translateY(16px); }
-            to   { opacity: 1; transform: scale(1)    translateY(0); }
-        }
+    /* ── Main ── */
+    main {
+      position:relative;z-index:2;
+      padding: calc(var(--nav-h) + 2rem) 2rem 3rem;
+      max-width: 1600px; margin: 0 auto;
+    }
 
-        /* Modal header */
-        .modal-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 20px 24px 18px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            gap: 16px;
-        }
-        .modal-header-left { display: flex; align-items: center; gap: 14px; }
-        .modal-icon {
-            width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
-            background: linear-gradient(135deg, rgba(0,219,180,0.15), rgba(56,189,248,0.15));
-            border: 1px solid rgba(0,219,180,0.2);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
-        }
-        .modal-title-wrap .modal-title { font-size: 18px; font-weight: 700; color: #fff; }
-        .modal-title-wrap .modal-sub  { font-size: 12px; color: #4b6072; margin-top: 2px; }
-        .modal-header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .badge-count {
-            font-size: 12px; font-weight: 600; color: #8899aa;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-            padding: 5px 12px; border-radius: 20px;
-        }
-        .btn-export-modal {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: linear-gradient(90deg, #00dbb4, #38bdf8);
-            color: #060c14; font-size: 13px; font-weight: 700;
-            padding: 8px 18px; border-radius: 9px; border: none; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-export-modal:hover { opacity: 0.88; }
-        .btn-export-modal svg { width: 13px; height: 13px; }
-        .modal-close-btn {
-            width: 34px; height: 34px; border-radius: 9px;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-            color: #6b7280; cursor: pointer; font-size: 18px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-        }
-        .modal-close-btn:hover { background: rgba(239,68,68,0.12); color: #f87171; border-color: rgba(239,68,68,0.25); }
+    /* ── KPI Cards ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem; margin-bottom: 2.5rem;
+    }
+    @media(max-width:1200px){ .kpi-grid{grid-template-columns:repeat(3,1fr);} }
+    @media(max-width:700px) { .kpi-grid{grid-template-columns:repeat(2,1fr);} }
 
-        /* Chart area */
-        .modal-chart-area {
-            padding: 20px 24px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-        .modal-chart-wrap { position: relative; height: 200px; }
+    .kpi-card {
+      position:relative;
+      background:var(--card-bg);
+      border:1px solid var(--border);
+      backdrop-filter:blur(20px);
+      border-radius:18px;
+      padding:1.4rem 1.2rem;
+      overflow:hidden;
+      transition:transform .3s,box-shadow .3s;
+      animation:cardIn .5s ease both;
+    }
+    .kpi-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.4);}
+    .kpi-card::before{
+      content:'';position:absolute;inset:0;border-radius:inherit;
+      background:var(--accent-grad,linear-gradient(135deg,rgba(124,58,237,.08),rgba(6,182,212,.04)));
+      pointer-events:none;
+    }
+    .kpi-icon{font-size:1.6rem;margin-bottom:.6rem;}
+    .kpi-val{
+      font-size:1.9rem;font-weight:800;line-height:1;margin-bottom:.3rem;
+      background:var(--accent-grad,linear-gradient(135deg,#a78bfa,#22d3ee));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .kpi-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+    .kpi-sub{font-size:.75rem;color:var(--muted);margin-top:.3rem;}
 
-        /* Table */
-        .modal-table-wrap { overflow: auto; flex: 1; }
-        .modal-table {
-            width: 100%; border-collapse: collapse;
-            font-size: 13.5px;
-        }
-        .modal-table thead th {
-            position: sticky; top: 0;
-            background: #0d1117;
-            padding: 13px 18px;
-            font-size: 12px; font-weight: 700;
-            letter-spacing: 0.5px; text-transform: uppercase;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            white-space: nowrap;
-        }
-        .modal-table thead th:nth-child(1) { color: #4b6072; width: 52px; text-align: center; }
-        .modal-table thead th:nth-child(2) { color: #8899aa; }
-        .modal-table thead th:nth-child(3) { color: #00dbb4; }
-        .modal-table thead th:nth-child(4) { color: #818cf8; }
-        .modal-table thead th:nth-child(5) { color: #38bdf8; }
+    @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
-        .modal-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.15s; }
-        .modal-table tbody tr:hover { background: rgba(0,219,180,0.04); }
-        .modal-table tbody td {
-            padding: 14px 18px; color: #c8d4e0; vertical-align: middle; white-space: nowrap;
-        }
-        .modal-table tbody td:nth-child(1) { text-align: center; font-size: 18px; }
-        .modal-table tbody td:nth-child(2) { font-weight: 600; color: #e0eaf4; font-size: 14px; }
+    /* ── Section headers ── */
+    .section-hdr {
+      display:flex;align-items:center;gap:1rem;
+      margin:2.5rem 0 1.25rem;
+    }
+    .section-hdr-line{flex:1;height:1px;background:var(--border);}
+    .section-hdr-title{
+      font-size:.78rem;font-weight:700;letter-spacing:.12em;
+      text-transform:uppercase;color:var(--muted);white-space:nowrap;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .section-hdr-icon{font-size:1rem;}
 
-        /* Revenue bar cell */
-        .rev-cell { display: flex; align-items: center; gap: 10px; }
-        .rev-bar-bg {
-            flex: 1; height: 28px; border-radius: 6px;
-            background: rgba(0,219,180,0.08);
-            position: relative; overflow: hidden;
-            max-width: 260px; min-width: 80px;
-        }
-        .rev-bar-fill {
-            position: absolute; left: 0; top: 0; bottom: 0;
-            background: linear-gradient(90deg, rgba(0,219,180,0.55), rgba(56,189,248,0.35));
-            border-radius: 6px;
-            transition: width 0.6s ease;
-        }
-        .rev-bar-label {
-            position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-            font-size: 13px; font-weight: 700; color: #e0f7f4;
-            white-space: nowrap;
-        }
+    /* ── Chart grid ── */
+    .chart-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1.25rem;
+    }
+    @media(max-width:1000px){.chart-grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:650px) {.chart-grid{grid-template-columns:1fr;}}
 
-        /* Loading */
-        .shimmer {
-            background: linear-gradient(90deg, #15152a 25%, #1e1e38 50%, #15152a 75%);
-            background-size: 200% 100%; animation: shimmer 1.5s infinite;
-            border-radius: 6px; color: transparent !important;
-        }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .chart-card{
+      background:var(--card-bg);
+      border:1px solid var(--border);
+      backdrop-filter:blur(20px);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1rem;
+      display:flex;flex-direction:column;
+      transition:transform .3s,box-shadow .3s,border-color .3s;
+      animation:cardIn .5s ease both;
+    }
+    .chart-card:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.35);border-color:rgba(124,58,237,.25);}
+    .chart-card.span-2{grid-column:span 2;}
+    .chart-card.span-3{grid-column:1/-1;}
 
-        @media (max-width: 900px) {
-            .kpi-row { grid-template-columns: repeat(2, 1fr); }
-            .chart-row.two, .chart-row.three { grid-template-columns: 1fr; }
-            .topbar { padding: 12px 16px; }
-            .main { padding: 16px; }
-        }
-    </style>
+    @media(max-width:1000px){.chart-card.span-2{grid-column:span 1;}.chart-card.span-3{grid-column:span 2;}}
+    @media(max-width:650px) {.chart-card.span-2,.chart-card.span-3{grid-column:span 1;}}
+
+    .chart-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;}
+    .chart-title{font-size:.88rem;font-weight:700;color:var(--text);}
+    .chart-sub  {font-size:.72rem;color:var(--muted);margin-top:.15rem;}
+    .chart-badge{
+      font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+      padding:.25rem .65rem;border-radius:100px;white-space:nowrap;
+    }
+    .badge-purple{background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
+    .badge-cyan  {background:rgba(6,182,212,.2);color:#67e8f9;border:1px solid rgba(6,182,212,.3);}
+    .badge-amber {background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
+    .badge-red   {background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3);}
+    .badge-green {background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
+    .badge-pink  {background:rgba(236,72,153,.2);color:#f9a8d4;border:1px solid rgba(236,72,153,.3);}
+
+    .chart-wrap{flex:1;position:relative;min-height:220px;}
+    .chart-wrap canvas{width:100%!important;}
+
+    /* loading skeleton */
+    .skeleton{
+      background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);
+      background-size:200% 100%;
+      animation:shimmer 1.5s infinite;
+      border-radius:8px;height:220px;
+    }
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* ── Footer ── */
+    footer{
+      position:relative;z-index:2;
+      text-align:center;padding:2rem;
+      color:var(--muted);font-size:.75rem;
+      border-top:1px solid var(--border);
+    }
+  </style>
 </head>
 <body>
-    <!-- Top Bar -->
-    <div class="topbar">
-        <div class="left">
-            <div class="logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-            </div>
-            <h1>Chocolate Sales Dashboard</h1>
-        </div>
-        <div class="actions">
-            <a href="/" class="btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-                Home
-            </a>
-            <button class="btn primary" onclick="exportCSV()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Export Data
-            </button>
-        </div>
+  <canvas id="bg-canvas"></canvas>
+  <div class="bg-grad"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="/" class="back-btn">← Home</a>
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-icon">👥</div>
+      <div>
+        <div>HR Analytics</div>
+        <div class="nav-title-sub">People Intelligence Dashboard</div>
+      </div>
+    </a>
+    <div class="nav-spacer"></div>
+    <div class="nav-pill"><span class="nav-dot"></span>Live Data · 340 Employees</div>
+  </nav>
+
+  <main>
+    <!-- ── KPI Cards ── -->
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--accent-grad:linear-gradient(135deg,rgba(124,58,237,.12),rgba(167,139,250,.05));animation-delay:.05s">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-val" id="k-total" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-lbl">Total Employees</div>
+        <div class="kpi-sub" id="k-active">— active</div>
+      </div>
+      <div class="kpi-card" style="animation-delay:.1s">
+        <div class="kpi-icon">📉</div>
+        <div class="kpi-val" id="k-attr" style="background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-lbl">Attrition Rate</div>
+        <div class="kpi-sub" id="k-attrn">— employees left</div>
+      </div>
+      <div class="kpi-card" style="animation-delay:.15s">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-val" id="k-sal" style="background:linear-gradient(135deg,#f59e0b,#fcd34d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-lbl">Avg. Salary</div>
+        <div class="kpi-sub">Annual compensation</div>
+      </div>
+      <div class="kpi-card" style="animation-delay:.2s">
+        <div class="kpi-icon">🎂</div>
+        <div class="kpi-val" id="k-age" style="background:linear-gradient(135deg,#06b6d4,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-lbl">Average Age</div>
+        <div class="kpi-sub">Years old</div>
+      </div>
+      <div class="kpi-card" style="animation-delay:.25s">
+        <div class="kpi-icon">⚖️</div>
+        <div class="kpi-val" id="k-gender" style="background:linear-gradient(135deg,#ec4899,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-lbl">Gender Ratio</div>
+        <div class="kpi-sub" id="k-gendersub">Male / Female</div>
+      </div>
+      <div class="kpi-card" style="animation-delay:.3s">
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-val" id="k-tenure" style="background:linear-gradient(135deg,#10b981,#6ee7b7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-lbl">Avg. Tenure</div>
+        <div class="kpi-sub">Years at company</div>
+      </div>
     </div>
 
-    <div class="main">
-        <!-- KPIs -->
-        <div class="kpi-row" id="kpi-row"></div>
-
-        <!-- Row 1: Monthly Trend (full width) -->
-        <div class="chart-row full">
-            <div class="chart-card">
-                <h3>Monthly Revenue & Boxes Trend</h3>
-                <div class="chart-wrap tall"><canvas id="monthlyChart"></canvas></div>
-            </div>
-        </div>
-
-        <!-- Row 2: Country + Category + Region -->
-        <div class="chart-row three">
-            <div class="chart-card">
-                <h3>Revenue by Country</h3>
-                <div class="chart-wrap"><canvas id="countryChart"></canvas></div>
-            </div>
-            <div class="chart-card">
-                <h3>Revenue by Category</h3>
-                <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
-            </div>
-            <div class="chart-card">
-                <h3>Revenue by Region</h3>
-                <div class="chart-wrap"><canvas id="regionChart"></canvas></div>
-            </div>
-        </div>
-
-        <!-- Row 3: Top Products + Team -->
-        <div class="chart-row two">
-            <div class="chart-card">
-                <h3>Top 10 Products</h3>
-                <div class="chart-wrap"><canvas id="productsChart"></canvas></div>
-            </div>
-            <div class="chart-card">
-                <h3>Revenue by Team</h3>
-                <div class="chart-wrap"><canvas id="teamChart"></canvas></div>
-            </div>
-        </div>
-
-        <!-- Row 4: Salespeople + Region Trend -->
-        <div class="chart-row two">
-            <div class="chart-card">
-                <h3>Top 10 Salespeople</h3>
-                <div class="chart-wrap"><canvas id="salespeopleChart"></canvas></div>
-            </div>
-            <div class="chart-card">
-                <h3>Monthly Trend by Region</h3>
-                <div class="chart-wrap"><canvas id="regionTrendChart"></canvas></div>
-            </div>
-        </div>
+    <!-- ── Section: Workforce Overview ── -->
+    <div class="section-hdr">
+      <div class="section-hdr-title"><span class="section-hdr-icon">🏢</span> Workforce Overview</div>
+      <div class="section-hdr-line"></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card span-2" style="animation-delay:.35s">
+        <div class="chart-hdr"><div><div class="chart-title">Headcount by Department</div><div class="chart-sub">Total employees per department</div></div><span class="chart-badge badge-purple">Headcount</span></div>
+        <div class="chart-wrap"><canvas id="c-headcount"></canvas></div>
+      </div>
+      <div class="chart-card" style="animation-delay:.4s">
+        <div class="chart-hdr"><div><div class="chart-title">Gender Distribution</div><div class="chart-sub">Male vs Female split</div></div><span class="chart-badge badge-pink">Gender</span></div>
+        <div class="chart-wrap"><canvas id="c-gender"></canvas></div>
+      </div>
     </div>
 
-    <!-- Drill-down Modal -->
-    <div class="modal-overlay" id="modal">
-        <div class="modal">
-            <!-- Header -->
-            <div class="modal-header">
-                <div class="modal-header-left">
-                    <div class="modal-icon" id="modal-icon">📅</div>
-                    <div class="modal-title-wrap">
-                        <div class="modal-title" id="modal-title">Daily Trend</div>
-                        <div class="modal-sub" id="modal-sub">Day-by-day performance</div>
-                    </div>
-                </div>
-                <div class="modal-header-right">
-                    <div class="badge-count" id="modal-badge">— records</div>
-                    <button class="btn-export-modal" onclick="exportModalCSV()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Export CSV
-                    </button>
-                    <button class="modal-close-btn" onclick="closeModal()">&times;</button>
-                </div>
-            </div>
-            <!-- Trend Chart -->
-            <div class="modal-chart-area">
-                <div class="modal-chart-wrap"><canvas id="modalChart"></canvas></div>
-            </div>
-            <!-- Table -->
-            <div class="modal-table-wrap" id="modal-table-wrap">
-                <table class="modal-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Date</th>
-                            <th>Revenue ($)</th>
-                            <th>Boxes</th>
-                            <th>Shipments</th>
-                        </tr>
-                    </thead>
-                    <tbody id="modal-tbody"></tbody>
-                </table>
-            </div>
-        </div>
+    <!-- ── Section: Demographics ── -->
+    <div class="section-hdr">
+      <div class="section-hdr-title"><span class="section-hdr-icon">📋</span> Demographics</div>
+      <div class="section-hdr-line"></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card" style="animation-delay:.45s">
+        <div class="chart-hdr"><div><div class="chart-title">Age Distribution</div><div class="chart-sub">Employees by age group</div></div><span class="chart-badge badge-cyan">Age</span></div>
+        <div class="chart-wrap"><canvas id="c-age"></canvas></div>
+      </div>
+      <div class="chart-card" style="animation-delay:.5s">
+        <div class="chart-hdr"><div><div class="chart-title">Education Level</div><div class="chart-sub">Highest qualification attained</div></div><span class="chart-badge badge-amber">Education</span></div>
+        <div class="chart-wrap"><canvas id="c-edu"></canvas></div>
+      </div>
+      <div class="chart-card" style="animation-delay:.55s">
+        <div class="chart-hdr"><div><div class="chart-title">Tenure Distribution</div><div class="chart-sub">Years spent at company</div></div><span class="chart-badge badge-green">Tenure</span></div>
+        <div class="chart-wrap"><canvas id="c-tenure"></canvas></div>
+      </div>
     </div>
 
-<script>
-// ── Theme ──
-const IND = '#818cf8', IND2 = '#6366f1', IND_A = 'rgba(99,102,241,0.15)';
-const SKY = '#38bdf8', SKY2 = '#0ea5e9', SKY_A = 'rgba(14,165,233,0.15)';
-const BAR_COLORS = [IND, SKY, IND2, SKY2, '#a78bfa', '#22d3ee'];
-Chart.defaults.color = '#6b7280';
-Chart.defaults.borderColor = 'rgba(255,255,255,0.04)';
-Chart.defaults.plugins.legend.labels.usePointStyle = true;
-Chart.defaults.plugins.legend.labels.font = { size: 11 };
+    <!-- ── Section: Attrition Analysis ── -->
+    <div class="section-hdr">
+      <div class="section-hdr-title"><span class="section-hdr-icon">🚨</span> Attrition Analysis</div>
+      <div class="section-hdr-line"></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card span-2" style="animation-delay:.6s">
+        <div class="chart-hdr"><div><div class="chart-title">Attrition Rate by Department</div><div class="chart-sub">Percentage of employees who left</div></div><span class="chart-badge badge-red">Attrition %</span></div>
+        <div class="chart-wrap"><canvas id="c-attrDept"></canvas></div>
+      </div>
+      <div class="chart-card" style="animation-delay:.65s">
+        <div class="chart-hdr"><div><div class="chart-title">Attrition by Age Group</div><div class="chart-sub">Turnover rate across age bands</div></div><span class="chart-badge badge-red">Risk</span></div>
+        <div class="chart-wrap"><canvas id="c-attrAge"></canvas></div>
+      </div>
+    </div>
 
-function fmt(n) {
-    if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
-    if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
-    return '$' + n;
-}
+    <!-- ── Section: Recruitment ── -->
+    <div class="section-hdr">
+      <div class="section-hdr-title"><span class="section-hdr-icon">📈</span> Recruitment Trend</div>
+      <div class="section-hdr-line"></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card span-3" style="animation-delay:.7s">
+        <div class="chart-hdr"><div><div class="chart-title">Monthly Hiring Trend</div><div class="chart-sub">New employee hires over time</div></div><span class="chart-badge badge-cyan">Timeline</span></div>
+        <div class="chart-wrap" style="min-height:240px"><canvas id="c-hiring"></canvas></div>
+      </div>
+    </div>
 
-// ── Modal state ──
-let modalData = null;
-let modalChartInst = null;
+    <!-- ── Section: Performance & Satisfaction ── -->
+    <div class="section-hdr">
+      <div class="section-hdr-title"><span class="section-hdr-icon">⭐</span> Performance &amp; Satisfaction</div>
+      <div class="section-hdr-line"></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card" style="animation-delay:.75s">
+        <div class="chart-hdr"><div><div class="chart-title">Performance Ratings</div><div class="chart-sub">Employee performance distribution</div></div><span class="chart-badge badge-amber">Ratings</span></div>
+        <div class="chart-wrap"><canvas id="c-perf"></canvas></div>
+      </div>
+      <div class="chart-card" style="animation-delay:.8s">
+        <div class="chart-hdr"><div><div class="chart-title">Work-Life Balance</div><div class="chart-sub">Employee WLB self-assessment</div></div><span class="chart-badge badge-green">Wellbeing</span></div>
+        <div class="chart-wrap"><canvas id="c-wlb"></canvas></div>
+      </div>
+      <div class="chart-card" style="animation-delay:.85s">
+        <div class="chart-hdr"><div><div class="chart-title">Overtime Distribution</div><div class="chart-sub">Employees working extra hours</div></div><span class="chart-badge badge-red">OT</span></div>
+        <div class="chart-wrap"><canvas id="c-overtime"></canvas></div>
+      </div>
+    </div>
 
-const CHART_ICONS = {
-    month: '📅', country: '🌍', category: '🍫', product: '🍬',
-    person: '👤', team: '🏆', region: '🗺️',
-};
-const CHART_LABELS = {
-    month: 'Daily Trend', country: 'Country Breakdown', category: 'Category Breakdown',
-    product: 'Product Breakdown', person: 'Salesperson Breakdown',
-    team: 'Team Breakdown', region: 'Region Breakdown',
-};
-const MEDALS = ['🥇','🥈','🥉'];
+    <div class="chart-grid" style="margin-top:1.25rem">
+      <div class="chart-card span-3" style="animation-delay:.9s">
+        <div class="chart-hdr"><div><div class="chart-title">Job Satisfaction by Department</div><div class="chart-sub">Satisfaction levels (Low → Very High) across all departments</div></div><span class="chart-badge badge-purple">Satisfaction</span></div>
+        <div class="chart-wrap" style="min-height:260px"><canvas id="c-satisfaction"></canvas></div>
+      </div>
+    </div>
 
-function fmtFull(n) {
-    return '$' + Number(n).toLocaleString();
-}
+    <!-- ── Section: Compensation & Work Patterns ── -->
+    <div class="section-hdr">
+      <div class="section-hdr-title"><span class="section-hdr-icon">💼</span> Compensation &amp; Work Patterns</div>
+      <div class="section-hdr-line"></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card span-2" style="animation-delay:.95s">
+        <div class="chart-hdr"><div><div class="chart-title">Average Salary by Department</div><div class="chart-sub">Mean annual compensation per department</div></div><span class="chart-badge badge-amber">Salary</span></div>
+        <div class="chart-wrap"><canvas id="c-salary"></canvas></div>
+      </div>
+      <div class="chart-card" style="animation-delay:1s">
+        <div class="chart-hdr"><div><div class="chart-title">Business Travel</div><div class="chart-sub">Employee travel frequency</div></div><span class="chart-badge badge-cyan">Travel</span></div>
+        <div class="chart-wrap"><canvas id="c-travel"></canvas></div>
+      </div>
+    </div>
+  </main>
 
-function openDrilldown(chartType, value) {
-    document.getElementById('modal').classList.add('active');
-    // Set header
-    document.getElementById('modal-icon').textContent = CHART_ICONS[chartType] || '📊';
-    document.getElementById('modal-title').textContent = CHART_LABELS[chartType] || 'Detail';
-    document.getElementById('modal-sub').textContent = 'Day-by-day performance for ' + value;
-    document.getElementById('modal-badge').textContent = 'Loading…';
-    document.getElementById('modal-tbody').innerHTML =
-        '<tr><td colspan="5" style="text-align:center;padding:40px;color:#4b6072">Loading data…</td></tr>';
+  <footer>
+    HR Analytics Dashboard &nbsp;·&nbsp; Built with Flask &amp; Chart.js &nbsp;·&nbsp; Data refreshed on load
+  </footer>
 
-    // Clear previous chart
-    if (modalChartInst) { modalChartInst.destroy(); modalChartInst = null; }
+  <script>
+  /* ── Background Canvas ── */
+  (function() {
+    const cv = document.getElementById('bg-canvas');
+    const cx = cv.getContext('2d');
+    let W, H, pts;
+    function resize(){ W=cv.width=window.innerWidth; H=cv.height=window.innerHeight; }
+    class P {
+      constructor(){ this.x=Math.random()*W; this.y=Math.random()*H; this.vx=(Math.random()-.5)*.35; this.vy=(Math.random()-.5)*.35; this.r=Math.random()*1.5+.5; this.h=240+Math.random()*80; }
+      tick(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W)this.vx*=-1; if(this.y<0||this.y>H)this.vy*=-1; }
+      draw(){ cx.beginPath(); cx.arc(this.x,this.y,this.r,0,Math.PI*2); cx.fillStyle=`hsla(${this.h},75%,65%,.7)`; cx.fill(); }
+    }
+    function init(){ pts=Array.from({length:Math.min(70,Math.floor(W*H/14000))},()=>new P()); }
+    function draw(){
+      cx.clearRect(0,0,W,H);
+      for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+        const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+        if(d<130){ cx.beginPath(); cx.strokeStyle=`hsla(${(pts[i].h+pts[j].h)/2},70%,60%,${(1-d/130)*.3})`; cx.lineWidth=.6; cx.moveTo(pts[i].x,pts[i].y); cx.lineTo(pts[j].x,pts[j].y); cx.stroke(); }
+      }
+      pts.forEach(p=>{ p.tick(); p.draw(); });
+      requestAnimationFrame(draw);
+    }
+    resize(); init(); draw();
+    window.addEventListener('resize',()=>{ resize(); init(); });
+  })();
 
-    fetch('/api/drilldown?chart=' + encodeURIComponent(chartType) + '&value=' + encodeURIComponent(value))
-        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-        .then(data => {
-            modalData = data;
-            document.getElementById('modal-badge').textContent = data.total_days + ' records';
+  /* ── Chart.js Defaults ── */
+  Chart.defaults.color          = '#94a3b8';
+  Chart.defaults.borderColor    = 'rgba(255,255,255,0.06)';
+  Chart.defaults.font.family    = 'Inter, sans-serif';
+  Chart.defaults.font.size      = 11;
+  Chart.defaults.plugins.legend.labels.boxWidth  = 12;
+  Chart.defaults.plugins.legend.labels.padding   = 16;
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(8,18,40,0.95)';
+  Chart.defaults.plugins.tooltip.borderColor     = 'rgba(124,58,237,0.4)';
+  Chart.defaults.plugins.tooltip.borderWidth     = 1;
+  Chart.defaults.plugins.tooltip.padding         = 12;
+  Chart.defaults.plugins.tooltip.titleColor      = '#e2e8f0';
+  Chart.defaults.plugins.tooltip.bodyColor       = '#94a3b8';
+  Chart.defaults.plugins.tooltip.cornerRadius    = 10;
 
-            // ── Trend chart ──
-            const ctx = document.getElementById('modalChart').getContext('2d');
-            modalChartInst = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.dates,
-                    datasets: [
-                        {
-                            label: 'Revenue ($)',
-                            data: data.revenues,
-                            borderColor: '#00dbb4',
-                            backgroundColor: 'rgba(0,219,180,0.08)',
-                            fill: true, tension: 0.4,
-                            pointRadius: 3, pointHoverRadius: 7,
-                            borderWidth: 2.5, yAxisID: 'y',
-                        },
-                        {
-                            label: 'Boxes',
-                            data: data.boxes_list,
-                            borderColor: '#a78bfa',
-                            backgroundColor: 'rgba(167,139,250,0.06)',
-                            fill: true, tension: 0.4,
-                            pointRadius: 3, pointHoverRadius: 7,
-                            borderWidth: 2, yAxisID: 'y1',
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    interaction: { intersect: false, mode: 'index' },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: { usePointStyle: true, font: { size: 12 }, color: '#8899aa' }
-                        },
-                    },
-                    scales: {
-                        x: { ticks: { color: '#4b6072', font: { size: 10 }, maxTicksLimit: 12 }, grid: { color: 'rgba(255,255,255,0.03)' } },
-                        y:  { position: 'left',  ticks: { color: '#4b6072', callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.04)' } },
-                        y1: { position: 'right', ticks: { color: '#4b6072', callback: v => v.toLocaleString() }, grid: { drawOnChartArea: false } },
-                    }
-                }
-            });
+  const P10 = ['#7c3aed','#06b6d4','#f59e0b','#10b981','#ef4444','#ec4899','#f97316','#8b5cf6','#14b8a6','#eab308'];
+  const ALPHA = c => c + '33';
 
-            // ── Table ──
-            const maxRev = Math.max(...data.rows.map(r => r.revenue));
-            const tbody = document.getElementById('modal-tbody');
-            tbody.innerHTML = '';
-            data.rows.forEach((row, i) => {
-                const rank = i < 3 ? MEDALS[i] : (i + 1);
-                const pct = maxRev > 0 ? (row.revenue / maxRev * 100).toFixed(1) : 0;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${rank}</td>
-                    <td>${row.date}</td>
-                    <td>
-                        <div class="rev-cell">
-                            <div class="rev-bar-bg">
-                                <div class="rev-bar-fill" style="width:${pct}%"></div>
-                                <span class="rev-bar-label">${fmtFull(row.revenue)}</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td>${Number(row.boxes).toLocaleString()}</td>
-                    <td>${Number(row.shipments).toLocaleString()}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        })
-        .catch(err => {
-            document.getElementById('modal-tbody').innerHTML =
-                `<tr><td colspan="5" style="text-align:center;padding:40px;color:#f87171">Error: ${err.message}</td></tr>`;
-            document.getElementById('modal-badge').textContent = 'Error';
-        });
-}
+  function grad(ctx, colors, vertical=true) {
+    const g = vertical
+      ? ctx.createLinearGradient(0, 0, 0, ctx.canvas.parentElement.offsetHeight || 300)
+      : ctx.createLinearGradient(0, 0, ctx.canvas.parentElement.offsetWidth || 300, 0);
+    colors.forEach(([stop, color]) => g.addColorStop(stop, color));
+    return g;
+  }
 
-function closeModal() {
-    document.getElementById('modal').classList.remove('active');
-    if (modalChartInst) { modalChartInst.destroy(); modalChartInst = null; }
-}
-document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  const BASE_OPTS = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 900, easing: 'easeOutQuart' },
+    plugins: { legend: { display: false } },
+  };
 
-function clickOpts(chartType) {
-    return {
-        onClick: (evt, elements, chart) => {
-            if (!elements.length) return;
-            const idx = elements[0].index;
-            const label = chart.data.labels[idx];
-            openDrilldown(chartType, label);
-        },
-        onHover: (evt, elements) => {
-            evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+  function barColors(n, palette) {
+    return Array.from({length:n}, (_,i) => palette[i % palette.length]);
+  }
+
+  /* ── KPI Loader ── */
+  async function loadKPIs() {
+    const d = await fetch('/api/hr/summary').then(r=>r.json());
+    animNum('k-total', d.total_employees, 0, '');
+    document.getElementById('k-active').textContent = d.active_employees + ' active';
+    animNum('k-attr',  d.attrition_rate,  1, '%');
+    document.getElementById('k-attrn').textContent = d.attrition_count + ' employees left';
+    animSal('k-sal',   d.avg_salary);
+    animNum('k-age',   d.avg_age,  1, ' yrs');
+    document.getElementById('k-gender').textContent = Math.round(d.male_count/d.total_employees*100) + '/' + Math.round(d.female_count/d.total_employees*100);
+    document.getElementById('k-gendersub').textContent = d.male_count + 'M / ' + d.female_count + 'F';
+    animNum('k-tenure', d.avg_tenure, 1, ' yr');
+  }
+
+  function animNum(id, target, dec, sfx) {
+    const el=document.getElementById(id); let cur=0, step=target/50;
+    const t=setInterval(()=>{ cur=Math.min(cur+step,target); el.textContent=cur.toFixed(dec)+sfx; if(cur>=target)clearInterval(t); },16);
+  }
+  function animSal(id, target) {
+    const el=document.getElementById(id); let cur=0, step=target/50;
+    const t=setInterval(()=>{ cur=Math.min(cur+step,target); el.textContent='$'+(cur/1000).toFixed(0)+'K'; if(cur>=target)clearInterval(t); },16);
+  }
+
+  /* ── Charts ── */
+  async function buildCharts() {
+    const [headcount, gender, age, edu, tenure, attrDept, attrAge, hiring, perf, wlb, overtime, satisfaction, salary, travel] = await Promise.all([
+      fetch('/api/hr/headcount-by-dept').then(r=>r.json()),
+      fetch('/api/hr/gender-distribution').then(r=>r.json()),
+      fetch('/api/hr/age-distribution').then(r=>r.json()),
+      fetch('/api/hr/education-distribution').then(r=>r.json()),
+      fetch('/api/hr/tenure-distribution').then(r=>r.json()),
+      fetch('/api/hr/attrition-by-dept').then(r=>r.json()),
+      fetch('/api/hr/attrition-by-age').then(r=>r.json()),
+      fetch('/api/hr/monthly-hiring').then(r=>r.json()),
+      fetch('/api/hr/performance-distribution').then(r=>r.json()),
+      fetch('/api/hr/worklife-balance').then(r=>r.json()),
+      fetch('/api/hr/overtime-distribution').then(r=>r.json()),
+      fetch('/api/hr/satisfaction-by-dept').then(r=>r.json()),
+      fetch('/api/hr/salary-by-dept').then(r=>r.json()),
+      fetch('/api/hr/travel-distribution').then(r=>r.json()),
+    ]);
+
+    /* 1. Headcount by Department — horizontal bar */
+    new Chart(document.getElementById('c-headcount'), {
+      type: 'bar',
+      data: {
+        labels: headcount.labels,
+        datasets: [{
+          data: headcount.values,
+          backgroundColor: barColors(headcount.labels.length, P10),
+          borderRadius: 6,
+          borderSkipped: false,
+        }]
+      },
+      options: { ...BASE_OPTS, indexAxis:'y',
+        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw} employees` } } },
+        scales: {
+          x: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} },
+          y: { grid:{display:false}, ticks:{color:'#94a3b8',font:{size:11}} }
         }
-    };
-}
+      }
+    });
 
-// ── KPIs ──
-const kpiConfig = [
-    { id: 'revenue', label: 'Total Revenue', icon: 'dollar', cls: 'i' },
-    { id: 'boxes', label: 'Boxes Sold', icon: 'box', cls: 's' },
-    { id: 'shipments', label: 'Shipments', icon: 'truck', cls: 'i' },
-    { id: 'people', label: 'Salespeople', icon: 'users', cls: 's' },
-    { id: 'avg', label: 'Avg / Shipment', icon: 'pulse', cls: 'i' },
-];
-const icons = {
-    dollar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
-    box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="22" height="18" rx="2"/><path d="M1 9h22"/></svg>',
-    truck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
-    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
-    pulse: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
-};
-
-// Render KPI skeleton
-document.getElementById('kpi-row').innerHTML = kpiConfig.map(k =>
-    `<div class="kpi-card"><div class="kpi-icon ${k.cls}">${icons[k.icon]}</div>` +
-    `<div class="kpi-info"><div class="label">${k.label}</div>` +
-    `<div class="val shimmer" id="kpi-${k.id}">$000.0M</div></div></div>`
-).join('');
-
-fetch('/api/summary').then(r => r.json()).then(d => {
-    const s = (id, v) => { const el = document.getElementById('kpi-'+id); el.textContent = v; el.classList.remove('shimmer'); };
-    s('revenue', fmt(d.total_revenue));
-    s('boxes', d.total_boxes.toLocaleString());
-    s('shipments', d.total_shipments.toLocaleString());
-    s('people', d.total_salespeople);
-    s('avg', fmt(d.avg_revenue_per_shipment));
-});
-
-// ── Charts ──
-
-// 1. Monthly Trend
-fetch('/api/revenue-by-month').then(r => r.json()).then(data => {
-    new Chart(document.getElementById('monthlyChart'), {
-        type: 'line',
-        data: {
-            labels: data.labels,
-            datasets: [{
-                label: 'Revenue', data: data.revenue,
-                borderColor: IND, backgroundColor: IND_A,
-                fill: true, tension: 0.4, pointRadius: 3, pointHoverRadius: 7, yAxisID: 'y',
-            }, {
-                label: 'Boxes', data: data.boxes,
-                borderColor: SKY, backgroundColor: SKY_A,
-                fill: true, tension: 0.4, pointRadius: 3, pointHoverRadius: 7, yAxisID: 'y1',
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            interaction: { intersect: false, mode: 'index' },
-            ...clickOpts('month'),
-            scales: {
-                y:  { position: 'left',  ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } },
-                y1: { position: 'right', ticks: { callback: v => v.toLocaleString() }, grid: { drawOnChartArea: false } },
-            },
+    /* 2. Gender Distribution — doughnut */
+    new Chart(document.getElementById('c-gender'), {
+      type: 'doughnut',
+      data: {
+        labels: gender.labels,
+        datasets: [{
+          data: gender.values,
+          backgroundColor: ['#06b6d4','#ec4899'],
+          borderColor: 'rgba(5,11,26,.8)',
+          borderWidth: 3,
+          hoverOffset: 8,
+        }]
+      },
+      options: {
+        ...BASE_OPTS, cutout:'68%',
+        plugins: {
+          legend: { display:true, position:'bottom' },
+          tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw} (${Math.round(c.raw/gender.values.reduce((a,b)=>a+b,0)*100)}%)` } }
         }
+      }
     });
-});
 
-// 2. Country (doughnut)
-fetch('/api/revenue-by-country').then(r => r.json()).then(data => {
-    const shades = data.labels.map((_, i) => {
-        const t = i / Math.max(data.labels.length - 1, 1);
-        return `hsl(${234 + t * 30}, ${70 + t * 10}%, ${62 + t * 10}%)`;
+    /* 3. Age Distribution — vertical bar */
+    new Chart(document.getElementById('c-age'), {
+      type: 'bar',
+      data: {
+        labels: age.labels,
+        datasets: [{
+          data: age.values,
+          backgroundColor: age.values.map((_,i)=>`hsla(${190+i*8},75%,55%,.75)`),
+          borderRadius: 5,
+          borderSkipped: false,
+        }]
+      },
+      options: { ...BASE_OPTS,
+        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw} employees` } } },
+        scales: {
+          x: { grid:{display:false}, ticks:{color:'#64748b'} },
+          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+        }
+      }
     });
-    new Chart(document.getElementById('countryChart'), {
-        type: 'doughnut',
-        data: { labels: data.labels, datasets: [{ data: data.values, backgroundColor: shades, borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
-            ...clickOpts('country'),
-            plugins: { legend: { position: 'right' } } }
-    });
-});
 
-// 3. Category (doughnut)
-fetch('/api/revenue-by-category').then(r => r.json()).then(data => {
-    new Chart(document.getElementById('categoryChart'), {
-        type: 'doughnut',
-        data: { labels: data.labels, datasets: [{ data: data.values, backgroundColor: [IND, SKY, '#a78bfa'], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
-            ...clickOpts('category'),
-            plugins: { legend: { position: 'right' } } }
+    /* 4. Education Level — doughnut */
+    new Chart(document.getElementById('c-edu'), {
+      type: 'doughnut',
+      data: {
+        labels: edu.labels,
+        datasets: [{
+          data: edu.values,
+          backgroundColor: ['#6b21a8','#7c3aed','#8b5cf6','#a78bfa','#c4b5fd'],
+          borderColor: 'rgba(5,11,26,.8)',
+          borderWidth: 3, hoverOffset:8,
+        }]
+      },
+      options: { ...BASE_OPTS, cutout:'62%',
+        plugins: { legend:{display:true,position:'bottom'} }
+      }
     });
-});
 
-// 4. Region (bar)
-fetch('/api/revenue-by-region').then(r => r.json()).then(data => {
-    new Chart(document.getElementById('regionChart'), {
-        type: 'bar',
-        data: { labels: data.labels, datasets: [{
-            label: 'Revenue', data: data.values,
-            backgroundColor: data.labels.map((_, i) => i % 2 === 0 ? IND : SKY),
-            borderRadius: 6, maxBarThickness: 40,
-        }] },
-        options: { responsive: true, maintainAspectRatio: false,
-            ...clickOpts('region'),
-            plugins: { legend: { display: false } },
-            scales: { y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    /* 5. Tenure Distribution — vertical bar */
+    new Chart(document.getElementById('c-tenure'), {
+      type: 'bar',
+      data: {
+        labels: tenure.labels,
+        datasets: [{
+          data: tenure.values,
+          backgroundColor: tenure.values.map((_,i)=>`hsla(${145+i*10},65%,50%,.75)`),
+          borderRadius: 5,
+          borderSkipped: false,
+        }]
+      },
+      options: { ...BASE_OPTS,
+        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw} employees` } } },
+        scales: {
+          x: { grid:{display:false}, ticks:{color:'#64748b'} },
+          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+        }
+      }
     });
-});
 
-// 5. Top Products (horizontal bar)
-fetch('/api/top-products').then(r => r.json()).then(data => {
-    new Chart(document.getElementById('productsChart'), {
-        type: 'bar',
-        data: { labels: data.labels, datasets: [{
-            label: 'Revenue', data: data.values,
-            backgroundColor: data.labels.map((_, i) => i % 2 === 0 ? IND : SKY),
-            borderRadius: 5, maxBarThickness: 24,
-        }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-            ...clickOpts('product'),
-            plugins: { legend: { display: false } },
-            scales: { x: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    /* 6. Attrition by Department — horizontal bar (red palette) */
+    new Chart(document.getElementById('c-attrDept'), {
+      type: 'bar',
+      data: {
+        labels: attrDept.labels,
+        datasets: [{
+          data: attrDept.values,
+          backgroundColor: attrDept.labels.map((_,i)=>`hsla(${0+i*10},80%,60%,.75)`),
+          borderRadius: 6,
+          borderSkipped: false,
+        }]
+      },
+      options: { ...BASE_OPTS, indexAxis:'y',
+        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw}% attrition rate` } } },
+        scales: {
+          x: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'}, max: Math.ceil(Math.max(...attrDept.values)*1.2) },
+          y: { grid:{display:false}, ticks:{color:'#94a3b8'} }
+        }
+      }
     });
-});
 
-// 6. Team (bar)
-fetch('/api/revenue-by-team').then(r => r.json()).then(data => {
-    new Chart(document.getElementById('teamChart'), {
-        type: 'bar',
-        data: { labels: data.labels, datasets: [{
-            label: 'Revenue', data: data.values,
-            backgroundColor: data.labels.map((_, i) => i % 2 === 0 ? IND : SKY),
-            borderRadius: 6, maxBarThickness: 40,
-        }] },
-        options: { responsive: true, maintainAspectRatio: false,
-            ...clickOpts('team'),
-            plugins: { legend: { display: false } },
-            scales: { y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    /* 7. Attrition by Age Group — vertical bar */
+    new Chart(document.getElementById('c-attrAge'), {
+      type: 'bar',
+      data: {
+        labels: attrAge.labels,
+        datasets: [{
+          data: attrAge.values,
+          backgroundColor: attrAge.values.map(v=> v>25?'rgba(239,68,68,.8)': v>15?'rgba(249,115,22,.75)':'rgba(245,158,11,.7)'),
+          borderRadius: 5,
+          borderSkipped: false,
+        }]
+      },
+      options: { ...BASE_OPTS,
+        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw}% attrition` } } },
+        scales: {
+          x: { grid:{display:false}, ticks:{color:'#64748b',maxRotation:30} },
+          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'} }
+        }
+      }
     });
-});
 
-// 7. Salespeople (horizontal bar)
-fetch('/api/top-salespeople').then(r => r.json()).then(data => {
-    new Chart(document.getElementById('salespeopleChart'), {
-        type: 'bar',
-        data: { labels: data.labels, datasets: [{
-            label: 'Revenue', data: data.values,
-            backgroundColor: data.labels.map((_, i) => i % 2 === 0 ? IND : SKY),
-            borderRadius: 5, maxBarThickness: 24,
-        }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-            ...clickOpts('person'),
-            plugins: { legend: { display: false } },
-            scales: { x: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } } } }
+    /* 8. Monthly Hiring Trend — line with gradient fill */
+    const hiringCtx = document.getElementById('c-hiring').getContext('2d');
+    const hiringGrad = hiringCtx.createLinearGradient(0, 0, 0, 280);
+    hiringGrad.addColorStop(0,   'rgba(6,182,212,.45)');
+    hiringGrad.addColorStop(.7,  'rgba(6,182,212,.08)');
+    hiringGrad.addColorStop(1,   'rgba(6,182,212,0)');
+    new Chart(hiringCtx, {
+      type: 'line',
+      data: {
+        labels: hiring.labels,
+        datasets: [{
+          data: hiring.values,
+          borderColor: '#06b6d4',
+          backgroundColor: hiringGrad,
+          pointBackgroundColor: '#06b6d4',
+          pointRadius: 4, pointHoverRadius: 7,
+          tension: .4, fill: true, borderWidth: 2.5,
+        }]
+      },
+      options: { ...BASE_OPTS,
+        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw} hires` } } },
+        scales: {
+          x: { grid:{display:false}, ticks:{color:'#64748b',maxTicksLimit:12,maxRotation:30} },
+          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+        }
+      }
     });
-});
 
-// 8. Region Trend (stacked area)
-fetch('/api/monthly-trend-by-region').then(r => r.json()).then(data => {
-    const regionColors = { 'APAC': IND, 'Americas': SKY, 'Europe': '#a78bfa' };
-    const regionAlpha = { 'APAC': IND_A, 'Americas': SKY_A, 'Europe': 'rgba(167,139,250,0.15)' };
-    const datasets = Object.entries(data.datasets).map(([region, values]) => ({
-        label: region, data: values,
-        borderColor: regionColors[region] || IND,
-        backgroundColor: regionAlpha[region] || IND_A,
-        fill: true, tension: 0.4,
+    /* 9. Performance Distribution — doughnut */
+    new Chart(document.getElementById('c-perf'), {
+      type: 'doughnut',
+      data: {
+        labels: perf.labels,
+        datasets: [{
+          data: perf.values,
+          backgroundColor: ['#6b7280','#f59e0b','#10b981','#7c3aed'],
+          borderColor: 'rgba(5,11,26,.8)',
+          borderWidth:3, hoverOffset:8,
+        }]
+      },
+      options: { ...BASE_OPTS, cutout:'65%',
+        plugins: { legend:{display:true,position:'bottom'} }
+      }
+    });
+
+    /* 10. Work-Life Balance — doughnut */
+    new Chart(document.getElementById('c-wlb'), {
+      type: 'doughnut',
+      data: {
+        labels: wlb.labels,
+        datasets: [{
+          data: wlb.values,
+          backgroundColor: ['#ef4444','#f97316','#06b6d4','#10b981'],
+          borderColor: 'rgba(5,11,26,.8)',
+          borderWidth:3, hoverOffset:8,
+        }]
+      },
+      options: { ...BASE_OPTS, cutout:'65%',
+        plugins: { legend:{display:true,position:'bottom'} }
+      }
+    });
+
+    /* 11. Overtime — doughnut */
+    new Chart(document.getElementById('c-overtime'), {
+      type: 'doughnut',
+      data: {
+        labels: overtime.labels,
+        datasets: [{
+          data: overtime.values,
+          backgroundColor: ['#ef4444','#10b981'],
+          borderColor: 'rgba(5,11,26,.8)',
+          borderWidth:3, hoverOffset:8,
+        }]
+      },
+      options: { ...BASE_OPTS, cutout:'65%',
+        plugins: { legend:{display:true,position:'bottom'},
+          tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw} employees` } }
+        }
+      }
+    });
+
+    /* 12. Job Satisfaction by Dept — grouped bar */
+    const satColors = ['#ef4444','#f59e0b','#06b6d4','#10b981'];
+    const satDatasets = Object.entries(satisfaction.datasets).map(([label, data], i) => ({
+      label,
+      data,
+      backgroundColor: satColors[i] + 'cc',
+      borderColor: satColors[i],
+      borderWidth: 1,
+      borderRadius: 4,
     }));
-    new Chart(document.getElementById('regionTrendChart'), {
-        type: 'line',
-        data: { labels: data.labels, datasets },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            interaction: { intersect: false, mode: 'index' },
-            scales: {
-                y: { stacked: true, ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.03)' } },
-                x: { grid: { color: 'rgba(255,255,255,0.03)' } },
-            },
-            plugins: { legend: { position: 'top' } },
+    new Chart(document.getElementById('c-satisfaction'), {
+      type: 'bar',
+      data: { labels: satisfaction.labels, datasets: satDatasets },
+      options: { ...BASE_OPTS,
+        plugins: { legend: { display:true, position:'top', labels:{color:'#94a3b8'} } },
+        scales: {
+          x: { grid:{display:false}, ticks:{color:'#64748b'} },
+          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'}, stacked:false }
         }
+      }
     });
-});
 
-// ── Export Functions ──
-function exportCSV() {
-    // Export summary report
-    fetch('/api/summary').then(r => r.json()).then(d => {
-        let csv = 'Metric,Value\n';
-        csv += `Total Revenue,${d.total_revenue}\n`;
-        csv += `Total Boxes,${d.total_boxes}\n`;
-        csv += `Total Shipments,${d.total_shipments}\n`;
-        csv += `Salespeople,${d.total_salespeople}\n`;
-        csv += `Avg Revenue Per Shipment,${d.avg_revenue_per_shipment}\n`;
-        csv += `Top Product,${d.top_product}\n`;
-        csv += `Top Country,${d.top_country}\n`;
-        downloadCSV(csv, 'chocolate_sales_summary.csv');
+    /* 13. Salary by Department — vertical bar */
+    new Chart(document.getElementById('c-salary'), {
+      type: 'bar',
+      data: {
+        labels: salary.labels,
+        datasets: [{
+          data: salary.values,
+          backgroundColor: salary.labels.map((_,i)=>`hsla(${38+i*6},90%,${50+i*2}%,.75)`),
+          borderRadius: 6,
+          borderSkipped: false,
+        }]
+      },
+      options: { ...BASE_OPTS,
+        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` $${(c.raw/1000).toFixed(1)}K avg` } } },
+        scales: {
+          x: { grid:{display:false}, ticks:{color:'#64748b',maxRotation:20} },
+          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b', callback:v=>'$'+(v/1000)+'K'} }
+        }
+      }
     });
-}
 
-function exportModalCSV() {
-    if (!modalData || !modalData.rows.length) return;
-    let csv = 'Date,Revenue,Boxes,Shipments\n';
-    modalData.rows.forEach(row => {
-        csv += `${row.date},${row.revenue},${row.boxes},${row.shipments}\n`;
+    /* 14. Business Travel — doughnut */
+    new Chart(document.getElementById('c-travel'), {
+      type: 'doughnut',
+      data: {
+        labels: travel.labels,
+        datasets: [{
+          data: travel.values,
+          backgroundColor: ['#8b5cf6','#f97316','#ef4444'],
+          borderColor: 'rgba(5,11,26,.8)',
+          borderWidth:3, hoverOffset:8,
+        }]
+      },
+      options: { ...BASE_OPTS, cutout:'62%',
+        plugins: { legend:{display:true,position:'bottom'} }
+      }
     });
-    downloadCSV(csv, 'drilldown_' + (modalData.label || 'export').replace(/\s+/g,'_') + '.csv');
-}
+  }
 
-function downloadCSV(csv, filename) {
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(link.href);
-}
-</script>
+  /* ── Init ── */
+  loadKPIs();
+  buildCharts();
+  </script>
 </body>
 </html>
