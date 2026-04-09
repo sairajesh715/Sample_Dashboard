@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
@@ -57,21 +58,41 @@
     /* ── Main ── */
     main { position:relative;z-index:2;padding:calc(var(--nav-h) + 2rem) 2rem 3rem;max-width:1600px;margin:0 auto; }
 
-    /* ── KPI Cards ── */
+    /* ── KPI Cards — dramatic pop-out on hover ── */
     .kpi-grid { display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:2.5rem; }
     @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
     @media(max-width:700px) {.kpi-grid{grid-template-columns:repeat(2,1fr);}}
 
     .kpi-card {
-      position:relative;background:var(--cbg);border:1px solid var(--bdr);
-      backdrop-filter:blur(20px);border-radius:18px;padding:1.4rem 1.2rem;
-      overflow:hidden;cursor:pointer;
-      transition:transform .3s,box-shadow .3s,border-color .3s;
+      position:relative;
+      background:var(--cbg);
+      border:1px solid var(--bdr);
+      backdrop-filter:blur(20px);
+      border-radius:18px;
+      padding:1.4rem 1.2rem;
+      overflow:hidden;
+      cursor:pointer;
+      will-change:transform;
+      transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, border-color .22s ease;
       animation:cardIn .5s ease both;
     }
-    .kpi-card:hover { transform:translateY(-5px);box-shadow:0 24px 48px rgba(0,0,0,.45);border-color:rgba(124,58,237,.35); }
+    .kpi-card:hover {
+      transform: translateY(-10px) scale(1.04);
+      box-shadow: 0 30px 60px rgba(0,0,0,.6),
+                  0 0 0 1px rgba(124,58,237,.5),
+                  0 0 50px rgba(124,58,237,.22);
+      border-color: rgba(124,58,237,.65);
+    }
     .kpi-card::before { content:'';position:absolute;inset:0;border-radius:inherit;background:var(--kbg,none);pointer-events:none; }
-    .kpi-card::after  { content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--kline,transparent);border-radius:0 0 18px 18px;opacity:.7; }
+    .kpi-card::after  { content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--kline,transparent);border-radius:0 0 18px 18px; }
+    /* Shimmer on hover */
+    .kpi-card .kpi-shine {
+      position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+      background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);
+      opacity:0;transition:opacity .22s;
+    }
+    .kpi-card:hover .kpi-shine { opacity:1; }
+
     .kpi-icon { font-size:1.5rem;margin-bottom:.5rem; }
     .kpi-val  { font-size:1.85rem;font-weight:800;line-height:1;margin-bottom:.3rem; }
     .kpi-lbl  { font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600; }
@@ -83,19 +104,40 @@
     .section-hdr-line  { flex:1;height:1px;background:var(--bdr); }
     .section-hdr-title { font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:.5rem; }
 
-    /* ── Chart grid ── */
+    /* ── Chart grid — pop-out on hover ── */
     .chart-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem; }
     @media(max-width:1000px){.chart-grid{grid-template-columns:repeat(2,1fr);}}
-    @media(max-width:650px) {.chart-grid{grid-template-columns:1fr;}}
+    @media(max-width:650px) {.chart-grid{grid-column:span 1;}}
 
     .chart-card {
-      background:var(--cbg);border:1px solid var(--bdr);
-      backdrop-filter:blur(20px);border-radius:18px;padding:1.2rem 1.2rem .9rem;
+      background:var(--cbg);
+      border:1px solid var(--bdr);
+      backdrop-filter:blur(20px);
+      border-radius:18px;
+      padding:1.2rem 1.2rem .9rem;
       display:flex;flex-direction:column;
-      transition:transform .3s,box-shadow .3s,border-color .3s;
+      cursor:pointer;
+      will-change:transform;
+      transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, border-color .22s ease;
       animation:cardIn .5s ease both;
+      position:relative;overflow:hidden;
     }
-    .chart-card:hover { transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.35);border-color:rgba(124,58,237,.22); }
+    .chart-card:hover {
+      transform: translateY(-8px) scale(1.015);
+      box-shadow: 0 24px 50px rgba(0,0,0,.55),
+                  0 0 0 1px rgba(124,58,237,.3),
+                  0 0 35px rgba(124,58,237,.16);
+      border-color: rgba(124,58,237,.5);
+    }
+    /* Top glow stripe on hover */
+    .chart-card::before {
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,var(--purple),var(--cyan),var(--amber));
+      opacity:0;transition:opacity .22s;
+      border-radius:18px 18px 0 0;
+    }
+    .chart-card:hover::before { opacity:1; }
+
     .chart-card.span-2 { grid-column:span 2; }
     .chart-card.span-3 { grid-column:1/-1; }
     @media(max-width:1000px){.chart-card.span-2{grid-column:span 1;}.chart-card.span-3{grid-column:span 2;}}
@@ -119,102 +161,115 @@
     /* ── Modal ── */
     .modal-overlay {
       position:fixed;inset:0;z-index:500;
-      background:rgba(5,11,26,.88);
-      backdrop-filter:blur(12px);
+      background:rgba(5,11,26,.9);
+      backdrop-filter:blur(14px);
       display:flex;align-items:center;justify-content:center;
       padding:1rem;
       opacity:0;pointer-events:none;
-      transition:opacity .3s;
+      transition:opacity .28s ease;
     }
     .modal-overlay.open { opacity:1;pointer-events:all; }
 
     .modal-card {
       background:rgba(7,16,38,.98);
-      border:1px solid rgba(124,58,237,.25);
+      border:1px solid rgba(124,58,237,.28);
       border-radius:24px;
-      width:100%;max-width:1060px;
+      width:100%;max-width:1070px;
       max-height:90vh;
       display:flex;flex-direction:column;
       overflow:hidden;
-      transform:translateY(32px) scale(.96);
+      transform:translateY(36px) scale(.95);
       transition:transform .38s cubic-bezier(.34,1.56,.64,1);
-      box-shadow:0 40px 80px rgba(0,0,0,.65),0 0 0 1px rgba(124,58,237,.12);
+      box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 0 1px rgba(124,58,237,.12),0 0 60px rgba(124,58,237,.08);
     }
     .modal-overlay.open .modal-card { transform:none; }
 
     .modal-hdr {
-      display:flex;align-items:flex-start;justify-content:space-between;
-      padding:1.4rem 1.75rem 1rem;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1.25rem 1.75rem .9rem;
       border-bottom:1px solid rgba(255,255,255,.06);
       background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.05));
       gap:1rem;flex-shrink:0;
     }
     .modal-title {
-      font-size:1.12rem;font-weight:800;
+      font-size:1.1rem;font-weight:800;
       background:linear-gradient(135deg,#a78bfa,#22d3ee);
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
     }
-    .modal-subtitle { font-size:.73rem;color:var(--muted);margin-top:.2rem; }
+    .modal-subtitle { font-size:.72rem;color:var(--muted);margin-top:.18rem; }
+    .modal-hdr-btns { display:flex;align-items:center;gap:.6rem;flex-shrink:0; }
+
+    .btn-export {
+      display:flex;align-items:center;gap:.4rem;
+      background:linear-gradient(135deg,#10b981,#059669);
+      border:none;color:#fff;font-weight:700;font-size:.75rem;
+      padding:.45rem 1rem;border-radius:9px;cursor:pointer;
+      transition:all .2s;white-space:nowrap;
+    }
+    .btn-export:hover { transform:translateY(-2px);box-shadow:0 8px 22px rgba(16,185,129,.4); }
+    .btn-export:disabled { opacity:.55;cursor:not-allowed;transform:none;box-shadow:none; }
+
     .modal-close {
       background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
       color:#94a3b8;font-size:.95rem;width:32px;height:32px;border-radius:8px;
-      cursor:pointer;display:flex;align-items:center;justify-content:center;
-      transition:all .2s;flex-shrink:0;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;
     }
-    .modal-close:hover { background:rgba(239,68,68,.2);color:#fca5a5;border-color:rgba(239,68,68,.3); }
+    .modal-close:hover { background:rgba(239,68,68,.22);color:#fca5a5;border-color:rgba(239,68,68,.4); }
 
     .modal-stats {
-      display:flex;gap:.9rem;padding:1rem 1.75rem;
+      display:flex;gap:.8rem;padding:.9rem 1.75rem;
       border-bottom:1px solid rgba(255,255,255,.06);
       flex-wrap:wrap;flex-shrink:0;
     }
-    .mstat { display:flex;flex-direction:column;gap:.12rem;padding:.55rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;min-width:110px; }
-    .mstat-val { font-size:1.15rem;font-weight:800;color:var(--text); }
-    .mstat-lbl { font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em; }
+    .mstat { display:flex;flex-direction:column;gap:.1rem;padding:.5rem .9rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;min-width:105px; }
+    .mstat-val { font-size:1.1rem;font-weight:800;color:var(--text); }
+    .mstat-lbl { font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em; }
 
-    .modal-table-wrap { flex:1;overflow:auto;padding:.5rem 1.75rem 1rem; }
+    .modal-table-wrap { flex:1;overflow:auto;padding:.4rem 1.75rem .8rem; }
     .modal-table { width:100%;border-collapse:collapse;font-size:.78rem; }
     .modal-table th {
-      text-align:left;padding:.55rem .7rem;
-      color:var(--muted);font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;
+      text-align:left;padding:.52rem .65rem;
+      color:var(--muted);font-size:.63rem;text-transform:uppercase;letter-spacing:.08em;
       border-bottom:1px solid rgba(255,255,255,.07);
-      position:sticky;top:0;background:rgba(7,16,38,.99);white-space:nowrap;
+      position:sticky;top:0;background:rgba(7,16,38,.99);white-space:nowrap;z-index:1;
     }
-    .modal-table td { padding:.55rem .7rem;border-bottom:1px solid rgba(255,255,255,.04);color:#cbd5e1;white-space:nowrap; }
-    .modal-table tr:hover td { background:rgba(255,255,255,.03); }
+    .modal-table td { padding:.52rem .65rem;border-bottom:1px solid rgba(255,255,255,.04);color:#cbd5e1;white-space:nowrap; }
+    .modal-table tr:hover td { background:rgba(255,255,255,.04); }
+    .emp-name { color:#e2e8f0!important;font-weight:600; }
+    .sal-cell { color:#fcd34d!important;font-weight:600; }
 
-    .tag { display:inline-block;padding:.18rem .5rem;border-radius:100px;font-size:.65rem;font-weight:700; }
-    .tg-yes   { background:rgba(239,68,68,.2);   color:#fca5a5; }
-    .tg-no    { background:rgba(16,185,129,.2);  color:#6ee7b7; }
-    .tg-low   { background:rgba(107,114,128,.2); color:#9ca3af; }
-    .tg-good  { background:rgba(245,158,11,.2);  color:#fcd34d; }
-    .tg-exc   { background:rgba(6,182,212,.2);   color:#67e8f9; }
-    .tg-out   { background:rgba(124,58,237,.2);  color:#a78bfa; }
-    .tg-med   { background:rgba(249,115,22,.2);  color:#fdba74; }
-    .tg-high  { background:rgba(16,185,129,.15); color:#6ee7b7; }
-    .tg-vhigh { background:rgba(124,58,237,.2);  color:#a78bfa; }
-    .tg-ot    { background:rgba(239,68,68,.18);  color:#fca5a5; }
-    .tg-m     { background:rgba(6,182,212,.15);  color:#67e8f9; }
-    .tg-f     { background:rgba(236,72,153,.15); color:#f9a8d4; }
+    /* Tags */
+    .tag { display:inline-block;padding:.18rem .5rem;border-radius:100px;font-size:.64rem;font-weight:700; }
+    .tg-yes   { background:rgba(239,68,68,.2);    color:#fca5a5; }
+    .tg-no    { background:rgba(16,185,129,.2);   color:#6ee7b7; }
+    .tg-low   { background:rgba(107,114,128,.22); color:#9ca3af; }
+    .tg-good  { background:rgba(245,158,11,.22);  color:#fcd34d; }
+    .tg-exc   { background:rgba(6,182,212,.2);    color:#67e8f9; }
+    .tg-out   { background:rgba(124,58,237,.2);   color:#a78bfa; }
+    .tg-med   { background:rgba(249,115,22,.2);   color:#fdba74; }
+    .tg-high  { background:rgba(16,185,129,.15);  color:#6ee7b7; }
+    .tg-vhigh { background:rgba(124,58,237,.2);   color:#a78bfa; }
+    .tg-ot    { background:rgba(239,68,68,.18);   color:#fca5a5; }
+    .tg-m     { background:rgba(6,182,212,.15);   color:#67e8f9; }
+    .tg-f     { background:rgba(236,72,153,.15);  color:#f9a8d4; }
 
     .modal-footer {
       display:flex;align-items:center;justify-content:space-between;
-      padding:.85rem 1.75rem;border-top:1px solid rgba(255,255,255,.06);
-      font-size:.75rem;color:var(--muted);flex-shrink:0;flex-wrap:wrap;gap:.5rem;
+      padding:.8rem 1.75rem;border-top:1px solid rgba(255,255,255,.06);
+      font-size:.73rem;color:var(--muted);flex-shrink:0;flex-wrap:wrap;gap:.5rem;
     }
     .pg-wrap { display:flex;align-items:center;gap:.5rem; }
     .pg-btn {
       background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-      color:#94a3b8;padding:.3rem .7rem;border-radius:7px;cursor:pointer;font-size:.75rem;transition:all .2s;
+      color:#94a3b8;padding:.28rem .65rem;border-radius:7px;cursor:pointer;font-size:.73rem;transition:all .2s;
     }
     .pg-btn:hover:not(:disabled) { background:rgba(124,58,237,.2);color:#a78bfa;border-color:rgba(124,58,237,.4); }
     .pg-btn:disabled { opacity:.35;cursor:not-allowed; }
-    .pg-info { color:#475569;font-size:.75rem; }
 
-    footer { position:relative;z-index:2;text-align:center;padding:2rem;color:var(--muted);font-size:.73rem;border-top:1px solid var(--bdr); }
+    /* Error state */
+    .modal-error { color:#ef4444;font-size:.8rem;padding:2rem;text-align:center; }
 
-    /* click hints on chart cards */
-    .chart-card { cursor:pointer; }
+    footer { position:relative;z-index:2;text-align:center;padding:1.75rem;color:var(--muted);font-size:.73rem;border-top:1px solid var(--bdr);margin-top:1rem; }
   </style>
 </head>
 <body>
@@ -235,37 +290,43 @@
   <main>
     <!-- KPI Cards -->
     <div class="kpi-grid">
-      <div class="kpi-card" style="--kbg:linear-gradient(135deg,rgba(124,58,237,.09),rgba(167,139,250,.03));--kline:linear-gradient(90deg,#7c3aed,#a78bfa);animation-delay:.05s" onclick="openModal('all','','👥 All Employees','')">
+      <div class="kpi-card" style="--kbg:linear-gradient(135deg,rgba(124,58,237,.09),transparent);--kline:linear-gradient(90deg,#7c3aed,#a78bfa);animation-delay:.05s" onclick="openModal('all','','👥 All Employees','')">
+        <div class="kpi-shine"></div>
         <div class="kpi-icon">👥</div>
         <div class="kpi-val" id="k-total" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Total Employees</div>
         <div class="kpi-sub" id="k-active">— active</div>
       </div>
       <div class="kpi-card" style="--kline:linear-gradient(90deg,#ef4444,#f97316);animation-delay:.1s" onclick="openModal('attrition','Yes','📉 Attrited Employees','')">
+        <div class="kpi-shine"></div>
         <div class="kpi-icon">📉</div>
         <div class="kpi-val" id="k-attr" style="background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Attrition Rate</div>
         <div class="kpi-sub" id="k-attrn">— left</div>
       </div>
-      <div class="kpi-card" style="--kline:linear-gradient(90deg,#f59e0b,#fcd34d);animation-delay:.15s" onclick="openModal('all','','💰 Salary — All Employees','salary')">
+      <div class="kpi-card" style="--kline:linear-gradient(90deg,#f59e0b,#fcd34d);animation-delay:.15s" onclick="openModal('all','','💰 All Employees — by Salary','salary')">
+        <div class="kpi-shine"></div>
         <div class="kpi-icon">💰</div>
         <div class="kpi-val" id="k-sal" style="background:linear-gradient(135deg,#f59e0b,#fcd34d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Avg. Salary</div>
         <div class="kpi-sub">Annual compensation</div>
       </div>
-      <div class="kpi-card" style="--kline:linear-gradient(90deg,#06b6d4,#67e8f9);animation-delay:.2s" onclick="openModal('all','','🎂 Age — All Employees','age')">
+      <div class="kpi-card" style="--kline:linear-gradient(90deg,#06b6d4,#67e8f9);animation-delay:.2s" onclick="openModal('all','','🎂 All Employees — by Age','age')">
+        <div class="kpi-shine"></div>
         <div class="kpi-icon">🎂</div>
         <div class="kpi-val" id="k-age" style="background:linear-gradient(135deg,#06b6d4,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Average Age</div>
         <div class="kpi-sub">Years old</div>
       </div>
       <div class="kpi-card" style="--kline:linear-gradient(90deg,#ec4899,#06b6d4);animation-delay:.25s" onclick="openModal('all','','⚖️ All Employees — Gender View','')">
+        <div class="kpi-shine"></div>
         <div class="kpi-icon">⚖️</div>
         <div class="kpi-val" id="k-gender" style="background:linear-gradient(135deg,#ec4899,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Gender Ratio</div>
         <div class="kpi-sub" id="k-gendersub">M / F</div>
       </div>
-      <div class="kpi-card" style="--kline:linear-gradient(90deg,#10b981,#6ee7b7);animation-delay:.3s" onclick="openModal('all','','📅 Tenure — All Employees','years')">
+      <div class="kpi-card" style="--kline:linear-gradient(90deg,#10b981,#6ee7b7);animation-delay:.3s" onclick="openModal('all','','📅 All Employees — by Tenure','years')">
+        <div class="kpi-shine"></div>
         <div class="kpi-icon">📅</div>
         <div class="kpi-val" id="k-tenure" style="background:linear-gradient(135deg,#10b981,#6ee7b7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Avg. Tenure</div>
@@ -280,11 +341,11 @@
     </div>
     <div class="chart-grid">
       <div class="chart-card span-2" style="animation-delay:.35s">
-        <div class="chart-hdr"><div><div class="chart-title">Headcount by Department</div><div class="chart-sub">Click a bar to explore employees</div></div><span class="cbadge cb-purple">Headcount</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Headcount by Department</div><div class="chart-sub">Click a bar to explore employees in that dept</div></div><span class="cbadge cb-purple">Headcount</span></div>
         <div class="chart-wrap"><canvas id="c-headcount"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:.4s">
-        <div class="chart-hdr"><div><div class="chart-title">Gender Distribution</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-pink">Gender</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Gender Distribution</div><div class="chart-sub">Click a slice to view that group</div></div><span class="cbadge cb-pink">Gender</span></div>
         <div class="chart-wrap"><canvas id="c-gender"></canvas></div>
       </div>
     </div>
@@ -320,7 +381,7 @@
         <div class="chart-wrap"><canvas id="c-attrDept"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:.65s">
-        <div class="chart-hdr"><div><div class="chart-title">Attrition by Age Group</div><div class="chart-sub">Click an age band to explore leavers</div></div><span class="cbadge cb-red">Risk</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Attrition by Age Group</div><div class="chart-sub">Click an age band to see leavers</div></div><span class="cbadge cb-red">Risk</span></div>
         <div class="chart-wrap"><canvas id="c-attrAge"></canvas></div>
       </div>
     </div>
@@ -358,7 +419,7 @@
     </div>
     <div class="chart-grid" style="margin-top:1.2rem">
       <div class="chart-card span-3" style="animation-delay:.9s">
-        <div class="chart-hdr"><div><div class="chart-title">Job Satisfaction by Department</div><div class="chart-sub">Click any bar to see employees by satisfaction level</div></div><span class="cbadge cb-purple">Satisfaction</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Job Satisfaction by Department</div><div class="chart-sub">Click any bar to explore by satisfaction level</div></div><span class="cbadge cb-purple">Satisfaction</span></div>
         <div class="chart-wrap" style="min-height:208px"><canvas id="c-satisfaction"></canvas></div>
       </div>
     </div>
@@ -370,29 +431,36 @@
     </div>
     <div class="chart-grid">
       <div class="chart-card span-2" style="animation-delay:.95s">
-        <div class="chart-hdr"><div><div class="chart-title">Average Salary by Department</div><div class="chart-sub">Click a bar to explore dept employees</div></div><span class="cbadge cb-amber">Salary</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Average Salary by Department</div><div class="chart-sub">Click a bar to explore dept employees by salary</div></div><span class="cbadge cb-amber">Salary</span></div>
         <div class="chart-wrap"><canvas id="c-salary"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:1s">
-        <div class="chart-hdr"><div><div class="chart-title">Business Travel</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-cyan">Travel</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Business Travel</div><div class="chart-sub">Click a slice to view travel group</div></div><span class="cbadge cb-cyan">Travel</span></div>
         <div class="chart-wrap"><canvas id="c-travel"></canvas></div>
       </div>
     </div>
   </main>
 
-  <footer>HR Analytics Dashboard &nbsp;·&nbsp; Flask + Chart.js &nbsp;·&nbsp; Click any card or chart element to drill down</footer>
+  <footer>HR Analytics Dashboard &nbsp;·&nbsp; Flask + Chart.js &nbsp;·&nbsp; Click any card or chart element for drill-down &nbsp;·&nbsp; Use 📥 Export in popup for Excel</footer>
 
   <!-- ── Drill-Down Modal ── -->
-  <div id="modal-overlay" class="modal-overlay">
+  <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-hdr">
-        <div>
+        <div style="min-width:0">
           <div class="modal-title" id="modal-title">Employee Detail</div>
           <div class="modal-subtitle" id="modal-subtitle">Loading…</div>
         </div>
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-hdr-btns">
+          <button class="btn-export" id="btn-export" onclick="exportToExcel()">📥 Export Excel</button>
+          <button class="modal-close" onclick="closeModal()" title="Close (Esc)">✕</button>
+        </div>
       </div>
-      <div class="modal-stats" id="modal-stats"></div>
+
+      <div class="modal-stats" id="modal-stats">
+        <div class="mstat"><div class="mstat-val">—</div><div class="mstat-lbl">Loading</div></div>
+      </div>
+
       <div class="modal-table-wrap">
         <table class="modal-table">
           <thead>
@@ -402,15 +470,18 @@
               <th>Performance</th><th>Satisfaction</th><th>Overtime</th><th>Status</th>
             </tr>
           </thead>
-          <tbody id="modal-tbody"></tbody>
+          <tbody id="modal-tbody">
+            <tr><td colspan="12" style="text-align:center;padding:2.5rem;color:#475569">Loading data…</td></tr>
+          </tbody>
         </table>
       </div>
+
       <div class="modal-footer">
-        <span id="modal-count" style="color:#475569"></span>
+        <span id="modal-count" style="color:#475569;font-size:.72rem"></span>
         <div class="pg-wrap">
-          <button class="pg-btn" id="pg-prev" onclick="changePage(-1)">← Prev</button>
-          <span class="pg-info" id="pg-info">Page 1 / 1</span>
-          <button class="pg-btn" id="pg-next" onclick="changePage(1)">Next →</button>
+          <button class="pg-btn" id="pg-prev" onclick="changePage(-1)" disabled>← Prev</button>
+          <span style="color:#475569;font-size:.72rem" id="pg-info">Page 1 / 1</span>
+          <button class="pg-btn" id="pg-next" onclick="changePage(1)" disabled>Next →</button>
         </div>
       </div>
     </div>
@@ -449,61 +520,57 @@
   Chart.defaults.font.size       = 11;
   Chart.defaults.plugins.legend.labels.boxWidth = 11;
   Chart.defaults.plugins.legend.labels.padding  = 14;
-  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(7,16,38,0.96)';
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(7,16,38,0.97)';
   Chart.defaults.plugins.tooltip.borderColor     = 'rgba(124,58,237,0.45)';
   Chart.defaults.plugins.tooltip.borderWidth     = 1;
   Chart.defaults.plugins.tooltip.padding         = 12;
   Chart.defaults.plugins.tooltip.titleColor      = '#e2e8f0';
   Chart.defaults.plugins.tooltip.bodyColor       = '#94a3b8';
   Chart.defaults.plugins.tooltip.cornerRadius    = 10;
-
-  // Disable datalabels globally by default — enable per chart
   Chart.defaults.set('plugins.datalabels', { display: false });
 
   const P10 = ['#7c3aed','#06b6d4','#f59e0b','#10b981','#ef4444','#ec4899','#f97316','#8b5cf6','#14b8a6','#eab308'];
-
-  const HOVER_CURSOR = {
-    onHover: (e, el) => { e.native.target.style.cursor = el.length ? 'pointer' : 'default'; }
-  };
-
+  const HOVER_FN = { onHover:(e,el)=>{ e.native.target.style.cursor = el.length?'pointer':'default'; } };
   const BASE = {
     responsive:true, maintainAspectRatio:false,
     animation:{ duration:900, easing:'easeOutQuart' },
     plugins:{ legend:{ display:false }, datalabels:{ display:false } },
-    ...HOVER_CURSOR,
+    ...HOVER_FN,
   };
 
   /* ─── KPI Loader ─── */
   async function loadKPIs(){
-    const d = await fetch('/api/hr/summary').then(r=>r.json());
-    anim('k-total', d.total_employees, 0, '');
-    document.getElementById('k-active').textContent = d.active_employees + ' active';
-    anim('k-attr',  d.attrition_rate,  1, '%');
-    document.getElementById('k-attrn').textContent  = d.attrition_count + ' left';
-    animK('k-sal',  d.avg_salary);
-    anim('k-age',   d.avg_age,          1, ' yrs');
-    document.getElementById('k-gender').textContent    = Math.round(d.male_count/d.total_employees*100)+'/'+ Math.round(d.female_count/d.total_employees*100);
-    document.getElementById('k-gendersub').textContent = d.male_count+'M / '+d.female_count+'F';
-    anim('k-tenure', d.avg_tenure, 1, ' yr');
+    try {
+      const d = await fetch('/api/hr/summary').then(r=>r.json());
+      anim('k-total', d.total_employees, 0, '');
+      document.getElementById('k-active').textContent = d.active_employees+' active';
+      anim('k-attr',  d.attrition_rate,  1, '%');
+      document.getElementById('k-attrn').textContent  = d.attrition_count+' left';
+      animK('k-sal',  d.avg_salary);
+      anim('k-age',   d.avg_age,  1, ' yrs');
+      document.getElementById('k-gender').textContent    = Math.round(d.male_count/d.total_employees*100)+'/'+ Math.round(d.female_count/d.total_employees*100);
+      document.getElementById('k-gendersub').textContent = d.male_count+'M / '+d.female_count+'F';
+      anim('k-tenure', d.avg_tenure, 1, ' yr');
+    } catch(e){ console.error('KPI load error:', e); }
   }
-  function anim(id, target, dec, sfx){
+  function anim(id,target,dec,sfx){
     const el=document.getElementById(id);let cur=0,step=target/50;
     const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=cur.toFixed(dec)+sfx;if(cur>=target)clearInterval(t);},16);
   }
-  function animK(id, target){
+  function animK(id,target){
     const el=document.getElementById(id);let cur=0,step=target/50;
     const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent='$'+(cur/1000).toFixed(0)+'K';if(cur>=target)clearInterval(t);},16);
   }
 
-  /* ─── Modal State & Functions ─── */
+  /* ─── Modal ─── */
   let MS = { filterType:'all', filterValue:'', title:'', sortBy:'', page:1, totalPages:1 };
 
-  function openModal(ft, fv, title, sortBy=''){
-    MS = { filterType:ft, filterValue:fv, title, sortBy, page:1, totalPages:1 };
-    document.getElementById('modal-title').textContent = title;
-    document.getElementById('modal-subtitle').textContent = 'Loading…';
-    document.getElementById('modal-tbody').innerHTML = '<tr><td colspan="12" style="text-align:center;padding:2rem;color:#475569">Loading…</td></tr>';
-    document.getElementById('modal-stats').innerHTML = '';
+  function openModal(ft, fv, title, sortBy){
+    MS = { filterType:ft, filterValue:fv, title:title||'Employees', sortBy:sortBy||'', page:1, totalPages:1 };
+    document.getElementById('modal-title').textContent    = MS.title;
+    document.getElementById('modal-subtitle').textContent = 'Fetching data…';
+    document.getElementById('modal-stats').innerHTML      = '<div class="mstat"><div class="mstat-val">…</div><div class="mstat-lbl">Loading</div></div>';
+    document.getElementById('modal-tbody').innerHTML      = '<tr><td colspan="12" style="text-align:center;padding:2.5rem;color:#475569">Loading data…</td></tr>';
     document.getElementById('modal-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
     fetchModal(1);
@@ -522,335 +589,397 @@
 
   async function fetchModal(page){
     MS.page = page;
-    const url = `/api/hr/employees?filter_type=${encodeURIComponent(MS.filterType)}&filter_value=${encodeURIComponent(MS.filterValue)}&page=${page}&sort_by=${MS.sortBy}`;
-    const d = await fetch(url).then(r=>r.json());
-    MS.totalPages = d.total_pages;
+    const url = `/api/hr/employees?filter_type=${encodeURIComponent(MS.filterType)}&filter_value=${encodeURIComponent(MS.filterValue)}&page=${page}&sort_by=${encodeURIComponent(MS.sortBy)}`;
+    try {
+      const res = await fetch(url);
+      if(!res.ok){
+        const txt = await res.text();
+        throw new Error(`Server ${res.status}: ${txt.substring(0,300)}`);
+      }
+      const d = await res.json();
+      if(d.error) throw new Error(d.error);
 
-    document.getElementById('modal-subtitle').textContent = `${d.total} employee${d.total!==1?'s':''} · Page ${d.page} of ${d.total_pages}`;
-    document.getElementById('modal-count').textContent = `Showing ${(d.page-1)*15+1}–${Math.min(d.page*15,d.total)} of ${d.total}`;
+      MS.totalPages = d.total_pages;
+      document.getElementById('modal-subtitle').textContent = `${d.total} employee${d.total!==1?'s':''} · Page ${d.page} of ${d.total_pages}`;
+      document.getElementById('modal-count').textContent    = `Showing ${(d.page-1)*15+1}–${Math.min(d.page*15,d.total)} of ${d.total}`;
 
-    // Stats bar
-    document.getElementById('modal-stats').innerHTML = `
-      <div class="mstat"><div class="mstat-val">${d.total}</div><div class="mstat-lbl">Employees</div></div>
-      <div class="mstat"><div class="mstat-val">$${(d.stats.avg_salary/1000).toFixed(0)}K</div><div class="mstat-lbl">Avg Salary</div></div>
-      <div class="mstat"><div class="mstat-val">${d.stats.avg_age}</div><div class="mstat-lbl">Avg Age</div></div>
-      <div class="mstat"><div class="mstat-val">${d.stats.avg_tenure} yr</div><div class="mstat-lbl">Avg Tenure</div></div>
-      <div class="mstat"><div class="mstat-val" style="color:${d.stats.attrition_rate>20?'#fca5a5':'#6ee7b7'}">${d.stats.attrition_rate}%</div><div class="mstat-lbl">Attrition Rate</div></div>
-    `;
+      /* Stats bar */
+      const attrColor = d.stats.attrition_rate > 20 ? '#fca5a5' : '#6ee7b7';
+      document.getElementById('modal-stats').innerHTML = `
+        <div class="mstat"><div class="mstat-val">${d.total}</div><div class="mstat-lbl">Employees</div></div>
+        <div class="mstat"><div class="mstat-val">$${(d.stats.avg_salary/1000).toFixed(0)}K</div><div class="mstat-lbl">Avg Salary</div></div>
+        <div class="mstat"><div class="mstat-val">${d.stats.avg_age}</div><div class="mstat-lbl">Avg Age</div></div>
+        <div class="mstat"><div class="mstat-val">${d.stats.avg_tenure} yr</div><div class="mstat-lbl">Avg Tenure</div></div>
+        <div class="mstat"><div class="mstat-val" style="color:${attrColor}">${d.stats.attrition_rate}%</div><div class="mstat-lbl">Attrition Rate</div></div>
+      `;
 
-    // Table
-    const pfTag = {Low:'tg-low',Good:'tg-good',Excellent:'tg-exc',Outstanding:'tg-out'};
-    const sfTag = {Low:'tg-low',Medium:'tg-med',High:'tg-high','Very High':'tg-vhigh'};
-    const offset = (d.page-1)*15;
-    document.getElementById('modal-tbody').innerHTML = d.records.length
-      ? d.records.map((r,i) => `
-        <tr>
-          <td style="color:#475569">${offset+i+1}</td>
-          <td style="color:#e2e8f0;font-weight:600">${r.name}</td>
-          <td>${r.department}</td>
-          <td style="color:#94a3b8">${r.job_title}</td>
-          <td>${r.age}</td>
-          <td><span class="tag ${r.gender==='Male'?'tg-m':'tg-f'}">${r.gender}</span></td>
-          <td style="color:#fcd34d;font-weight:600">$${(r.salary/1000).toFixed(1)}K</td>
-          <td>${r.years} yr</td>
-          <td><span class="tag ${pfTag[r.performance]||''}">${r.performance}</span></td>
-          <td><span class="tag ${sfTag[r.satisfaction]||''}">${r.satisfaction}</span></td>
-          <td><span class="tag ${r.overtime==='Yes'?'tg-ot':'tg-no'}">${r.overtime}</span></td>
-          <td><span class="tag ${r.attrition==='Yes'?'tg-yes':'tg-no'}">${r.attrition}</span></td>
-        </tr>`)
-        .join('')
-      : '<tr><td colspan="12" style="text-align:center;padding:2rem;color:#475569">No records found</td></tr>';
+      /* Table rows */
+      const pfTag  = {Low:'tg-low',Good:'tg-good',Excellent:'tg-exc',Outstanding:'tg-out'};
+      const sfTag  = {Low:'tg-low',Medium:'tg-med',High:'tg-high','Very High':'tg-vhigh'};
+      const offset = (d.page-1)*15;
+      document.getElementById('modal-tbody').innerHTML = d.records.length
+        ? d.records.map((r,i)=>`
+            <tr>
+              <td style="color:#475569;font-size:.7rem">${offset+i+1}</td>
+              <td class="emp-name">${r.name}</td>
+              <td>${r.department}</td>
+              <td style="color:#94a3b8;font-size:.75rem">${r.job_title}</td>
+              <td>${r.age}</td>
+              <td><span class="tag ${r.gender==='Male'?'tg-m':'tg-f'}">${r.gender}</span></td>
+              <td class="sal-cell">$${(r.salary/1000).toFixed(1)}K</td>
+              <td>${r.years} yr</td>
+              <td><span class="tag ${pfTag[r.performance]||''}">${r.performance}</span></td>
+              <td><span class="tag ${sfTag[r.satisfaction]||''}">${r.satisfaction}</span></td>
+              <td><span class="tag ${r.overtime==='Yes'?'tg-ot':'tg-no'}">${r.overtime}</span></td>
+              <td><span class="tag ${r.attrition==='Yes'?'tg-yes':'tg-no'}">${r.attrition}</span></td>
+            </tr>`).join('')
+        : '<tr><td colspan="12" style="text-align:center;padding:2rem;color:#475569">No records found for this filter</td></tr>';
 
-    // Pagination
-    document.getElementById('pg-prev').disabled = (d.page <= 1);
-    document.getElementById('pg-next').disabled = (d.page >= d.total_pages);
-    document.getElementById('pg-info').textContent = `Page ${d.page} / ${d.total_pages}`;
+      /* Pagination */
+      document.getElementById('pg-prev').disabled = (d.page <= 1);
+      document.getElementById('pg-next').disabled = (d.page >= d.total_pages);
+      document.getElementById('pg-info').textContent = `Page ${d.page} / ${d.total_pages}`;
+
+    } catch(err){
+      console.error('fetchModal error:', err);
+      document.getElementById('modal-subtitle').textContent = 'Error loading data';
+      document.getElementById('modal-stats').innerHTML = '';
+      document.getElementById('modal-tbody').innerHTML = `
+        <tr><td colspan="12" class="modal-error">⚠ ${err.message}</td></tr>`;
+    }
   }
 
+  /* ─── Export to Excel ─── */
+  async function exportToExcel(){
+    const btn = document.getElementById('btn-export');
+    btn.textContent = '⏳ Exporting…';
+    btn.disabled = true;
+    try {
+      /* Fetch ALL rows (per_page=9999) with same filter */
+      const url = `/api/hr/employees?filter_type=${encodeURIComponent(MS.filterType)}&filter_value=${encodeURIComponent(MS.filterValue)}&page=1&per_page=9999&sort_by=${encodeURIComponent(MS.sortBy)}`;
+      const res = await fetch(url);
+      const d   = await res.json();
+      if(d.error) throw new Error(d.error);
+
+      /* Build rows for the "Employees" sheet */
+      const rows = d.records.map((r, i) => ({
+        '#':                  i + 1,
+        'Employee ID':        r.id,
+        'Name':               r.name,
+        'Department':         r.department,
+        'Job Title':          r.job_title,
+        'Age':                r.age,
+        'Gender':             r.gender,
+        'Annual Salary ($)':  r.salary,
+        'Years at Company':   r.years,
+        'Performance':        r.performance,
+        'Job Satisfaction':   r.satisfaction,
+        'Overtime':           r.overtime,
+        'Attrition':          r.attrition,
+      }));
+
+      /* Build rows for the "Summary" sheet */
+      const summary = [
+        { Metric:'Filter Applied',   Value: MS.title },
+        { Metric:'Filter Type',      Value: MS.filterType },
+        { Metric:'Filter Value',     Value: MS.filterValue || 'All' },
+        { Metric:'Total Employees',  Value: d.total },
+        { Metric:'Avg Salary',       Value: '$' + (d.stats.avg_salary/1000).toFixed(1) + 'K' },
+        { Metric:'Avg Age',          Value: d.stats.avg_age + ' yrs' },
+        { Metric:'Avg Tenure',       Value: d.stats.avg_tenure + ' yr' },
+        { Metric:'Attrition Rate',   Value: d.stats.attrition_rate + '%' },
+        { Metric:'Export Date',      Value: new Date().toLocaleString() },
+      ];
+
+      const wb  = XLSX.utils.book_new();
+      const ws1 = XLSX.utils.json_to_sheet(rows);
+      const ws2 = XLSX.utils.json_to_sheet(summary);
+
+      /* Column widths */
+      ws1['!cols'] = [{wch:4},{wch:10},{wch:20},{wch:14},{wch:22},{wch:5},{wch:8},{wch:14},{wch:12},{wch:12},{wch:14},{wch:9},{wch:9}];
+      ws2['!cols'] = [{wch:20},{wch:30}];
+
+      XLSX.utils.book_append_sheet(wb, ws1, 'Employees');
+      XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+
+      const safe = MS.title.replace(/[^a-zA-Z0-9\s]/g,'').trim().replace(/\s+/g,'_').substring(0,40);
+      const date = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(wb, `HR_${safe}_${date}.xlsx`);
+    } catch(err){
+      console.error('Export error:', err);
+      alert('Export failed: ' + err.message);
+    } finally {
+      btn.textContent = '📥 Export Excel';
+      btn.disabled = false;
+    }
+  }
+
+  /* ─── Modal close shortcuts ─── */
   document.getElementById('modal-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
   document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 
   /* ─── Charts ─── */
   async function buildCharts(){
-    const [headcount,gender,age,edu,tenure,attrDept,attrAge,hiring,perf,wlb,overtime,satisfaction,salary,travel] = await Promise.all([
-      '/api/hr/headcount-by-dept', '/api/hr/gender-distribution', '/api/hr/age-distribution',
-      '/api/hr/education-distribution', '/api/hr/tenure-distribution', '/api/hr/attrition-by-dept',
-      '/api/hr/attrition-by-age', '/api/hr/monthly-hiring', '/api/hr/performance-distribution',
-      '/api/hr/worklife-balance', '/api/hr/overtime-distribution', '/api/hr/satisfaction-by-dept',
-      '/api/hr/salary-by-dept', '/api/hr/travel-distribution'
-    ].map(u=>fetch(u).then(r=>r.json())));
+    try {
+      const [headcount,gender,age,edu,tenure,attrDept,attrAge,hiring,perf,wlb,overtime,satisfaction,salary,travel] = await Promise.all([
+        '/api/hr/headcount-by-dept','/api/hr/gender-distribution','/api/hr/age-distribution',
+        '/api/hr/education-distribution','/api/hr/tenure-distribution','/api/hr/attrition-by-dept',
+        '/api/hr/attrition-by-age','/api/hr/monthly-hiring','/api/hr/performance-distribution',
+        '/api/hr/worklife-balance','/api/hr/overtime-distribution','/api/hr/satisfaction-by-dept',
+        '/api/hr/salary-by-dept','/api/hr/travel-distribution'
+      ].map(u=>fetch(u).then(r=>r.json())));
 
-    /* 1 ── Headcount by Dept — horizontal bar */
-    new Chart(document.getElementById('c-headcount'), {
-      type:'bar',
-      data:{ labels:headcount.labels, datasets:[{ data:headcount.values, backgroundColor:P10, borderRadius:5, borderSkipped:false }] },
-      options:{
-        ...BASE, indexAxis:'y',
-        plugins:{ ...BASE.plugins,
-          tooltip:{ callbacks:{ label: c=>` ${c.raw} employees` } },
-          datalabels:{
-            display:true, anchor:'end', align:'start',
-            color:'#e2e8f0', font:{ size:10, weight:'700' },
-            formatter: v => v,
-            padding:{ left:6 },
-          }
-        },
-        scales:{
-          x:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} },
-          y:{ grid:{display:false}, ticks:{color:'#94a3b8'} }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('department',headcount.labels[el[0].index],'🏢 '+headcount.labels[el[0].index],''); }
-      }
-    });
-
-    /* 2 ── Gender — doughnut */
-    const gTotal = gender.values.reduce((a,b)=>a+b,0);
-    new Chart(document.getElementById('c-gender'), {
-      type:'doughnut',
-      data:{ labels:gender.labels, datasets:[{ data:gender.values, backgroundColor:['#06b6d4','#ec4899'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
-      options:{
-        ...BASE, cutout:'68%',
-        plugins:{ ...BASE.plugins,
-          legend:{ display:true, position:'bottom' },
-          tooltip:{ callbacks:{ label: c=>` ${c.label}: ${c.raw} (${Math.round(c.raw/gTotal*100)}%)` } },
-          datalabels:{
-            display:true, color:'#fff', font:{ size:12, weight:'700' },
-            formatter:(v)=>Math.round(v/gTotal*100)+'%',
-          }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('gender',gender.labels[el[0].index],'⚖️ Gender — '+gender.labels[el[0].index],''); }
-      }
-    });
-
-    /* 3 ── Age Distribution — vertical bar */
-    new Chart(document.getElementById('c-age'), {
-      type:'bar',
-      data:{ labels:age.labels, datasets:[{ data:age.values, backgroundColor:age.values.map((_,i)=>`hsla(${190+i*8},75%,55%,.78)`), borderRadius:5, borderSkipped:false }] },
-      options:{
-        ...BASE,
-        plugins:{ ...BASE.plugins,
-          tooltip:{ callbacks:{ label: c=>` ${c.raw} employees` } },
-          datalabels:{ display:true, anchor:'end', align:'top', color:'#94a3b8', font:{ size:10, weight:'700' }, formatter:v=>v }
-        },
-        scales:{
-          x:{ grid:{display:false}, ticks:{color:'#64748b'} },
-          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('age_group',age.labels[el[0].index],'🎂 Age Group — '+age.labels[el[0].index],''); }
-      }
-    });
-
-    /* 4 ── Education — doughnut */
-    const eduTotal = edu.values.reduce((a,b)=>a+b,0);
-    new Chart(document.getElementById('c-edu'), {
-      type:'doughnut',
-      data:{ labels:edu.labels, datasets:[{ data:edu.values, backgroundColor:['#6b21a8','#7c3aed','#8b5cf6','#a78bfa','#c4b5fd'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
-      options:{
-        ...BASE, cutout:'62%',
-        plugins:{ ...BASE.plugins,
-          legend:{ display:true, position:'bottom' },
-          datalabels:{
-            display:(ctx)=>ctx.dataset.data[ctx.dataIndex]/eduTotal>0.05,
-            color:'#fff', font:{ size:10, weight:'700' },
-            formatter:(v)=>Math.round(v/eduTotal*100)+'%',
-          }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('education',edu.labels[el[0].index],'🎓 Education — '+edu.labels[el[0].index],''); }
-      }
-    });
-
-    /* 5 ── Tenure — vertical bar */
-    new Chart(document.getElementById('c-tenure'), {
-      type:'bar',
-      data:{ labels:tenure.labels, datasets:[{ data:tenure.values, backgroundColor:tenure.values.map((_,i)=>`hsla(${145+i*10},65%,50%,.78)`), borderRadius:5, borderSkipped:false }] },
-      options:{
-        ...BASE,
-        plugins:{ ...BASE.plugins,
-          tooltip:{ callbacks:{ label: c=>` ${c.raw} employees` } },
-          datalabels:{ display:true, anchor:'end', align:'top', color:'#94a3b8', font:{ size:10, weight:'700' }, formatter:v=>v }
-        },
-        scales:{
-          x:{ grid:{display:false}, ticks:{color:'#64748b'} },
-          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('tenure',tenure.labels[el[0].index],'📅 Tenure — '+tenure.labels[el[0].index],''); }
-      }
-    });
-
-    /* 6 ── Attrition by Dept — horizontal bar */
-    new Chart(document.getElementById('c-attrDept'), {
-      type:'bar',
-      data:{ labels:attrDept.labels, datasets:[{ data:attrDept.values, backgroundColor:attrDept.labels.map((_,i)=>`hsla(${5+i*10},82%,60%,.78)`), borderRadius:5, borderSkipped:false }] },
-      options:{
-        ...BASE, indexAxis:'y',
-        plugins:{ ...BASE.plugins,
-          tooltip:{ callbacks:{ label: c=>` ${c.raw}% attrition` } },
-          datalabels:{
-            display:true, anchor:'end', align:'start',
-            color:'#fca5a5', font:{ size:10, weight:'700' },
-            formatter:v=>v.toFixed(1)+'%', padding:{ left:4 },
-          }
-        },
-        scales:{
-          x:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'}, max:Math.ceil(Math.max(...attrDept.values)*1.25) },
-          y:{ grid:{display:false}, ticks:{color:'#94a3b8'} }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('attrition_dept',attrDept.labels[el[0].index],'🚨 Attrited — '+attrDept.labels[el[0].index],''); }
-      }
-    });
-
-    /* 7 ── Attrition by Age — vertical bar */
-    new Chart(document.getElementById('c-attrAge'), {
-      type:'bar',
-      data:{ labels:attrAge.labels, datasets:[{ data:attrAge.values, backgroundColor:attrAge.values.map(v=>v>25?'rgba(239,68,68,.82)':v>15?'rgba(249,115,22,.78)':'rgba(245,158,11,.72)'), borderRadius:5, borderSkipped:false }] },
-      options:{
-        ...BASE,
-        plugins:{ ...BASE.plugins,
-          tooltip:{ callbacks:{ label: c=>` ${c.raw}% attrition` } },
-          datalabels:{ display:true, anchor:'end', align:'top', color:'#fca5a5', font:{ size:10, weight:'700' }, formatter:v=>v.toFixed(1)+'%' }
-        },
-        scales:{
-          x:{ grid:{display:false}, ticks:{color:'#64748b',maxRotation:30} },
-          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'} }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('attrition_age',attrAge.labels[el[0].index],'🚨 Attrited — Age '+attrAge.labels[el[0].index],''); }
-      }
-    });
-
-    /* 8 ── Monthly Hiring — line (no data labels to avoid clutter) */
-    const hiringCtx = document.getElementById('c-hiring').getContext('2d');
-    const hiGrad = hiringCtx.createLinearGradient(0,0,0,220);
-    hiGrad.addColorStop(0,'rgba(6,182,212,.45)'); hiGrad.addColorStop(.7,'rgba(6,182,212,.08)'); hiGrad.addColorStop(1,'rgba(6,182,212,0)');
-    new Chart(hiringCtx, {
-      type:'line',
-      data:{ labels:hiring.labels, datasets:[{ data:hiring.values, borderColor:'#06b6d4', backgroundColor:hiGrad, pointBackgroundColor:'#06b6d4', pointRadius:4, pointHoverRadius:7, tension:.4, fill:true, borderWidth:2.5 }] },
-      options:{
-        ...BASE,
-        plugins:{ ...BASE.plugins,
-          tooltip:{ callbacks:{ label: c=>` ${c.raw} hires` } },
-          datalabels:{ display:false }
-        },
-        scales:{
-          x:{ grid:{display:false}, ticks:{color:'#64748b',maxTicksLimit:12,maxRotation:30} },
-          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('hire_month',hiring.labels[el[0].index],'📅 Hired in '+hiring.labels[el[0].index],''); }
-      }
-    });
-
-    /* 9 ── Performance — doughnut */
-    const pfTotal = perf.values.reduce((a,b)=>a+b,0);
-    new Chart(document.getElementById('c-perf'), {
-      type:'doughnut',
-      data:{ labels:perf.labels, datasets:[{ data:perf.values, backgroundColor:['#6b7280','#f59e0b','#10b981','#7c3aed'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
-      options:{
-        ...BASE, cutout:'65%',
-        plugins:{ ...BASE.plugins,
-          legend:{ display:true, position:'bottom' },
-          datalabels:{ display:true, color:'#fff', font:{ size:11, weight:'700' }, formatter:v=>Math.round(v/pfTotal*100)+'%' }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('performance',perf.labels[el[0].index],'⭐ Performance — '+perf.labels[el[0].index],''); }
-      }
-    });
-
-    /* 10 ── Work-Life Balance — doughnut */
-    const wlbTotal = wlb.values.reduce((a,b)=>a+b,0);
-    new Chart(document.getElementById('c-wlb'), {
-      type:'doughnut',
-      data:{ labels:wlb.labels, datasets:[{ data:wlb.values, backgroundColor:['#ef4444','#f97316','#06b6d4','#10b981'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
-      options:{
-        ...BASE, cutout:'65%',
-        plugins:{ ...BASE.plugins,
-          legend:{ display:true, position:'bottom' },
-          datalabels:{ display:true, color:'#fff', font:{ size:11, weight:'700' }, formatter:v=>Math.round(v/wlbTotal*100)+'%' }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('wlb',wlb.labels[el[0].index],'💚 Work-Life Balance — '+wlb.labels[el[0].index],''); }
-      }
-    });
-
-    /* 11 ── Overtime — doughnut */
-    const otTotal = overtime.values.reduce((a,b)=>a+b,0);
-    new Chart(document.getElementById('c-overtime'), {
-      type:'doughnut',
-      data:{ labels:overtime.labels, datasets:[{ data:overtime.values, backgroundColor:['#ef4444','#10b981'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
-      options:{
-        ...BASE, cutout:'65%',
-        plugins:{ ...BASE.plugins,
-          legend:{ display:true, position:'bottom' },
-          tooltip:{ callbacks:{ label: c=>` ${c.label}: ${c.raw}` } },
-          datalabels:{ display:true, color:'#fff', font:{ size:11, weight:'700' }, formatter:v=>Math.round(v/otTotal*100)+'%' }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('overtime',overtime.labels[el[0].index],'⏰ Overtime — '+overtime.labels[el[0].index],''); }
-      }
-    });
-
-    /* 12 ── Job Satisfaction by Dept — grouped bar */
-    const satColors = ['#ef4444','#f59e0b','#06b6d4','#10b981'];
-    const satDatasets = Object.entries(satisfaction.datasets).map(([label,data],i)=>({
-      label, data,
-      backgroundColor: satColors[i]+'cc',
-      borderColor: satColors[i],
-      borderWidth:1, borderRadius:3,
-    }));
-    new Chart(document.getElementById('c-satisfaction'), {
-      type:'bar',
-      data:{ labels:satisfaction.labels, datasets:satDatasets },
-      options:{
-        ...BASE,
-        plugins:{
-          legend:{ display:true, position:'top', labels:{ color:'#94a3b8' } },
-          datalabels:{
-            display:(ctx)=> ctx.dataset.data[ctx.dataIndex] > 4,
-            anchor:'center', align:'center',
-            color:'#fff', font:{ size:9, weight:'700' },
-            formatter:v=>v,
-          }
-        },
-        scales:{
-          x:{ grid:{display:false}, ticks:{color:'#64748b'} },
-          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-        },
-        onClick:(e,el)=>{
-          if(!el.length)return;
-          const dept = satisfaction.labels[el[0].index];
-          const satLevel = Object.keys(satisfaction.datasets)[el[0].datasetIndex];
-          openModal('satisfaction', satLevel, '😊 Satisfaction: '+satLevel+' — '+dept, '');
+      /* 1 ── Headcount — horizontal bar */
+      new Chart(document.getElementById('c-headcount'), {
+        type:'bar',
+        data:{ labels:headcount.labels, datasets:[{ data:headcount.values, backgroundColor:P10, borderRadius:5, borderSkipped:false }] },
+        options:{
+          ...BASE, indexAxis:'y',
+          plugins:{ ...BASE.plugins,
+            tooltip:{ callbacks:{ label:c=>` ${c.raw} employees` } },
+            datalabels:{ display:true, anchor:'end', align:'start', color:'#e2e8f0', font:{size:10,weight:'700'}, formatter:v=>v, padding:{left:6} }
+          },
+          scales:{
+            x:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} },
+            y:{ grid:{display:false}, ticks:{color:'#94a3b8'} }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('department',headcount.labels[el[0].index],'🏢 '+headcount.labels[el[0].index],''); }
         }
-      }
-    });
+      });
 
-    /* 13 ── Salary by Dept — vertical bar */
-    new Chart(document.getElementById('c-salary'), {
-      type:'bar',
-      data:{ labels:salary.labels, datasets:[{ data:salary.values, backgroundColor:salary.labels.map((_,i)=>`hsla(${38+i*5},88%,${52+i*2}%,.78)`), borderRadius:5, borderSkipped:false }] },
-      options:{
-        ...BASE,
-        plugins:{ ...BASE.plugins,
-          tooltip:{ callbacks:{ label: c=>` $${(c.raw/1000).toFixed(1)}K avg` } },
-          datalabels:{ display:true, anchor:'end', align:'top', color:'#fcd34d', font:{ size:10, weight:'700' }, formatter:v=>'$'+(v/1000).toFixed(0)+'K' }
-        },
-        scales:{
-          x:{ grid:{display:false}, ticks:{color:'#64748b',maxRotation:20} },
-          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>'$'+(v/1000)+'K'} }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('department',salary.labels[el[0].index],'💰 '+salary.labels[el[0].index]+' — Salary View','salary'); }
-      }
-    });
+      /* 2 ── Gender — doughnut */
+      const gTot = gender.values.reduce((a,b)=>a+b,0);
+      new Chart(document.getElementById('c-gender'), {
+        type:'doughnut',
+        data:{ labels:gender.labels, datasets:[{ data:gender.values, backgroundColor:['#06b6d4','#ec4899'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
+        options:{
+          ...BASE, cutout:'68%',
+          plugins:{ ...BASE.plugins,
+            legend:{ display:true, position:'bottom' },
+            tooltip:{ callbacks:{ label:c=>` ${c.label}: ${c.raw} (${Math.round(c.raw/gTot*100)}%)` } },
+            datalabels:{ display:true, color:'#fff', font:{size:12,weight:'700'}, formatter:v=>Math.round(v/gTot*100)+'%' }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('gender',gender.labels[el[0].index],'⚖️ Gender — '+gender.labels[el[0].index],''); }
+        }
+      });
 
-    /* 14 ── Business Travel — doughnut */
-    const tvTotal = travel.values.reduce((a,b)=>a+b,0);
-    new Chart(document.getElementById('c-travel'), {
-      type:'doughnut',
-      data:{ labels:travel.labels, datasets:[{ data:travel.values, backgroundColor:['#8b5cf6','#f97316','#ef4444'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
-      options:{
-        ...BASE, cutout:'62%',
-        plugins:{ ...BASE.plugins,
-          legend:{ display:true, position:'bottom' },
-          datalabels:{ display:true, color:'#fff', font:{ size:11, weight:'700' }, formatter:v=>Math.round(v/tvTotal*100)+'%' }
-        },
-        onClick:(e,el)=>{ if(!el.length)return; openModal('travel',travel.labels[el[0].index],'✈️ Travel — '+travel.labels[el[0].index],''); }
-      }
-    });
+      /* 3 ── Age Distribution — bar */
+      new Chart(document.getElementById('c-age'), {
+        type:'bar',
+        data:{ labels:age.labels, datasets:[{ data:age.values, backgroundColor:age.values.map((_,i)=>`hsla(${190+i*8},75%,55%,.78)`), borderRadius:5, borderSkipped:false }] },
+        options:{
+          ...BASE,
+          plugins:{ ...BASE.plugins,
+            tooltip:{ callbacks:{ label:c=>` ${c.raw} employees` } },
+            datalabels:{ display:true, anchor:'end', align:'top', color:'#94a3b8', font:{size:10,weight:'700'}, formatter:v=>v }
+          },
+          scales:{
+            x:{ grid:{display:false}, ticks:{color:'#64748b'} },
+            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('age_group',age.labels[el[0].index],'🎂 Age Group — '+age.labels[el[0].index],''); }
+        }
+      });
+
+      /* 4 ── Education — doughnut */
+      const eduTot = edu.values.reduce((a,b)=>a+b,0);
+      new Chart(document.getElementById('c-edu'), {
+        type:'doughnut',
+        data:{ labels:edu.labels, datasets:[{ data:edu.values, backgroundColor:['#6b21a8','#7c3aed','#8b5cf6','#a78bfa','#c4b5fd'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
+        options:{
+          ...BASE, cutout:'62%',
+          plugins:{ ...BASE.plugins,
+            legend:{ display:true, position:'bottom' },
+            datalabels:{ display:(ctx)=>ctx.dataset.data[ctx.dataIndex]/eduTot>0.05, color:'#fff', font:{size:10,weight:'700'}, formatter:v=>Math.round(v/eduTot*100)+'%' }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('education',edu.labels[el[0].index],'🎓 Education — '+edu.labels[el[0].index],''); }
+        }
+      });
+
+      /* 5 ── Tenure — bar */
+      new Chart(document.getElementById('c-tenure'), {
+        type:'bar',
+        data:{ labels:tenure.labels, datasets:[{ data:tenure.values, backgroundColor:tenure.values.map((_,i)=>`hsla(${145+i*10},65%,50%,.78)`), borderRadius:5, borderSkipped:false }] },
+        options:{
+          ...BASE,
+          plugins:{ ...BASE.plugins,
+            tooltip:{ callbacks:{ label:c=>` ${c.raw} employees` } },
+            datalabels:{ display:true, anchor:'end', align:'top', color:'#94a3b8', font:{size:10,weight:'700'}, formatter:v=>v }
+          },
+          scales:{
+            x:{ grid:{display:false}, ticks:{color:'#64748b'} },
+            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('tenure',tenure.labels[el[0].index],'📅 Tenure — '+tenure.labels[el[0].index],''); }
+        }
+      });
+
+      /* 6 ── Attrition by Dept — horizontal bar */
+      new Chart(document.getElementById('c-attrDept'), {
+        type:'bar',
+        data:{ labels:attrDept.labels, datasets:[{ data:attrDept.values, backgroundColor:attrDept.labels.map((_,i)=>`hsla(${5+i*10},82%,60%,.78)`), borderRadius:5, borderSkipped:false }] },
+        options:{
+          ...BASE, indexAxis:'y',
+          plugins:{ ...BASE.plugins,
+            tooltip:{ callbacks:{ label:c=>` ${c.raw}% attrition` } },
+            datalabels:{ display:true, anchor:'end', align:'start', color:'#fca5a5', font:{size:10,weight:'700'}, formatter:v=>v.toFixed(1)+'%', padding:{left:4} }
+          },
+          scales:{
+            x:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'}, max:Math.ceil(Math.max(...attrDept.values)*1.25) },
+            y:{ grid:{display:false}, ticks:{color:'#94a3b8'} }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('attrition_dept',attrDept.labels[el[0].index],'🚨 Attrited — '+attrDept.labels[el[0].index],''); }
+        }
+      });
+
+      /* 7 ── Attrition by Age — bar */
+      new Chart(document.getElementById('c-attrAge'), {
+        type:'bar',
+        data:{ labels:attrAge.labels, datasets:[{ data:attrAge.values, backgroundColor:attrAge.values.map(v=>v>25?'rgba(239,68,68,.82)':v>15?'rgba(249,115,22,.78)':'rgba(245,158,11,.72)'), borderRadius:5, borderSkipped:false }] },
+        options:{
+          ...BASE,
+          plugins:{ ...BASE.plugins,
+            tooltip:{ callbacks:{ label:c=>` ${c.raw}% attrition` } },
+            datalabels:{ display:true, anchor:'end', align:'top', color:'#fca5a5', font:{size:10,weight:'700'}, formatter:v=>v.toFixed(1)+'%' }
+          },
+          scales:{
+            x:{ grid:{display:false}, ticks:{color:'#64748b',maxRotation:30} },
+            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'} }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('attrition_age',attrAge.labels[el[0].index],'🚨 Attrited — Age '+attrAge.labels[el[0].index],''); }
+        }
+      });
+
+      /* 8 ── Monthly Hiring — line */
+      const hCtx = document.getElementById('c-hiring').getContext('2d');
+      const hGrad = hCtx.createLinearGradient(0,0,0,220);
+      hGrad.addColorStop(0,'rgba(6,182,212,.45)'); hGrad.addColorStop(.7,'rgba(6,182,212,.08)'); hGrad.addColorStop(1,'rgba(6,182,212,0)');
+      new Chart(hCtx, {
+        type:'line',
+        data:{ labels:hiring.labels, datasets:[{ data:hiring.values, borderColor:'#06b6d4', backgroundColor:hGrad, pointBackgroundColor:'#06b6d4', pointRadius:4, pointHoverRadius:8, tension:.4, fill:true, borderWidth:2.5 }] },
+        options:{
+          ...BASE,
+          plugins:{ ...BASE.plugins,
+            tooltip:{ callbacks:{ label:c=>` ${c.raw} hires` } },
+            datalabels:{ display:false }
+          },
+          scales:{
+            x:{ grid:{display:false}, ticks:{color:'#64748b',maxTicksLimit:12,maxRotation:30} },
+            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('hire_month',hiring.labels[el[0].index],'📅 Hired in '+hiring.labels[el[0].index],''); }
+        }
+      });
+
+      /* 9 ── Performance — doughnut */
+      const pfTot = perf.values.reduce((a,b)=>a+b,0);
+      new Chart(document.getElementById('c-perf'), {
+        type:'doughnut',
+        data:{ labels:perf.labels, datasets:[{ data:perf.values, backgroundColor:['#6b7280','#f59e0b','#10b981','#7c3aed'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
+        options:{
+          ...BASE, cutout:'65%',
+          plugins:{ ...BASE.plugins,
+            legend:{ display:true, position:'bottom' },
+            datalabels:{ display:true, color:'#fff', font:{size:11,weight:'700'}, formatter:v=>Math.round(v/pfTot*100)+'%' }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('performance',perf.labels[el[0].index],'⭐ Performance — '+perf.labels[el[0].index],''); }
+        }
+      });
+
+      /* 10 ── WLB — doughnut */
+      const wlbTot = wlb.values.reduce((a,b)=>a+b,0);
+      new Chart(document.getElementById('c-wlb'), {
+        type:'doughnut',
+        data:{ labels:wlb.labels, datasets:[{ data:wlb.values, backgroundColor:['#ef4444','#f97316','#06b6d4','#10b981'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
+        options:{
+          ...BASE, cutout:'65%',
+          plugins:{ ...BASE.plugins,
+            legend:{ display:true, position:'bottom' },
+            datalabels:{ display:true, color:'#fff', font:{size:11,weight:'700'}, formatter:v=>Math.round(v/wlbTot*100)+'%' }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('wlb',wlb.labels[el[0].index],'💚 Work-Life Balance — '+wlb.labels[el[0].index],''); }
+        }
+      });
+
+      /* 11 ── Overtime — doughnut */
+      const otTot = overtime.values.reduce((a,b)=>a+b,0);
+      new Chart(document.getElementById('c-overtime'), {
+        type:'doughnut',
+        data:{ labels:overtime.labels, datasets:[{ data:overtime.values, backgroundColor:['#ef4444','#10b981'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
+        options:{
+          ...BASE, cutout:'65%',
+          plugins:{ ...BASE.plugins,
+            legend:{ display:true, position:'bottom' },
+            tooltip:{ callbacks:{ label:c=>` ${c.label}: ${c.raw}` } },
+            datalabels:{ display:true, color:'#fff', font:{size:11,weight:'700'}, formatter:v=>Math.round(v/otTot*100)+'%' }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('overtime',overtime.labels[el[0].index],'⏰ Overtime — '+overtime.labels[el[0].index],''); }
+        }
+      });
+
+      /* 12 ── Job Satisfaction — grouped bar */
+      const satColors=['#ef4444','#f59e0b','#06b6d4','#10b981'];
+      const satDS = Object.entries(satisfaction.datasets).map(([label,data],i)=>({
+        label, data, backgroundColor:satColors[i]+'cc', borderColor:satColors[i], borderWidth:1, borderRadius:3,
+      }));
+      new Chart(document.getElementById('c-satisfaction'), {
+        type:'bar',
+        data:{ labels:satisfaction.labels, datasets:satDS },
+        options:{
+          ...BASE,
+          plugins:{
+            legend:{ display:true, position:'top', labels:{color:'#94a3b8'} },
+            datalabels:{ display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>4, anchor:'center', align:'center', color:'#fff', font:{size:9,weight:'700'}, formatter:v=>v }
+          },
+          scales:{
+            x:{ grid:{display:false}, ticks:{color:'#64748b'} },
+            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+          },
+          onClick:(e,el)=>{
+            if(!el.length)return;
+            const dept    = satisfaction.labels[el[0].index];
+            const satLvl  = Object.keys(satisfaction.datasets)[el[0].datasetIndex];
+            openModal('satisfaction', satLvl, '😊 Satisfaction: '+satLvl+' — '+dept, '');
+          }
+        }
+      });
+
+      /* 13 ── Salary by Dept — bar */
+      new Chart(document.getElementById('c-salary'), {
+        type:'bar',
+        data:{ labels:salary.labels, datasets:[{ data:salary.values, backgroundColor:salary.labels.map((_,i)=>`hsla(${38+i*5},88%,${52+i*2}%,.78)`), borderRadius:5, borderSkipped:false }] },
+        options:{
+          ...BASE,
+          plugins:{ ...BASE.plugins,
+            tooltip:{ callbacks:{ label:c=>` $${(c.raw/1000).toFixed(1)}K avg` } },
+            datalabels:{ display:true, anchor:'end', align:'top', color:'#fcd34d', font:{size:10,weight:'700'}, formatter:v=>'$'+(v/1000).toFixed(0)+'K' }
+          },
+          scales:{
+            x:{ grid:{display:false}, ticks:{color:'#64748b',maxRotation:20} },
+            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>'$'+(v/1000)+'K'} }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('department',salary.labels[el[0].index],'💰 '+salary.labels[el[0].index]+' — Salary View','salary'); }
+        }
+      });
+
+      /* 14 ── Business Travel — doughnut */
+      const tvTot = travel.values.reduce((a,b)=>a+b,0);
+      new Chart(document.getElementById('c-travel'), {
+        type:'doughnut',
+        data:{ labels:travel.labels, datasets:[{ data:travel.values, backgroundColor:['#8b5cf6','#f97316','#ef4444'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
+        options:{
+          ...BASE, cutout:'62%',
+          plugins:{ ...BASE.plugins,
+            legend:{ display:true, position:'bottom' },
+            datalabels:{ display:true, color:'#fff', font:{size:11,weight:'700'}, formatter:v=>Math.round(v/tvTot*100)+'%' }
+          },
+          onClick:(e,el)=>{ if(!el.length)return; openModal('travel',travel.labels[el[0].index],'✈️ Travel — '+travel.labels[el[0].index],''); }
+        }
+      });
+
+    } catch(err){
+      console.error('Chart build error:', err);
+    }
   }
 
   loadKPIs();
