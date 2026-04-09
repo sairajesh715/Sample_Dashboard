@@ -37,6 +37,119 @@ def dashboard():
     return render_template("dashboard.html")
 
 
+@app.route("/dashboard-v2")
+def dashboard_v2():
+    return render_template("dashboard_v2.html")
+
+
+@app.route("/api/hr/powerbi")
+def hr_powerbi():
+    """Single endpoint returning all aggregations for the Power BI-style dashboard,
+    filtered by optional query params: dept, gender, travel, overtime, attrition."""
+    dept      = request.args.get("dept",     "All")
+    gender    = request.args.get("gender",   "All")
+    travel    = request.args.get("travel",   "All")
+    overtime  = request.args.get("overtime", "All")
+    attrition = request.args.get("attrition","All")
+
+    df = DF.copy()
+    if dept     != "All": df = df[df["Department"]    == dept]
+    if gender   != "All": df = df[df["Gender"]        == gender]
+    if travel   != "All": df = df[df["BusinessTravel"]== travel]
+    if overtime != "All": df = df[df["OverTime"]      == overtime]
+    if attrition!= "All": df = df[df["Attrition"]     == attrition]
+
+    total    = len(df)
+    attr_n   = int((df["Attrition"] == "Yes").sum())
+    attr_r   = round(attr_n / total * 100, 1) if total else 0.0
+    avg_sal  = int(df["Salary"].mean())        if total else 0
+    avg_ten  = round(float(df["YearsAtCompany"].mean()), 1) if total else 0.0
+    avg_age  = round(float(df["Age"].mean()), 1)            if total else 0.0
+
+    # Headcount by dept
+    hc = df.groupby("Department").size().reset_index(name="n").sort_values("n", ascending=False)
+
+    # Attrition rate by dept
+    tot_d  = DF.groupby("Department").size()
+    left_d = DF[DF["Attrition"]=="Yes"].groupby("Department").size().reindex(tot_d.index, fill_value=0)
+    attr_d = (left_d / tot_d * 100).round(1).reset_index()
+    attr_d.columns = ["Department","Rate"]
+    attr_d = attr_d.set_index("Department")
+
+    # Avg salary by dept
+    sal_d = df.groupby("Department")["Salary"].mean().round(0).astype(int)
+
+    dept_labels = hc["Department"].tolist()
+
+    # Age distribution
+    age_g = df.groupby("AgeGroup", observed=False).size().reset_index(name="n")
+
+    # Performance
+    perf_map = {1:"Low",2:"Good",3:"Excellent",4:"Outstanding"}
+    perf_g = df["PerformanceRating"].value_counts().sort_index().reset_index()
+    perf_g.columns = ["r","n"]
+    perf_g["label"] = perf_g["r"].map(perf_map)
+
+    # Gender
+    gen_g = df["Gender"].value_counts().reset_index()
+    gen_g.columns = ["g","n"]
+
+    # WLB
+    wlb_map = {1:"Low",2:"Fair",3:"Good",4:"Excellent"}
+    wlb_g = df["WorkLifeBalance"].value_counts().sort_index().reset_index()
+    wlb_g.columns = ["l","n"]
+    wlb_g["label"] = wlb_g["l"].map(wlb_map)
+
+    # OT
+    ot_g = df["OverTime"].value_counts().reset_index()
+    ot_g.columns = ["o","n"]
+
+    # Tenure
+    ten_g = df.groupby("TenureGroup", observed=False).size().reset_index(name="n")
+
+    # Smart insights
+    insights = []
+    if total > 0:
+        top_dept = hc.iloc[0]["Department"] if len(hc) else "N/A"
+        insights.append(f"<b>{top_dept}</b> is the largest department with <b>{int(hc.iloc[0]['n'])}</b> employees.")
+        if len(attr_d):
+            worst = attr_d["Rate"].idxmax()
+            insights.append(f"Highest attrition is in <b>{worst}</b> at <b>{attr_d.loc[worst,'Rate']}%</b>.")
+        if (df["OverTime"]=="Yes").sum() > 0:
+            ot_pct = round((df["OverTime"]=="Yes").mean()*100,1)
+            insights.append(f"<b>{ot_pct}%</b> of employees work overtime — a key attrition risk factor.")
+        top_sal_dept = sal_d.idxmax() if len(sal_d) else "N/A"
+        insights.append(f"<b>{top_sal_dept}</b> leads in avg salary at <b>${sal_d.max():,}</b>.")
+        male_pct = round((df["Gender"]=="Male").mean()*100,1) if total else 0
+        insights.append(f"Workforce is <b>{male_pct}%</b> male / <b>{round(100-male_pct,1)}%</b> female.")
+
+    return jsonify({
+        "kpi": {
+            "total": total, "active": total - attr_n,
+            "attrition_count": attr_n, "attrition_rate": attr_r,
+            "avg_salary": avg_sal, "avg_age": avg_age, "avg_tenure": avg_ten,
+        },
+        "headcount_by_dept": {
+            "labels": dept_labels,
+            "headcount": hc["n"].tolist(),
+            "attrition_rate": [float(attr_d.loc[d,"Rate"]) if d in attr_d.index else 0 for d in dept_labels],
+            "avg_salary": [int(sal_d.get(d, 0)) for d in dept_labels],
+        },
+        "age_dist":  {"labels": age_g["AgeGroup"].astype(str).tolist(), "values": age_g["n"].tolist()},
+        "perf_dist": {"labels": perf_g["label"].tolist(),  "values": perf_g["n"].tolist()},
+        "gender":    {"labels": gen_g["g"].tolist(),        "values": gen_g["n"].tolist()},
+        "wlb":       {"labels": wlb_g["label"].tolist(),    "values": wlb_g["n"].tolist()},
+        "overtime":  {"labels": ot_g["o"].tolist(),         "values": ot_g["n"].tolist()},
+        "tenure":    {"labels": ten_g["TenureGroup"].astype(str).tolist(), "values": ten_g["n"].tolist()},
+        "insights":  insights,
+        "filter_options": {
+            "departments": sorted(DF["Department"].unique().tolist()),
+            "genders":     sorted(DF["Gender"].unique().tolist()),
+            "travel":      sorted(DF["BusinessTravel"].unique().tolist()),
+        },
+    })
+
+
 # ── KPI Summary ───────────────────────────────────────────────────────────────
 
 @app.route("/api/hr/summary")

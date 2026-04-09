@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>HR Analytics · Power BI View</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+/* ── Reset ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;}
+
+/* ── Theme ── */
+:root{
+  --sidebar-w:190px;
+  --bg:       #141824;
+  --sidebar:  #0f1320;
+  --card:     #1c2235;
+  --card2:    #222840;
+  --bdr:      rgba(255,255,255,.07);
+  --text:     #e2e8f0;
+  --muted:    #8892a4;
+  --purple:   #7c3aed;
+  --cyan:     #06b6d4;
+  --green:    #10b981;
+  --amber:    #f59e0b;
+  --red:      #ef4444;
+  --pink:     #ec4899;
+  --orange:   #f97316;
+  --blue:     #3b82f6;
+}
+
+/* ── Root grid: sidebar | main ── */
+body{
+  display:grid;
+  grid-template-columns:var(--sidebar-w) 1fr;
+  grid-template-rows:100vh;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════ */
+.sidebar{
+  background:var(--sidebar);
+  border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  z-index:10;
+}
+.sb-logo{
+  padding:1.2rem 1.1rem .8rem;
+  border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:.55rem;
+}
+.sb-icon{
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+}
+.sb-title{font-size:.85rem;font-weight:800;line-height:1.1;}
+.sb-sub  {font-size:.62rem;color:var(--muted);}
+
+.sb-section{font-size:.6rem;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;padding:.9rem 1.1rem .35rem;}
+.sb-nav{list-style:none;padding:0 .55rem;}
+.sb-nav li a{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.52rem .7rem;border-radius:8px;
+  font-size:.78rem;font-weight:500;color:var(--muted);
+  text-decoration:none;transition:all .18s;cursor:pointer;
+}
+.sb-nav li a:hover,.sb-nav li a.active{
+  background:rgba(124,58,237,.18);color:var(--text);
+}
+.sb-nav li a.active{border-left:2px solid var(--purple);padding-left:calc(.7rem - 2px);}
+.sb-nav li a .nav-ic{font-size:.95rem;width:18px;text-align:center;}
+
+.sb-bottom{margin-top:auto;padding:.9rem 1.1rem;border-top:1px solid var(--bdr);}
+.live-badge{display:flex;align-items:center;gap:.4rem;font-size:.65rem;font-weight:600;color:#6ee7b7;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.back-link{display:flex;align-items:center;gap:.3rem;font-size:.68rem;color:var(--muted);text-decoration:none;margin-top:.5rem;transition:color .18s;}
+.back-link:hover{color:var(--text);}
+
+/* ════════════════════════════════════════
+   MAIN: flex column
+════════════════════════════════════════ */
+.main{
+  display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;
+  padding:.7rem .9rem .6rem;
+  gap:.5rem;
+}
+
+/* ── Top bar ── */
+.topbar{
+  display:flex;align-items:center;gap:.8rem;flex-shrink:0;
+  padding-bottom:.4rem;
+  border-bottom:1px solid var(--bdr);
+}
+.topbar-title{font-size:.95rem;font-weight:700;flex:1;}
+.topbar-sub  {font-size:.68rem;color:var(--muted);}
+
+/* ── Slicer strip ── */
+.slicers{
+  display:flex;align-items:center;gap:.5rem;flex-wrap:nowrap;flex-shrink:0;
+  background:var(--card);
+  border:1px solid var(--bdr);
+  border-radius:10px;
+  padding:.45rem .75rem;
+}
+.slicer-label{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.slicer-sep{width:1px;height:18px;background:var(--bdr);margin:0 .1rem;}
+.slicer-group{display:flex;align-items:center;gap:.28rem;flex-wrap:nowrap;}
+.slicer-chip{
+  font-size:.68rem;font-weight:500;
+  padding:.22rem .55rem;border-radius:100px;
+  border:1px solid var(--bdr);background:transparent;
+  color:var(--muted);cursor:pointer;white-space:nowrap;
+  transition:all .16s;
+}
+.slicer-chip:hover{border-color:rgba(124,58,237,.5);color:var(--text);}
+.slicer-chip.active{
+  background:var(--purple);border-color:var(--purple);color:#fff;font-weight:600;
+}
+.slicer-reset{
+  margin-left:auto;font-size:.65rem;font-weight:600;
+  color:var(--muted);border:none;background:none;cursor:pointer;
+  padding:.2rem .4rem;border-radius:4px;transition:color .16s;
+  white-space:nowrap;
+}
+.slicer-reset:hover{color:var(--red);}
+
+/* ── KPI Row ── */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:.55rem;
+  flex-shrink:0;
+}
+.kpi-card{
+  background:var(--card);
+  border:1px solid var(--bdr);
+  border-radius:12px;
+  padding:.75rem 1rem;
+  display:flex;flex-direction:column;gap:.15rem;
+  position:relative;overflow:hidden;
+  cursor:default;
+  transition:border-color .2s,box-shadow .2s;
+}
+.kpi-card:hover{border-color:rgba(124,58,237,.4);box-shadow:0 6px 24px rgba(0,0,0,.4);}
+.kpi-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--kline,transparent);border-radius:0 0 12px 12px;}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;}
+.kpi-label{font-size:.65rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.kpi-badge{font-size:.6rem;font-weight:700;padding:.12rem .38rem;border-radius:100px;background:rgba(16,185,129,.15);color:var(--green);}
+.kpi-badge.bad{background:rgba(239,68,68,.15);color:var(--red);}
+.kpi-val{font-size:1.75rem;font-weight:800;line-height:1.1;letter-spacing:-.02em;}
+.kpi-sub{font-size:.62rem;color:var(--muted);}
+.kpi-spark{height:36px;margin-top:.25rem;}
+
+/* ── Charts area: main grid ── */
+.charts-area{
+  flex:1;min-height:0;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 260px;
+  grid-template-rows:1fr 1fr;
+  gap:.55rem;
+}
+
+/* card base */
+.ch-card{
+  background:var(--card);
+  border:1px solid var(--bdr);
+  border-radius:12px;
+  padding:.65rem .8rem .5rem;
+  display:flex;flex-direction:column;
+  min-height:0;overflow:hidden;
+}
+.ch-title{font-size:.7rem;font-weight:700;color:var(--text);margin-bottom:.1rem;white-space:nowrap;}
+.ch-sub  {font-size:.58rem;color:var(--muted);margin-bottom:.35rem;}
+.ch-body {flex:1;min-height:0;position:relative;}
+.ch-body canvas{width:100%!important;height:100%!important;}
+
+/* ── Right column: stacked ── */
+.right-col{
+  display:flex;flex-direction:column;gap:.55rem;
+  grid-row:1/3;grid-column:4;
+  min-height:0;
+}
+
+/* ── Workforce breakdown card ── */
+.breakdown-card{
+  flex:1;min-height:0;
+  background:var(--card);border:1px solid var(--bdr);border-radius:12px;
+  padding:.65rem .8rem .5rem;display:flex;flex-direction:column;
+}
+.bd-title{font-size:.7rem;font-weight:700;margin-bottom:.5rem;}
+.bd-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;}
+.bd-label{font-size:.62rem;color:var(--muted);width:72px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bd-bar-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:7px;overflow:hidden;}
+.bd-bar{height:100%;border-radius:4px;transition:width .5s ease;}
+.bd-val{font-size:.62rem;font-weight:600;width:32px;text-align:right;flex-shrink:0;}
+
+/* ── Insights card ── */
+.insights-card{
+  flex:1;min-height:0;
+  background:var(--card2);border:1px solid var(--bdr);border-radius:12px;
+  padding:.65rem .8rem;display:flex;flex-direction:column;overflow:hidden;
+}
+.ins-title{font-size:.7rem;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.35rem;}
+.ins-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);}
+.ins-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:.45rem;}
+.ins-list::-webkit-scrollbar{width:3px;}
+.ins-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+.ins-item{
+  font-size:.65rem;color:#94a3b8;line-height:1.5;
+  padding:.4rem .5rem;border-radius:6px;
+  background:rgba(255,255,255,.03);
+  border-left:2px solid var(--cyan);
+}
+.ins-item b{color:var(--text);}
+
+/* ── Legend pills ── */
+.legend-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.3rem;}
+.leg{display:flex;align-items:center;gap:.22rem;font-size:.58rem;color:var(--muted);}
+.leg-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* ── Loading overlay ── */
+.loading{
+  position:fixed;inset:0;z-index:999;
+  background:rgba(20,24,36,.85);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .3s;
+}
+.loading.hidden{opacity:0;pointer-events:none;}
+.spin{width:36px;height:36px;border:3px solid rgba(124,58,237,.3);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-icon">🧠</div>
+    <div>
+      <div class="sb-title">HR Analytics</div>
+      <div class="sb-sub">Power BI View</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Navigation</div>
+  <ul class="sb-nav">
+    <li><a class="active" onclick="scrollSection('overview')"><span class="nav-ic">📊</span> Overview</a></li>
+    <li><a onclick="scrollSection('workforce')"><span class="nav-ic">👥</span> Workforce</a></li>
+    <li><a onclick="scrollSection('attrition')"><span class="nav-ic">📉</span> Attrition</a></li>
+    <li><a onclick="scrollSection('performance')"><span class="nav-ic">⭐</span> Performance</a></li>
+    <li><a onclick="scrollSection('compensation')"><span class="nav-ic">💰</span> Compensation</a></li>
+  </ul>
+
+  <div class="sb-section">Views</div>
+  <ul class="sb-nav">
+    <li><a href="/dashboard"><span class="nav-ic">🌌</span> Classic View</a></li>
+    <li><a href="/dashboard-v2" class="active"><span class="nav-ic">📋</span> Power BI View</a></li>
+    <li><a href="/"><span class="nav-ic">🏠</span> Landing Page</a></li>
+  </ul>
+
+  <div class="sb-bottom">
+    <div class="live-badge"><div class="live-dot"></div> Live · 340 records</div>
+  </div>
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<div class="main">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">HR Analytics Dashboard</div>
+      <div class="topbar-sub">Workforce Intelligence · Flask + Chart.js</div>
+    </div>
+    <div id="filter-summary" style="font-size:.68rem;color:var(--muted);margin-left:auto;"></div>
+  </div>
+
+  <!-- Slicers -->
+  <div class="slicers">
+    <span class="slicer-label">Filters</span>
+
+    <div class="slicer-sep"></div>
+    <span class="slicer-label">Dept</span>
+    <div class="slicer-group" id="sl-dept"></div>
+
+    <div class="slicer-sep"></div>
+    <span class="slicer-label">Gender</span>
+    <div class="slicer-group" id="sl-gender">
+      <button class="slicer-chip active" data-group="gender" data-val="All">All</button>
+      <button class="slicer-chip" data-group="gender" data-val="Male">Male</button>
+      <button class="slicer-chip" data-group="gender" data-val="Female">Female</button>
+    </div>
+
+    <div class="slicer-sep"></div>
+    <span class="slicer-label">Travel</span>
+    <div class="slicer-group" id="sl-travel">
+      <button class="slicer-chip active" data-group="travel" data-val="All">All</button>
+      <button class="slicer-chip" data-group="travel" data-val="Non-Travel">None</button>
+      <button class="slicer-chip" data-group="travel" data-val="Travel_Rarely">Rarely</button>
+      <button class="slicer-chip" data-group="travel" data-val="Travel_Frequently">Frequent</button>
+    </div>
+
+    <div class="slicer-sep"></div>
+    <span class="slicer-label">OverTime</span>
+    <div class="slicer-group" id="sl-ot">
+      <button class="slicer-chip active" data-group="overtime" data-val="All">All</button>
+      <button class="slicer-chip" data-group="overtime" data-val="Yes">Yes</button>
+      <button class="slicer-chip" data-group="overtime" data-val="No">No</button>
+    </div>
+
+    <div class="slicer-sep"></div>
+    <span class="slicer-label">Attrition</span>
+    <div class="slicer-group" id="sl-attr">
+      <button class="slicer-chip active" data-group="attrition" data-val="All">All</button>
+      <button class="slicer-chip" data-group="attrition" data-val="Yes">Yes</button>
+      <button class="slicer-chip" data-group="attrition" data-val="No">No</button>
+    </div>
+
+    <button class="slicer-reset" onclick="resetFilters()">✕ Reset</button>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-row">
+    <div class="kpi-card" style="--kline:var(--cyan)">
+      <div class="kpi-top">
+        <span class="kpi-label">Total Employees</span>
+        <span class="kpi-badge" id="kpi-total-badge">—</span>
+      </div>
+      <div class="kpi-val" id="kpi-total">—</div>
+      <div class="kpi-sub" id="kpi-active-sub">Active: —</div>
+      <div class="kpi-spark"><canvas id="spark-headcount"></canvas></div>
+    </div>
+    <div class="kpi-card" style="--kline:var(--red)">
+      <div class="kpi-top">
+        <span class="kpi-label">Attrition Rate</span>
+        <span class="kpi-badge bad" id="kpi-attr-badge">—</span>
+      </div>
+      <div class="kpi-val" id="kpi-attr">—</div>
+      <div class="kpi-sub" id="kpi-attr-sub">Employees left: —</div>
+      <div class="kpi-spark"><canvas id="spark-attrition"></canvas></div>
+    </div>
+    <div class="kpi-card" style="--kline:var(--amber)">
+      <div class="kpi-top">
+        <span class="kpi-label">Avg Salary</span>
+        <span class="kpi-badge" id="kpi-sal-badge">—</span>
+      </div>
+      <div class="kpi-val" id="kpi-sal">—</div>
+      <div class="kpi-sub">Per year, across filtered set</div>
+      <div class="kpi-spark"><canvas id="spark-salary"></canvas></div>
+    </div>
+    <div class="kpi-card" style="--kline:var(--green)">
+      <div class="kpi-top">
+        <span class="kpi-label">Avg Tenure</span>
+        <span class="kpi-badge" id="kpi-ten-badge">—</span>
+      </div>
+      <div class="kpi-val" id="kpi-ten">—</div>
+      <div class="kpi-sub" id="kpi-age-sub">Avg age: —</div>
+      <div class="kpi-spark"><canvas id="spark-tenure"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Charts area -->
+  <div class="charts-area">
+
+    <!-- Row 1, Col 1: Headcount + Attrition combo -->
+    <div class="ch-card">
+      <div class="ch-title">Headcount by Department</div>
+      <div class="legend-row">
+        <div class="leg"><div class="leg-dot" style="background:var(--cyan)"></div>Headcount</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>Attrition %</div>
+      </div>
+      <div class="ch-body"><canvas id="chart-headcount"></canvas></div>
+    </div>
+
+    <!-- Row 1, Col 2: Salary by Dept -->
+    <div class="ch-card">
+      <div class="ch-title">Avg Salary by Department</div>
+      <div class="legend-row">
+        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Avg Salary ($)</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--purple)"></div>Attrition %</div>
+      </div>
+      <div class="ch-body"><canvas id="chart-salary"></canvas></div>
+    </div>
+
+    <!-- Row 1, Col 3: Age Distribution -->
+    <div class="ch-card">
+      <div class="ch-title">Age Distribution</div>
+      <div class="ch-sub">Headcount per age band</div>
+      <div class="ch-body"><canvas id="chart-age"></canvas></div>
+    </div>
+
+    <!-- Row 2, Col 1: Performance -->
+    <div class="ch-card">
+      <div class="ch-title">Performance Rating</div>
+      <div class="ch-sub">Employee distribution</div>
+      <div class="ch-body"><canvas id="chart-perf"></canvas></div>
+    </div>
+
+    <!-- Row 2, Col 2: Work-Life Balance -->
+    <div class="ch-card">
+      <div class="ch-title">Work-Life Balance</div>
+      <div class="ch-sub">Self-reported score</div>
+      <div class="ch-body"><canvas id="chart-wlb"></canvas></div>
+    </div>
+
+    <!-- Row 2, Col 3: Tenure -->
+    <div class="ch-card">
+      <div class="ch-title">Tenure Distribution</div>
+      <div class="ch-sub">Years at company</div>
+      <div class="ch-body"><canvas id="chart-tenure"></canvas></div>
+    </div>
+
+    <!-- Right column: Workforce breakdown + Insights -->
+    <div class="right-col">
+      <div class="breakdown-card">
+        <div class="bd-title">Workforce Breakdown</div>
+        <div id="breakdown-body"></div>
+      </div>
+      <div class="insights-card">
+        <div class="ins-title"><div class="ins-dot"></div>Smart Insights</div>
+        <div class="ins-list" id="insights-list"></div>
+      </div>
+    </div>
+
+  </div><!-- /charts-area -->
+</div><!-- /main -->
+
+<!-- Loading -->
+<div class="loading" id="loader"><div class="spin"></div></div>
+
+<script>
+Chart.register(ChartDataLabels);
+
+/* ── State ── */
+const filters = { dept:'All', gender:'All', travel:'All', overtime:'All', attrition:'All' };
+let charts = {};
+let baseData = null; // store unfiltered dept data for sparklines
+
+/* ── Slicer wiring ── */
+document.querySelectorAll('.slicer-chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const grp = btn.dataset.group;
+    const val = btn.dataset.val;
+    filters[grp] = val;
+    // deactivate siblings in same group
+    btn.closest('.slicer-group').querySelectorAll('.slicer-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    load();
+  });
+});
+
+function resetFilters(){
+  Object.keys(filters).forEach(k => filters[k] = 'All');
+  document.querySelectorAll('.slicer-chip').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === 'All');
+  });
+  load();
+}
+
+/* ── Dept slicer (built dynamically) ── */
+function buildDeptSlicer(depts){
+  const wrap = document.getElementById('sl-dept');
+  if(wrap.children.length) return; // already built
+  ['All',...depts].forEach(d => {
+    const b = document.createElement('button');
+    b.className = 'slicer-chip' + (d==='All'?' active':'');
+    b.dataset.group = 'dept';
+    b.dataset.val   = d;
+    b.textContent   = d==='All'?'All':d.substring(0,4);
+    b.title = d;
+    b.addEventListener('click', () => {
+      filters.dept = d;
+      wrap.querySelectorAll('.slicer-chip').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      load();
+    });
+    wrap.appendChild(b);
+  });
+}
+
+/* ── Fetch & render ── */
+async function load(){
+  const ld = document.getElementById('loader');
+  ld.classList.remove('hidden');
+  const params = new URLSearchParams({
+    dept:     filters.dept,
+    gender:   filters.gender,
+    travel:   filters.travel,
+    overtime: filters.overtime,
+    attrition:filters.attrition,
+  });
+  const d = await fetch('/api/hr/powerbi?'+params).then(r=>r.json());
+  buildDeptSlicer(d.filter_options.departments);
+  updateKPIs(d);
+  updateCharts(d);
+  updateBreakdown(d);
+  updateInsights(d.insights);
+  updateFilterSummary();
+  ld.classList.add('hidden');
+}
+
+/* ── KPIs ── */
+function updateKPIs(d){
+  const k = d.kpi;
+  document.getElementById('kpi-total').textContent = k.total.toLocaleString();
+  document.getElementById('kpi-total-badge').textContent = `${k.active} active`;
+  document.getElementById('kpi-active-sub').textContent = `Active: ${k.active.toLocaleString()}`;
+
+  document.getElementById('kpi-attr').textContent = k.attrition_rate + '%';
+  document.getElementById('kpi-attr-badge').textContent = `${k.attrition_count} left`;
+  document.getElementById('kpi-attr-sub').textContent = `Employees left: ${k.attrition_count}`;
+
+  document.getElementById('kpi-sal').textContent = '$' + (k.avg_salary/1000).toFixed(1) + 'K';
+  document.getElementById('kpi-sal-badge').textContent = `$${k.avg_salary.toLocaleString()}`;
+
+  document.getElementById('kpi-ten').textContent = k.avg_tenure + ' yrs';
+  document.getElementById('kpi-ten-badge').textContent = k.avg_tenure + ' yr avg';
+  document.getElementById('kpi-age-sub').textContent = `Avg age: ${k.avg_age}`;
+
+  // Sparklines — use dept headcount as sparkline data
+  const hcVals  = d.headcount_by_dept.headcount;
+  const atVals  = d.headcount_by_dept.attrition_rate;
+  const salVals = d.headcount_by_dept.avg_salary;
+  const tenVals = d.tenure.values;
+  buildSpark('spark-headcount', hcVals,  '#06b6d4');
+  buildSpark('spark-attrition', atVals,  '#ef4444');
+  buildSpark('spark-salary',    salVals, '#f59e0b');
+  buildSpark('spark-tenure',    tenVals, '#10b981');
+}
+
+function buildSpark(id, data, color){
+  const ctx = document.getElementById(id).getContext('2d');
+  if(charts[id]) charts[id].destroy();
+  charts[id] = new Chart(ctx,{
+    type:'line',
+    data:{labels:data.map((_,i)=>i), datasets:[{data, borderColor:color, borderWidth:1.5,
+      pointRadius:0, fill:true,
+      backgroundColor: ctx=>{
+        const g=ctx.chart.ctx.createLinearGradient(0,0,0,36);
+        g.addColorStop(0,color+'55'); g.addColorStop(1,color+'00'); return g;
+      },
+      tension:.4}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}}}
+  });
+}
+
+/* ── Charts ── */
+const CYAN='#06b6d4',RED='#ef4444',AMBER='#f59e0b',PUR='#7c3aed',GREEN='#10b981',
+      PINK='#ec4899',BLUE='#3b82f6',ORG='#f97316';
+
+function mkChart(id, cfg){
+  if(charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id).getContext('2d');
+  charts[id] = new Chart(ctx, cfg);
+}
+
+function updateCharts(d){
+  const hc = d.headcount_by_dept;
+
+  /* 1 – Headcount + Attrition (combo bar + line) */
+  mkChart('chart-headcount',{
+    type:'bar',
+    data:{
+      labels: hc.labels,
+      datasets:[
+        { label:'Headcount', data:hc.headcount, backgroundColor:CYAN+'99',
+          borderColor:CYAN, borderWidth:1.5, borderRadius:4, yAxisID:'y' },
+        { label:'Attrition %', data:hc.attrition_rate, type:'line',
+          borderColor:RED, borderWidth:2, pointRadius:3, pointBackgroundColor:RED,
+          fill:false, tension:.4, yAxisID:'y2' }
+      ]
+    },
+    options: comboOpts('y','Headcount','y2','Attr %')
+  });
+
+  /* 2 – Salary + Attrition combo */
+  mkChart('chart-salary',{
+    type:'bar',
+    data:{
+      labels: hc.labels,
+      datasets:[
+        { label:'Avg Salary', data:hc.avg_salary, backgroundColor:AMBER+'99',
+          borderColor:AMBER, borderWidth:1.5, borderRadius:4, yAxisID:'y' },
+        { label:'Attrition %', data:hc.attrition_rate, type:'line',
+          borderColor:PUR, borderWidth:2, pointRadius:3, pointBackgroundColor:PUR,
+          fill:false, tension:.4, yAxisID:'y2' }
+      ]
+    },
+    options: comboOpts('y','Salary ($)','y2','Attr %', v=>'$'+(v/1000).toFixed(0)+'K')
+  });
+
+  /* 3 – Age distribution */
+  mkChart('chart-age',{
+    type:'bar',
+    data:{labels:d.age_dist.labels, datasets:[{
+      data:d.age_dist.values,
+      backgroundColor:[CYAN,BLUE,PUR,PINK,AMBER,RED,GREEN,ORG].map(c=>c+'cc'),
+      borderRadius:4, borderWidth:0
+    }]},
+    options: simpleBarOpts()
+  });
+
+  /* 4 – Performance donut */
+  mkChart('chart-perf',{
+    type:'doughnut',
+    data:{labels:d.perf_dist.labels, datasets:[{
+      data:d.perf_dist.values,
+      backgroundColor:[RED+'cc',AMBER+'cc',CYAN+'cc',GREEN+'cc'],
+      borderWidth:2, borderColor:'#1c2235', hoverOffset:6
+    }]},
+    options: donutOpts()
+  });
+
+  /* 5 – WLB donut */
+  mkChart('chart-wlb',{
+    type:'doughnut',
+    data:{labels:d.wlb.labels, datasets:[{
+      data:d.wlb.values,
+      backgroundColor:[RED+'cc',AMBER+'cc',BLUE+'cc',GREEN+'cc'],
+      borderWidth:2, borderColor:'#1c2235', hoverOffset:6
+    }]},
+    options: donutOpts()
+  });
+
+  /* 6 – Tenure bar */
+  mkChart('chart-tenure',{
+    type:'bar',
+    data:{labels:d.tenure.labels, datasets:[{
+      data:d.tenure.values,
+      backgroundColor:GREEN+'99', borderColor:GREEN,
+      borderWidth:1.5, borderRadius:4
+    }]},
+    options: simpleBarOpts()
+  });
+}
+
+function comboOpts(yId, yLabel, y2Id, y2Label, yFmt=v=>v){
+  const base = baseGridOpts();
+  return {
+    ...base,
+    scales:{
+      x:{ ticks:{color:'#8892a4',font:{size:9},maxRotation:30}, grid:{color:'rgba(255,255,255,.04)'} },
+      [yId]:{ position:'left', ticks:{color:'#8892a4',font:{size:9},callback:yFmt}, grid:{color:'rgba(255,255,255,.04)'} },
+      [y2Id]:{ position:'right', ticks:{color:'#8892a4',font:{size:9},callback:v=>v+'%'}, grid:{display:false} }
+    }
+  };
+}
+
+function simpleBarOpts(){
+  return {
+    ...baseGridOpts(),
+    scales:{
+      x:{ ticks:{color:'#8892a4',font:{size:9},maxRotation:30}, grid:{color:'rgba(255,255,255,.04)'} },
+      y:{ ticks:{color:'#8892a4',font:{size:9}}, grid:{color:'rgba(255,255,255,.04)'} }
+    }
+  };
+}
+
+function donutOpts(){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    cutout:'62%',
+    plugins:{
+      legend:{
+        position:'right',
+        labels:{color:'#8892a4',font:{size:9},boxWidth:8,padding:6,usePointStyle:true}
+      },
+      datalabels:{
+        color:'#fff', font:{size:8,weight:'700'},
+        formatter:(v,ctx)=>{
+          const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);
+          return tot?Math.round(v/tot*100)+'%':'';
+        }
+      },
+      tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw}}
+    }
+  };
+}
+
+function baseGridOpts(){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      datalabels:{display:false},
+      tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.raw}}
+    }
+  };
+}
+
+/* ── Workforce Breakdown (horizontal mini-bars) ── */
+function updateBreakdown(d){
+  const wrap = document.getElementById('breakdown-body');
+  const hc   = d.headcount_by_dept;
+  const max  = Math.max(...hc.headcount,1);
+  const colors=[CYAN,BLUE,PUR,PINK,AMBER,RED,GREEN,ORG];
+  wrap.innerHTML = hc.labels.map((lbl,i)=>{
+    const pct = Math.round(hc.headcount[i]/max*100);
+    return `<div class="bd-row">
+      <div class="bd-label" title="${lbl}">${lbl}</div>
+      <div class="bd-bar-wrap"><div class="bd-bar" style="width:${pct}%;background:${colors[i%colors.length]}"></div></div>
+      <div class="bd-val" style="color:${colors[i%colors.length]}">${hc.headcount[i]}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Smart Insights ── */
+function updateInsights(insights){
+  const el = document.getElementById('insights-list');
+  el.innerHTML = insights.map(t=>`<div class="ins-item">${t}</div>`).join('');
+}
+
+/* ── Filter summary text ── */
+function updateFilterSummary(){
+  const active = Object.entries(filters).filter(([,v])=>v!=='All').map(([k,v])=>`${k}: ${v}`);
+  const el = document.getElementById('filter-summary');
+  el.textContent = active.length ? 'Filters: '+active.join(' · ') : 'Showing: All employees';
+}
+
+/* ── Nav section highlight (cosmetic only) ── */
+function scrollSection(sec){
+  document.querySelectorAll('.sb-nav a').forEach(a=>a.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+/* ── Init ── */
+load();
+</script>
+</body>
+</html>
