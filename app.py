@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 
@@ -188,98 +188,109 @@ def travel_distribution():
 
 @app.route("/api/hr/employees")
 def get_employees():
-    """Return paginated, filtered employee records for drill-down modals."""
-    ftype    = request.args.get("filter_type",  "all")
-    fvalue   = request.args.get("filter_value", "")
-    page     = max(1, int(request.args.get("page", 1)))
-    sort_by  = request.args.get("sort_by", "")
-    per_page = 15
+    """Return paginated/filtered employee records for drill-down modals and Excel export."""
+    try:
+        ftype    = request.args.get("filter_type",  "all")
+        fvalue   = request.args.get("filter_value", "")
+        sort_by  = request.args.get("sort_by", "")
+        # per_page=9999 is used by the Excel export to fetch all rows at once
+        try:
+            per_page = max(1, min(int(request.args.get("per_page", 15)), 9999))
+            page     = max(1, int(request.args.get("page", 1)))
+        except (ValueError, TypeError):
+            per_page, page = 15, 1
 
-    df = DF.copy()
+        df = DF.copy()
 
-    if ftype == "department":
-        df = df[df["Department"] == fvalue]
-    elif ftype == "gender":
-        df = df[df["Gender"] == fvalue]
-    elif ftype == "age_group":
-        df = df[df["AgeGroup"].astype(str) == fvalue]
-    elif ftype == "education":
-        edu_map = {"Below College": 1, "College": 2, "Bachelor": 3, "Master": 4, "Doctorate": 5}
-        df = df[df["Education"] == edu_map.get(fvalue, -1)]
-    elif ftype == "tenure":
-        df = df[df["TenureGroup"].astype(str) == fvalue]
-    elif ftype == "performance":
-        perf_map = {"Low": 1, "Good": 2, "Excellent": 3, "Outstanding": 4}
-        df = df[df["PerformanceRating"] == perf_map.get(fvalue, -1)]
-    elif ftype == "wlb":
-        wlb_map = {"Low": 1, "Fair": 2, "Good": 3, "Excellent": 4}
-        df = df[df["WorkLifeBalance"] == wlb_map.get(fvalue, -1)]
-    elif ftype == "overtime":
-        df = df[df["OverTime"] == fvalue]
-    elif ftype == "satisfaction":
-        sat_map = {"Low": 1, "Medium": 2, "High": 3, "Very High": 4}
-        df = df[df["JobSatisfaction"] == sat_map.get(fvalue, -1)]
-    elif ftype == "travel":
-        df = df[df["BusinessTravel"] == fvalue]
-    elif ftype == "attrition":
-        df = df[df["Attrition"] == fvalue]
-    elif ftype == "attrition_dept":
-        df = df[(df["Department"] == fvalue) & (df["Attrition"] == "Yes")]
-    elif ftype == "attrition_age":
-        df = df[(df["AgeGroup"].astype(str) == fvalue) & (df["Attrition"] == "Yes")]
-    elif ftype == "hire_month":
-        df = df[df["HireMonth"] == fvalue]
-    # "all" — no filter
+        if ftype == "department":
+            df = df[df["Department"] == fvalue]
+        elif ftype == "gender":
+            df = df[df["Gender"] == fvalue]
+        elif ftype == "age_group":
+            df = df[df["AgeGroup"].astype(str) == fvalue]
+        elif ftype == "education":
+            edu_map = {"Below College": 1, "College": 2, "Bachelor": 3, "Master": 4, "Doctorate": 5}
+            df = df[df["Education"] == edu_map.get(fvalue, -1)]
+        elif ftype == "tenure":
+            df = df[df["TenureGroup"].astype(str) == fvalue]
+        elif ftype == "performance":
+            perf_map = {"Low": 1, "Good": 2, "Excellent": 3, "Outstanding": 4}
+            df = df[df["PerformanceRating"] == perf_map.get(fvalue, -1)]
+        elif ftype == "wlb":
+            wlb_map = {"Low": 1, "Fair": 2, "Good": 3, "Excellent": 4}
+            df = df[df["WorkLifeBalance"] == wlb_map.get(fvalue, -1)]
+        elif ftype == "overtime":
+            df = df[df["OverTime"] == fvalue]
+        elif ftype == "satisfaction":
+            sat_map = {"Low": 1, "Medium": 2, "High": 3, "Very High": 4}
+            df = df[df["JobSatisfaction"] == sat_map.get(fvalue, -1)]
+        elif ftype == "travel":
+            df = df[df["BusinessTravel"] == fvalue]
+        elif ftype == "attrition":
+            df = df[df["Attrition"] == fvalue]
+        elif ftype == "attrition_dept":
+            df = df[(df["Department"] == fvalue) & (df["Attrition"] == "Yes")]
+        elif ftype == "attrition_age":
+            df = df[(df["AgeGroup"].astype(str) == fvalue) & (df["Attrition"] == "Yes")]
+        elif ftype == "hire_month":
+            df = df[df["HireMonth"] == fvalue]
+        # "all" — no filter applied
 
-    if sort_by == "salary":
-        df = df.sort_values("Salary", ascending=False)
-    elif sort_by == "age":
-        df = df.sort_values("Age")
-    elif sort_by == "years":
-        df = df.sort_values("YearsAtCompany", ascending=False)
+        if sort_by == "salary":
+            df = df.sort_values("Salary", ascending=False)
+        elif sort_by == "age":
+            df = df.sort_values("Age")
+        elif sort_by == "years":
+            df = df.sort_values("YearsAtCompany", ascending=False)
 
-    total       = len(df)
-    total_pages = max(1, (total + per_page - 1) // per_page)
-    page        = min(page, total_pages)
-    df_page     = df.iloc[(page - 1) * per_page: page * per_page]
+        total       = int(len(df))
+        total_pages = max(1, (total + per_page - 1) // per_page)
+        page        = min(page, total_pages)
+        df_page     = df.iloc[(page - 1) * per_page: page * per_page]
 
-    perf_labels = {1: "Low", 2: "Good", 3: "Excellent", 4: "Outstanding"}
-    sat_labels  = {1: "Low", 2: "Medium", 3: "High",    4: "Very High"}
+        perf_labels = {1: "Low", 2: "Good", 3: "Excellent", 4: "Outstanding"}
+        sat_labels  = {1: "Low", 2: "Medium", 3: "High",    4: "Very High"}
 
-    records = []
-    for _, r in df_page.iterrows():
-        records.append({
-            "id":           int(r["EmployeeID"]),
-            "name":         r["Name"],
-            "department":   r["Department"],
-            "job_title":    r["JobTitle"],
-            "age":          int(r["Age"]),
-            "gender":       r["Gender"],
-            "salary":       int(r["Salary"]),
-            "years":        int(r["YearsAtCompany"]),
-            "performance":  perf_labels.get(int(r["PerformanceRating"]), "—"),
-            "satisfaction": sat_labels.get(int(r["JobSatisfaction"]), "—"),
-            "attrition":    r["Attrition"],
-            "overtime":     r["OverTime"],
+        records = []
+        for _, r in df_page.iterrows():
+            records.append({
+                "id":           int(r["EmployeeID"]),
+                "name":         str(r["Name"]),
+                "department":   str(r["Department"]),
+                "job_title":    str(r["JobTitle"]),
+                "age":          int(r["Age"]),
+                "gender":       str(r["Gender"]),
+                "salary":       int(r["Salary"]),
+                "years":        int(r["YearsAtCompany"]),
+                "performance":  perf_labels.get(int(r["PerformanceRating"]), "—"),
+                "satisfaction": sat_labels.get(int(r["JobSatisfaction"]), "—"),
+                "attrition":    str(r["Attrition"]),
+                "overtime":     str(r["OverTime"]),
+            })
+
+        # FIX: float() before round() ensures Python float, not numpy.float64
+        # (numpy.float64 is not JSON-serializable by Flask's default encoder)
+        avg_sal   = int(float(df["Salary"].mean()))                      if total > 0 else 0
+        avg_age   = round(float(df["Age"].mean()), 1)                    if total > 0 else 0.0
+        attr_rate = round(float((df["Attrition"] == "Yes").mean()) * 100, 1) if total > 0 else 0.0
+        avg_ten   = round(float(df["YearsAtCompany"].mean()), 1)         if total > 0 else 0.0
+
+        return jsonify({
+            "total":       total,
+            "page":        int(page),
+            "total_pages": int(total_pages),
+            "records":     records,
+            "stats": {
+                "avg_salary":     avg_sal,
+                "avg_age":        avg_age,
+                "attrition_rate": attr_rate,
+                "avg_tenure":     avg_ten,
+            },
         })
 
-    avg_sal   = int(df["Salary"].mean())            if total > 0 else 0
-    avg_age   = round(df["Age"].mean(), 1)           if total > 0 else 0
-    attr_rate = round((df["Attrition"] == "Yes").mean() * 100, 1) if total > 0 else 0
-    avg_ten   = round(df["YearsAtCompany"].mean(), 1) if total > 0 else 0
-
-    return jsonify({
-        "total":       total,
-        "page":        page,
-        "total_pages": total_pages,
-        "records":     records,
-        "stats": {
-            "avg_salary":     avg_sal,
-            "avg_age":        avg_age,
-            "attrition_rate": attr_rate,
-            "avg_tenure":     avg_ten,
-        },
-    })
+    except Exception as e:
+        import traceback
+        return jsonify({"error": str(e), "detail": traceback.format_exc()}), 500
 
 
 if __name__ == "__main__":
