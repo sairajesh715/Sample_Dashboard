@@ -7,202 +7,214 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
     :root {
-      --bg:       #050b1a;
-      --nav-h:    64px;
-      --card-bg:  rgba(8,18,40,.75);
-      --border:   rgba(255,255,255,.07);
-      --purple:   #7c3aed;
-      --cyan:     #06b6d4;
-      --amber:    #f59e0b;
-      --green:    #10b981;
-      --red:      #ef4444;
-      --pink:     #ec4899;
-      --orange:   #f97316;
-      --text:     #e2e8f0;
-      --muted:    #64748b;
+      --bg:     #050b1a;
+      --nav-h:  64px;
+      --cbg:    rgba(8,18,40,.78);
+      --bdr:    rgba(255,255,255,.07);
+      --purple: #7c3aed; --cyan:  #06b6d4;
+      --amber:  #f59e0b; --green: #10b981;
+      --red:    #ef4444; --pink:  #ec4899;
+      --orange: #f97316; --text:  #e2e8f0;
+      --muted:  #64748b;
     }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg); color: var(--text);
-      min-height: 100vh; overflow-x: hidden;
-    }
-
-    /* ── Canvas background ── */
-    #bg-canvas {
-      position: fixed; inset: 0; z-index: 0;
-      width:100%; height:100%; opacity:.35;
-    }
+    /* ── Background ── */
+    #bg-canvas { position:fixed;inset:0;z-index:0;width:100%;height:100%;opacity:.3; }
     .bg-grad {
-      position:fixed; inset:0; z-index:1; pointer-events:none;
+      position:fixed;inset:0;z-index:1;pointer-events:none;
       background:
-        radial-gradient(ellipse 55% 45% at 10% 40%, rgba(124,58,237,.12) 0%, transparent 70%),
-        radial-gradient(ellipse 45% 35% at 90% 15%, rgba(6,182,212,.10)  0%, transparent 70%),
-        radial-gradient(ellipse 35% 30% at 70% 90%, rgba(245,158,11,.08) 0%, transparent 60%);
+        radial-gradient(ellipse 55% 45% at 10% 40%,rgba(124,58,237,.12) 0%,transparent 70%),
+        radial-gradient(ellipse 45% 35% at 90% 15%,rgba(6,182,212,.10)  0%,transparent 70%),
+        radial-gradient(ellipse 35% 30% at 70% 90%,rgba(245,158,11,.08) 0%,transparent 60%);
     }
 
     /* ── Navbar ── */
     nav {
-      position: fixed; top:0; left:0; right:0; z-index:100;
-      height: var(--nav-h);
-      background: rgba(5,11,26,.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 2rem; gap: 1rem;
+      position:fixed;top:0;left:0;right:0;z-index:200;
+      height:var(--nav-h);
+      background:rgba(5,11,26,.88);
+      backdrop-filter:blur(22px);
+      border-bottom:1px solid var(--bdr);
+      display:flex;align-items:center;padding:0 2rem;gap:1rem;
     }
-    .nav-logo {
-      display:flex; align-items:center; gap:.6rem;
-      font-size:1.1rem; font-weight:800; color:var(--text);
-      text-decoration:none;
-    }
-    .nav-logo-icon {
-      width:34px;height:34px;border-radius:10px;
-      background:linear-gradient(135deg,var(--purple),var(--cyan));
-      display:flex;align-items:center;justify-content:center;
-      font-size:1.1rem;
-    }
-    .nav-title-sub { font-size:.7rem; color:var(--muted); font-weight:400; letter-spacing:.05em; }
+    .nav-logo { display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text); }
+    .nav-icon { width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:1.1rem; }
+    .nav-name { font-size:1.05rem;font-weight:800; }
+    .nav-sub  { font-size:.68rem;color:var(--muted);font-weight:400; }
     .nav-spacer { flex:1; }
-    .nav-pill {
-      display:flex;align-items:center;gap:.4rem;
-      background:rgba(124,58,237,.15);
-      border:1px solid rgba(124,58,237,.3);
-      border-radius:100px;padding:.35rem .9rem;
-      font-size:.72rem;font-weight:600;color:#a78bfa;
-    }
-    .nav-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+    .live-pill { display:flex;align-items:center;gap:.4rem;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:100px;padding:.35rem .9rem;font-size:.72rem;font-weight:600;color:#6ee7b7; }
+    .live-dot  { width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite; }
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-    .back-btn {
-      display:flex;align-items:center;gap:.4rem;
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--border);
-      border-radius:8px;padding:.35rem .8rem;
-      font-size:.78rem;color:var(--muted);
-      text-decoration:none;transition:all .2s;
-    }
-    .back-btn:hover{background:rgba(255,255,255,.1);color:var(--text);}
+    .back-btn { display:flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:8px;padding:.35rem .8rem;font-size:.78rem;color:var(--muted);text-decoration:none;transition:all .2s; }
+    .back-btn:hover { background:rgba(255,255,255,.1);color:var(--text); }
 
     /* ── Main ── */
-    main {
-      position:relative;z-index:2;
-      padding: calc(var(--nav-h) + 2rem) 2rem 3rem;
-      max-width: 1600px; margin: 0 auto;
-    }
+    main { position:relative;z-index:2;padding:calc(var(--nav-h) + 2rem) 2rem 3rem;max-width:1600px;margin:0 auto; }
 
     /* ── KPI Cards ── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 1rem; margin-bottom: 2.5rem;
-    }
-    @media(max-width:1200px){ .kpi-grid{grid-template-columns:repeat(3,1fr);} }
-    @media(max-width:700px) { .kpi-grid{grid-template-columns:repeat(2,1fr);} }
+    .kpi-grid { display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:2.5rem; }
+    @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:700px) {.kpi-grid{grid-template-columns:repeat(2,1fr);}}
 
     .kpi-card {
-      position:relative;
-      background:var(--card-bg);
-      border:1px solid var(--border);
-      backdrop-filter:blur(20px);
-      border-radius:18px;
-      padding:1.4rem 1.2rem;
-      overflow:hidden;
-      transition:transform .3s,box-shadow .3s;
+      position:relative;background:var(--cbg);border:1px solid var(--bdr);
+      backdrop-filter:blur(20px);border-radius:18px;padding:1.4rem 1.2rem;
+      overflow:hidden;cursor:pointer;
+      transition:transform .3s,box-shadow .3s,border-color .3s;
       animation:cardIn .5s ease both;
     }
-    .kpi-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.4);}
-    .kpi-card::before{
-      content:'';position:absolute;inset:0;border-radius:inherit;
-      background:var(--accent-grad,linear-gradient(135deg,rgba(124,58,237,.08),rgba(6,182,212,.04)));
-      pointer-events:none;
-    }
-    .kpi-icon{font-size:1.6rem;margin-bottom:.6rem;}
-    .kpi-val{
-      font-size:1.9rem;font-weight:800;line-height:1;margin-bottom:.3rem;
-      background:var(--accent-grad,linear-gradient(135deg,#a78bfa,#22d3ee));
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    }
-    .kpi-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
-    .kpi-sub{font-size:.75rem;color:var(--muted);margin-top:.3rem;}
-
+    .kpi-card:hover { transform:translateY(-5px);box-shadow:0 24px 48px rgba(0,0,0,.45);border-color:rgba(124,58,237,.35); }
+    .kpi-card::before { content:'';position:absolute;inset:0;border-radius:inherit;background:var(--kbg,none);pointer-events:none; }
+    .kpi-card::after  { content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--kline,transparent);border-radius:0 0 18px 18px;opacity:.7; }
+    .kpi-icon { font-size:1.5rem;margin-bottom:.5rem; }
+    .kpi-val  { font-size:1.85rem;font-weight:800;line-height:1;margin-bottom:.3rem; }
+    .kpi-lbl  { font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600; }
+    .kpi-sub  { font-size:.73rem;color:var(--muted);margin-top:.3rem; }
     @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
     /* ── Section headers ── */
-    .section-hdr {
-      display:flex;align-items:center;gap:1rem;
-      margin:2.5rem 0 1.25rem;
-    }
-    .section-hdr-line{flex:1;height:1px;background:var(--border);}
-    .section-hdr-title{
-      font-size:.78rem;font-weight:700;letter-spacing:.12em;
-      text-transform:uppercase;color:var(--muted);white-space:nowrap;
-      display:flex;align-items:center;gap:.5rem;
-    }
-    .section-hdr-icon{font-size:1rem;}
+    .section-hdr { display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.2rem; }
+    .section-hdr-line  { flex:1;height:1px;background:var(--bdr); }
+    .section-hdr-title { font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:.5rem; }
 
     /* ── Chart grid ── */
-    .chart-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:1.25rem;
-    }
+    .chart-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem; }
     @media(max-width:1000px){.chart-grid{grid-template-columns:repeat(2,1fr);}}
     @media(max-width:650px) {.chart-grid{grid-template-columns:1fr;}}
 
-    .chart-card{
-      background:var(--card-bg);
-      border:1px solid var(--border);
-      backdrop-filter:blur(20px);
-      border-radius:18px;
-      padding:1.4rem 1.4rem 1rem;
+    .chart-card {
+      background:var(--cbg);border:1px solid var(--bdr);
+      backdrop-filter:blur(20px);border-radius:18px;padding:1.2rem 1.2rem .9rem;
       display:flex;flex-direction:column;
       transition:transform .3s,box-shadow .3s,border-color .3s;
       animation:cardIn .5s ease both;
     }
-    .chart-card:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.35);border-color:rgba(124,58,237,.25);}
-    .chart-card.span-2{grid-column:span 2;}
-    .chart-card.span-3{grid-column:1/-1;}
-
+    .chart-card:hover { transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.35);border-color:rgba(124,58,237,.22); }
+    .chart-card.span-2 { grid-column:span 2; }
+    .chart-card.span-3 { grid-column:1/-1; }
     @media(max-width:1000px){.chart-card.span-2{grid-column:span 1;}.chart-card.span-3{grid-column:span 2;}}
     @media(max-width:650px) {.chart-card.span-2,.chart-card.span-3{grid-column:span 1;}}
 
-    .chart-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;}
-    .chart-title{font-size:.88rem;font-weight:700;color:var(--text);}
-    .chart-sub  {font-size:.72rem;color:var(--muted);margin-top:.15rem;}
-    .chart-badge{
-      font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-      padding:.25rem .65rem;border-radius:100px;white-space:nowrap;
-    }
-    .badge-purple{background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
-    .badge-cyan  {background:rgba(6,182,212,.2);color:#67e8f9;border:1px solid rgba(6,182,212,.3);}
-    .badge-amber {background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
-    .badge-red   {background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3);}
-    .badge-green {background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
-    .badge-pink  {background:rgba(236,72,153,.2);color:#f9a8d4;border:1px solid rgba(236,72,153,.3);}
+    .chart-hdr   { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.9rem;gap:.5rem; }
+    .chart-title { font-size:.85rem;font-weight:700;color:var(--text); }
+    .chart-sub   { font-size:.7rem;color:var(--muted);margin-top:.12rem; }
+    .cbadge { font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.22rem .6rem;border-radius:100px;white-space:nowrap; }
+    .cb-purple{background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
+    .cb-cyan  {background:rgba(6,182,212,.2);color:#67e8f9;border:1px solid rgba(6,182,212,.3);}
+    .cb-amber {background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
+    .cb-red   {background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3);}
+    .cb-green {background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
+    .cb-pink  {background:rgba(236,72,153,.2);color:#f9a8d4;border:1px solid rgba(236,72,153,.3);}
 
-    .chart-wrap{flex:1;position:relative;min-height:220px;}
-    .chart-wrap canvas{width:100%!important;}
+    /* 80% chart size */
+    .chart-wrap { flex:1;position:relative;min-height:176px; }
+    .chart-wrap canvas { width:100%!important; }
 
-    /* loading skeleton */
-    .skeleton{
-      background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);
-      background-size:200% 100%;
-      animation:shimmer 1.5s infinite;
-      border-radius:8px;height:220px;
+    /* ── Modal ── */
+    .modal-overlay {
+      position:fixed;inset:0;z-index:500;
+      background:rgba(5,11,26,.88);
+      backdrop-filter:blur(12px);
+      display:flex;align-items:center;justify-content:center;
+      padding:1rem;
+      opacity:0;pointer-events:none;
+      transition:opacity .3s;
     }
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .modal-overlay.open { opacity:1;pointer-events:all; }
 
-    /* ── Footer ── */
-    footer{
-      position:relative;z-index:2;
-      text-align:center;padding:2rem;
-      color:var(--muted);font-size:.75rem;
-      border-top:1px solid var(--border);
+    .modal-card {
+      background:rgba(7,16,38,.98);
+      border:1px solid rgba(124,58,237,.25);
+      border-radius:24px;
+      width:100%;max-width:1060px;
+      max-height:90vh;
+      display:flex;flex-direction:column;
+      overflow:hidden;
+      transform:translateY(32px) scale(.96);
+      transition:transform .38s cubic-bezier(.34,1.56,.64,1);
+      box-shadow:0 40px 80px rgba(0,0,0,.65),0 0 0 1px rgba(124,58,237,.12);
     }
+    .modal-overlay.open .modal-card { transform:none; }
+
+    .modal-hdr {
+      display:flex;align-items:flex-start;justify-content:space-between;
+      padding:1.4rem 1.75rem 1rem;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(6,182,212,.05));
+      gap:1rem;flex-shrink:0;
+    }
+    .modal-title {
+      font-size:1.12rem;font-weight:800;
+      background:linear-gradient(135deg,#a78bfa,#22d3ee);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .modal-subtitle { font-size:.73rem;color:var(--muted);margin-top:.2rem; }
+    .modal-close {
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+      color:#94a3b8;font-size:.95rem;width:32px;height:32px;border-radius:8px;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+      transition:all .2s;flex-shrink:0;
+    }
+    .modal-close:hover { background:rgba(239,68,68,.2);color:#fca5a5;border-color:rgba(239,68,68,.3); }
+
+    .modal-stats {
+      display:flex;gap:.9rem;padding:1rem 1.75rem;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      flex-wrap:wrap;flex-shrink:0;
+    }
+    .mstat { display:flex;flex-direction:column;gap:.12rem;padding:.55rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;min-width:110px; }
+    .mstat-val { font-size:1.15rem;font-weight:800;color:var(--text); }
+    .mstat-lbl { font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em; }
+
+    .modal-table-wrap { flex:1;overflow:auto;padding:.5rem 1.75rem 1rem; }
+    .modal-table { width:100%;border-collapse:collapse;font-size:.78rem; }
+    .modal-table th {
+      text-align:left;padding:.55rem .7rem;
+      color:var(--muted);font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      position:sticky;top:0;background:rgba(7,16,38,.99);white-space:nowrap;
+    }
+    .modal-table td { padding:.55rem .7rem;border-bottom:1px solid rgba(255,255,255,.04);color:#cbd5e1;white-space:nowrap; }
+    .modal-table tr:hover td { background:rgba(255,255,255,.03); }
+
+    .tag { display:inline-block;padding:.18rem .5rem;border-radius:100px;font-size:.65rem;font-weight:700; }
+    .tg-yes   { background:rgba(239,68,68,.2);   color:#fca5a5; }
+    .tg-no    { background:rgba(16,185,129,.2);  color:#6ee7b7; }
+    .tg-low   { background:rgba(107,114,128,.2); color:#9ca3af; }
+    .tg-good  { background:rgba(245,158,11,.2);  color:#fcd34d; }
+    .tg-exc   { background:rgba(6,182,212,.2);   color:#67e8f9; }
+    .tg-out   { background:rgba(124,58,237,.2);  color:#a78bfa; }
+    .tg-med   { background:rgba(249,115,22,.2);  color:#fdba74; }
+    .tg-high  { background:rgba(16,185,129,.15); color:#6ee7b7; }
+    .tg-vhigh { background:rgba(124,58,237,.2);  color:#a78bfa; }
+    .tg-ot    { background:rgba(239,68,68,.18);  color:#fca5a5; }
+    .tg-m     { background:rgba(6,182,212,.15);  color:#67e8f9; }
+    .tg-f     { background:rgba(236,72,153,.15); color:#f9a8d4; }
+
+    .modal-footer {
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.85rem 1.75rem;border-top:1px solid rgba(255,255,255,.06);
+      font-size:.75rem;color:var(--muted);flex-shrink:0;flex-wrap:wrap;gap:.5rem;
+    }
+    .pg-wrap { display:flex;align-items:center;gap:.5rem; }
+    .pg-btn {
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+      color:#94a3b8;padding:.3rem .7rem;border-radius:7px;cursor:pointer;font-size:.75rem;transition:all .2s;
+    }
+    .pg-btn:hover:not(:disabled) { background:rgba(124,58,237,.2);color:#a78bfa;border-color:rgba(124,58,237,.4); }
+    .pg-btn:disabled { opacity:.35;cursor:not-allowed; }
+    .pg-info { color:#475569;font-size:.75rem; }
+
+    footer { position:relative;z-index:2;text-align:center;padding:2rem;color:var(--muted);font-size:.73rem;border-top:1px solid var(--bdr); }
+
+    /* click hints on chart cards */
+    .chart-card { cursor:pointer; }
   </style>
 </head>
 <body>
@@ -213,561 +225,634 @@
   <nav>
     <a href="/" class="back-btn">← Home</a>
     <a href="/" class="nav-logo">
-      <div class="nav-logo-icon">👥</div>
-      <div>
-        <div>HR Analytics</div>
-        <div class="nav-title-sub">People Intelligence Dashboard</div>
-      </div>
+      <div class="nav-icon">👥</div>
+      <div><div class="nav-name">HR Analytics</div><div class="nav-sub">People Intelligence Dashboard</div></div>
     </a>
     <div class="nav-spacer"></div>
-    <div class="nav-pill"><span class="nav-dot"></span>Live Data · 340 Employees</div>
+    <div class="live-pill"><span class="live-dot"></span>Live · 340 Employees</div>
   </nav>
 
   <main>
-    <!-- ── KPI Cards ── -->
+    <!-- KPI Cards -->
     <div class="kpi-grid">
-      <div class="kpi-card" style="--accent-grad:linear-gradient(135deg,rgba(124,58,237,.12),rgba(167,139,250,.05));animation-delay:.05s">
+      <div class="kpi-card" style="--kbg:linear-gradient(135deg,rgba(124,58,237,.09),rgba(167,139,250,.03));--kline:linear-gradient(90deg,#7c3aed,#a78bfa);animation-delay:.05s" onclick="openModal('all','','👥 All Employees','')">
         <div class="kpi-icon">👥</div>
-        <div class="kpi-val" id="k-total" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-val" id="k-total" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Total Employees</div>
         <div class="kpi-sub" id="k-active">— active</div>
       </div>
-      <div class="kpi-card" style="animation-delay:.1s">
+      <div class="kpi-card" style="--kline:linear-gradient(90deg,#ef4444,#f97316);animation-delay:.1s" onclick="openModal('attrition','Yes','📉 Attrited Employees','')">
         <div class="kpi-icon">📉</div>
-        <div class="kpi-val" id="k-attr" style="background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-val" id="k-attr" style="background:linear-gradient(135deg,#ef4444,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Attrition Rate</div>
-        <div class="kpi-sub" id="k-attrn">— employees left</div>
+        <div class="kpi-sub" id="k-attrn">— left</div>
       </div>
-      <div class="kpi-card" style="animation-delay:.15s">
+      <div class="kpi-card" style="--kline:linear-gradient(90deg,#f59e0b,#fcd34d);animation-delay:.15s" onclick="openModal('all','','💰 Salary — All Employees','salary')">
         <div class="kpi-icon">💰</div>
-        <div class="kpi-val" id="k-sal" style="background:linear-gradient(135deg,#f59e0b,#fcd34d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-val" id="k-sal" style="background:linear-gradient(135deg,#f59e0b,#fcd34d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Avg. Salary</div>
         <div class="kpi-sub">Annual compensation</div>
       </div>
-      <div class="kpi-card" style="animation-delay:.2s">
+      <div class="kpi-card" style="--kline:linear-gradient(90deg,#06b6d4,#67e8f9);animation-delay:.2s" onclick="openModal('all','','🎂 Age — All Employees','age')">
         <div class="kpi-icon">🎂</div>
-        <div class="kpi-val" id="k-age" style="background:linear-gradient(135deg,#06b6d4,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-val" id="k-age" style="background:linear-gradient(135deg,#06b6d4,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Average Age</div>
         <div class="kpi-sub">Years old</div>
       </div>
-      <div class="kpi-card" style="animation-delay:.25s">
+      <div class="kpi-card" style="--kline:linear-gradient(90deg,#ec4899,#06b6d4);animation-delay:.25s" onclick="openModal('all','','⚖️ All Employees — Gender View','')">
         <div class="kpi-icon">⚖️</div>
-        <div class="kpi-val" id="k-gender" style="background:linear-gradient(135deg,#ec4899,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-val" id="k-gender" style="background:linear-gradient(135deg,#ec4899,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Gender Ratio</div>
-        <div class="kpi-sub" id="k-gendersub">Male / Female</div>
+        <div class="kpi-sub" id="k-gendersub">M / F</div>
       </div>
-      <div class="kpi-card" style="animation-delay:.3s">
+      <div class="kpi-card" style="--kline:linear-gradient(90deg,#10b981,#6ee7b7);animation-delay:.3s" onclick="openModal('all','','📅 Tenure — All Employees','years')">
         <div class="kpi-icon">📅</div>
-        <div class="kpi-val" id="k-tenure" style="background:linear-gradient(135deg,#10b981,#6ee7b7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">—</div>
+        <div class="kpi-val" id="k-tenure" style="background:linear-gradient(135deg,#10b981,#6ee7b7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">—</div>
         <div class="kpi-lbl">Avg. Tenure</div>
         <div class="kpi-sub">Years at company</div>
       </div>
     </div>
 
-    <!-- ── Section: Workforce Overview ── -->
+    <!-- Workforce Overview -->
     <div class="section-hdr">
-      <div class="section-hdr-title"><span class="section-hdr-icon">🏢</span> Workforce Overview</div>
+      <div class="section-hdr-title">🏢 Workforce Overview</div>
       <div class="section-hdr-line"></div>
     </div>
     <div class="chart-grid">
       <div class="chart-card span-2" style="animation-delay:.35s">
-        <div class="chart-hdr"><div><div class="chart-title">Headcount by Department</div><div class="chart-sub">Total employees per department</div></div><span class="chart-badge badge-purple">Headcount</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Headcount by Department</div><div class="chart-sub">Click a bar to explore employees</div></div><span class="cbadge cb-purple">Headcount</span></div>
         <div class="chart-wrap"><canvas id="c-headcount"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:.4s">
-        <div class="chart-hdr"><div><div class="chart-title">Gender Distribution</div><div class="chart-sub">Male vs Female split</div></div><span class="chart-badge badge-pink">Gender</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Gender Distribution</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-pink">Gender</span></div>
         <div class="chart-wrap"><canvas id="c-gender"></canvas></div>
       </div>
     </div>
 
-    <!-- ── Section: Demographics ── -->
+    <!-- Demographics -->
     <div class="section-hdr">
-      <div class="section-hdr-title"><span class="section-hdr-icon">📋</span> Demographics</div>
+      <div class="section-hdr-title">📋 Demographics</div>
       <div class="section-hdr-line"></div>
     </div>
     <div class="chart-grid">
       <div class="chart-card" style="animation-delay:.45s">
-        <div class="chart-hdr"><div><div class="chart-title">Age Distribution</div><div class="chart-sub">Employees by age group</div></div><span class="chart-badge badge-cyan">Age</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Age Distribution</div><div class="chart-sub">Click an age band to explore</div></div><span class="cbadge cb-cyan">Age</span></div>
         <div class="chart-wrap"><canvas id="c-age"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:.5s">
-        <div class="chart-hdr"><div><div class="chart-title">Education Level</div><div class="chart-sub">Highest qualification attained</div></div><span class="chart-badge badge-amber">Education</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Education Level</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-amber">Education</span></div>
         <div class="chart-wrap"><canvas id="c-edu"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:.55s">
-        <div class="chart-hdr"><div><div class="chart-title">Tenure Distribution</div><div class="chart-sub">Years spent at company</div></div><span class="chart-badge badge-green">Tenure</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Tenure Distribution</div><div class="chart-sub">Click a bar to explore</div></div><span class="cbadge cb-green">Tenure</span></div>
         <div class="chart-wrap"><canvas id="c-tenure"></canvas></div>
       </div>
     </div>
 
-    <!-- ── Section: Attrition Analysis ── -->
+    <!-- Attrition -->
     <div class="section-hdr">
-      <div class="section-hdr-title"><span class="section-hdr-icon">🚨</span> Attrition Analysis</div>
+      <div class="section-hdr-title">🚨 Attrition Analysis</div>
       <div class="section-hdr-line"></div>
     </div>
     <div class="chart-grid">
       <div class="chart-card span-2" style="animation-delay:.6s">
-        <div class="chart-hdr"><div><div class="chart-title">Attrition Rate by Department</div><div class="chart-sub">Percentage of employees who left</div></div><span class="chart-badge badge-red">Attrition %</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Attrition Rate by Department</div><div class="chart-sub">Click to see who left from each dept</div></div><span class="cbadge cb-red">Attrition %</span></div>
         <div class="chart-wrap"><canvas id="c-attrDept"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:.65s">
-        <div class="chart-hdr"><div><div class="chart-title">Attrition by Age Group</div><div class="chart-sub">Turnover rate across age bands</div></div><span class="chart-badge badge-red">Risk</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Attrition by Age Group</div><div class="chart-sub">Click an age band to explore leavers</div></div><span class="cbadge cb-red">Risk</span></div>
         <div class="chart-wrap"><canvas id="c-attrAge"></canvas></div>
       </div>
     </div>
 
-    <!-- ── Section: Recruitment ── -->
+    <!-- Recruitment -->
     <div class="section-hdr">
-      <div class="section-hdr-title"><span class="section-hdr-icon">📈</span> Recruitment Trend</div>
+      <div class="section-hdr-title">📈 Recruitment Trend</div>
       <div class="section-hdr-line"></div>
     </div>
     <div class="chart-grid">
       <div class="chart-card span-3" style="animation-delay:.7s">
-        <div class="chart-hdr"><div><div class="chart-title">Monthly Hiring Trend</div><div class="chart-sub">New employee hires over time</div></div><span class="chart-badge badge-cyan">Timeline</span></div>
-        <div class="chart-wrap" style="min-height:240px"><canvas id="c-hiring"></canvas></div>
+        <div class="chart-hdr"><div><div class="chart-title">Monthly Hiring Trend</div><div class="chart-sub">Click any point to see employees hired that month</div></div><span class="cbadge cb-cyan">Timeline</span></div>
+        <div class="chart-wrap" style="min-height:192px"><canvas id="c-hiring"></canvas></div>
       </div>
     </div>
 
-    <!-- ── Section: Performance & Satisfaction ── -->
+    <!-- Performance -->
     <div class="section-hdr">
-      <div class="section-hdr-title"><span class="section-hdr-icon">⭐</span> Performance &amp; Satisfaction</div>
+      <div class="section-hdr-title">⭐ Performance &amp; Satisfaction</div>
       <div class="section-hdr-line"></div>
     </div>
     <div class="chart-grid">
       <div class="chart-card" style="animation-delay:.75s">
-        <div class="chart-hdr"><div><div class="chart-title">Performance Ratings</div><div class="chart-sub">Employee performance distribution</div></div><span class="chart-badge badge-amber">Ratings</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Performance Ratings</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-amber">Ratings</span></div>
         <div class="chart-wrap"><canvas id="c-perf"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:.8s">
-        <div class="chart-hdr"><div><div class="chart-title">Work-Life Balance</div><div class="chart-sub">Employee WLB self-assessment</div></div><span class="chart-badge badge-green">Wellbeing</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Work-Life Balance</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-green">Wellbeing</span></div>
         <div class="chart-wrap"><canvas id="c-wlb"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:.85s">
-        <div class="chart-hdr"><div><div class="chart-title">Overtime Distribution</div><div class="chart-sub">Employees working extra hours</div></div><span class="chart-badge badge-red">OT</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Overtime Distribution</div><div class="chart-sub">Click to view overtime employees</div></div><span class="cbadge cb-red">OT</span></div>
         <div class="chart-wrap"><canvas id="c-overtime"></canvas></div>
       </div>
     </div>
-
-    <div class="chart-grid" style="margin-top:1.25rem">
+    <div class="chart-grid" style="margin-top:1.2rem">
       <div class="chart-card span-3" style="animation-delay:.9s">
-        <div class="chart-hdr"><div><div class="chart-title">Job Satisfaction by Department</div><div class="chart-sub">Satisfaction levels (Low → Very High) across all departments</div></div><span class="chart-badge badge-purple">Satisfaction</span></div>
-        <div class="chart-wrap" style="min-height:260px"><canvas id="c-satisfaction"></canvas></div>
+        <div class="chart-hdr"><div><div class="chart-title">Job Satisfaction by Department</div><div class="chart-sub">Click any bar to see employees by satisfaction level</div></div><span class="cbadge cb-purple">Satisfaction</span></div>
+        <div class="chart-wrap" style="min-height:208px"><canvas id="c-satisfaction"></canvas></div>
       </div>
     </div>
 
-    <!-- ── Section: Compensation & Work Patterns ── -->
+    <!-- Compensation -->
     <div class="section-hdr">
-      <div class="section-hdr-title"><span class="section-hdr-icon">💼</span> Compensation &amp; Work Patterns</div>
+      <div class="section-hdr-title">💼 Compensation &amp; Work Patterns</div>
       <div class="section-hdr-line"></div>
     </div>
     <div class="chart-grid">
       <div class="chart-card span-2" style="animation-delay:.95s">
-        <div class="chart-hdr"><div><div class="chart-title">Average Salary by Department</div><div class="chart-sub">Mean annual compensation per department</div></div><span class="chart-badge badge-amber">Salary</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Average Salary by Department</div><div class="chart-sub">Click a bar to explore dept employees</div></div><span class="cbadge cb-amber">Salary</span></div>
         <div class="chart-wrap"><canvas id="c-salary"></canvas></div>
       </div>
       <div class="chart-card" style="animation-delay:1s">
-        <div class="chart-hdr"><div><div class="chart-title">Business Travel</div><div class="chart-sub">Employee travel frequency</div></div><span class="chart-badge badge-cyan">Travel</span></div>
+        <div class="chart-hdr"><div><div class="chart-title">Business Travel</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-cyan">Travel</span></div>
         <div class="chart-wrap"><canvas id="c-travel"></canvas></div>
       </div>
     </div>
   </main>
 
-  <footer>
-    HR Analytics Dashboard &nbsp;·&nbsp; Built with Flask &amp; Chart.js &nbsp;·&nbsp; Data refreshed on load
-  </footer>
+  <footer>HR Analytics Dashboard &nbsp;·&nbsp; Flask + Chart.js &nbsp;·&nbsp; Click any card or chart element to drill down</footer>
+
+  <!-- ── Drill-Down Modal ── -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-hdr">
+        <div>
+          <div class="modal-title" id="modal-title">Employee Detail</div>
+          <div class="modal-subtitle" id="modal-subtitle">Loading…</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-stats" id="modal-stats"></div>
+      <div class="modal-table-wrap">
+        <table class="modal-table">
+          <thead>
+            <tr>
+              <th>#</th><th>Name</th><th>Department</th><th>Job Title</th>
+              <th>Age</th><th>Gender</th><th>Salary</th><th>Tenure</th>
+              <th>Performance</th><th>Satisfaction</th><th>Overtime</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="modal-tbody"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <span id="modal-count" style="color:#475569"></span>
+        <div class="pg-wrap">
+          <button class="pg-btn" id="pg-prev" onclick="changePage(-1)">← Prev</button>
+          <span class="pg-info" id="pg-info">Page 1 / 1</span>
+          <button class="pg-btn" id="pg-next" onclick="changePage(1)">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-  /* ── Background Canvas ── */
-  (function() {
-    const cv = document.getElementById('bg-canvas');
-    const cx = cv.getContext('2d');
-    let W, H, pts;
-    function resize(){ W=cv.width=window.innerWidth; H=cv.height=window.innerHeight; }
-    class P {
-      constructor(){ this.x=Math.random()*W; this.y=Math.random()*H; this.vx=(Math.random()-.5)*.35; this.vy=(Math.random()-.5)*.35; this.r=Math.random()*1.5+.5; this.h=240+Math.random()*80; }
-      tick(){ this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>W)this.vx*=-1; if(this.y<0||this.y>H)this.vy*=-1; }
-      draw(){ cx.beginPath(); cx.arc(this.x,this.y,this.r,0,Math.PI*2); cx.fillStyle=`hsla(${this.h},75%,65%,.7)`; cx.fill(); }
+  /* ─── Background Canvas ─── */
+  (function(){
+    const cv=document.getElementById('bg-canvas'), cx=cv.getContext('2d');
+    let W,H,pts;
+    function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+    class P{
+      constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.r=Math.random()*1.4+.4;this.h=240+Math.random()*80;}
+      tick(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1;}
+      draw(){cx.beginPath();cx.arc(this.x,this.y,this.r,0,Math.PI*2);cx.fillStyle=`hsla(${this.h},75%,65%,.7)`;cx.fill();}
     }
-    function init(){ pts=Array.from({length:Math.min(70,Math.floor(W*H/14000))},()=>new P()); }
+    function init(){pts=Array.from({length:Math.min(65,Math.floor(W*H/15000))},()=>new P());}
     function draw(){
       cx.clearRect(0,0,W,H);
-      for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+      for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
         const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
-        if(d<130){ cx.beginPath(); cx.strokeStyle=`hsla(${(pts[i].h+pts[j].h)/2},70%,60%,${(1-d/130)*.3})`; cx.lineWidth=.6; cx.moveTo(pts[i].x,pts[i].y); cx.lineTo(pts[j].x,pts[j].y); cx.stroke(); }
+        if(d<120){cx.beginPath();cx.strokeStyle=`hsla(${(pts[i].h+pts[j].h)/2},65%,60%,${(1-d/120)*.28})`;cx.lineWidth=.55;cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.stroke();}
       }
-      pts.forEach(p=>{ p.tick(); p.draw(); });
+      pts.forEach(p=>{p.tick();p.draw();});
       requestAnimationFrame(draw);
     }
-    resize(); init(); draw();
-    window.addEventListener('resize',()=>{ resize(); init(); });
+    resize();init();draw();
+    window.addEventListener('resize',()=>{resize();init();});
   })();
 
-  /* ── Chart.js Defaults ── */
-  Chart.defaults.color          = '#94a3b8';
-  Chart.defaults.borderColor    = 'rgba(255,255,255,0.06)';
-  Chart.defaults.font.family    = 'Inter, sans-serif';
-  Chart.defaults.font.size      = 11;
-  Chart.defaults.plugins.legend.labels.boxWidth  = 12;
-  Chart.defaults.plugins.legend.labels.padding   = 16;
-  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(8,18,40,0.95)';
-  Chart.defaults.plugins.tooltip.borderColor     = 'rgba(124,58,237,0.4)';
+  /* ─── Chart.js Globals ─── */
+  Chart.register(ChartDataLabels);
+  Chart.defaults.color           = '#94a3b8';
+  Chart.defaults.borderColor     = 'rgba(255,255,255,0.06)';
+  Chart.defaults.font.family     = 'Inter, sans-serif';
+  Chart.defaults.font.size       = 11;
+  Chart.defaults.plugins.legend.labels.boxWidth = 11;
+  Chart.defaults.plugins.legend.labels.padding  = 14;
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(7,16,38,0.96)';
+  Chart.defaults.plugins.tooltip.borderColor     = 'rgba(124,58,237,0.45)';
   Chart.defaults.plugins.tooltip.borderWidth     = 1;
   Chart.defaults.plugins.tooltip.padding         = 12;
   Chart.defaults.plugins.tooltip.titleColor      = '#e2e8f0';
   Chart.defaults.plugins.tooltip.bodyColor       = '#94a3b8';
   Chart.defaults.plugins.tooltip.cornerRadius    = 10;
 
+  // Disable datalabels globally by default — enable per chart
+  Chart.defaults.set('plugins.datalabels', { display: false });
+
   const P10 = ['#7c3aed','#06b6d4','#f59e0b','#10b981','#ef4444','#ec4899','#f97316','#8b5cf6','#14b8a6','#eab308'];
-  const ALPHA = c => c + '33';
 
-  function grad(ctx, colors, vertical=true) {
-    const g = vertical
-      ? ctx.createLinearGradient(0, 0, 0, ctx.canvas.parentElement.offsetHeight || 300)
-      : ctx.createLinearGradient(0, 0, ctx.canvas.parentElement.offsetWidth || 300, 0);
-    colors.forEach(([stop, color]) => g.addColorStop(stop, color));
-    return g;
-  }
-
-  const BASE_OPTS = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: { duration: 900, easing: 'easeOutQuart' },
-    plugins: { legend: { display: false } },
+  const HOVER_CURSOR = {
+    onHover: (e, el) => { e.native.target.style.cursor = el.length ? 'pointer' : 'default'; }
   };
 
-  function barColors(n, palette) {
-    return Array.from({length:n}, (_,i) => palette[i % palette.length]);
-  }
+  const BASE = {
+    responsive:true, maintainAspectRatio:false,
+    animation:{ duration:900, easing:'easeOutQuart' },
+    plugins:{ legend:{ display:false }, datalabels:{ display:false } },
+    ...HOVER_CURSOR,
+  };
 
-  /* ── KPI Loader ── */
-  async function loadKPIs() {
+  /* ─── KPI Loader ─── */
+  async function loadKPIs(){
     const d = await fetch('/api/hr/summary').then(r=>r.json());
-    animNum('k-total', d.total_employees, 0, '');
+    anim('k-total', d.total_employees, 0, '');
     document.getElementById('k-active').textContent = d.active_employees + ' active';
-    animNum('k-attr',  d.attrition_rate,  1, '%');
-    document.getElementById('k-attrn').textContent = d.attrition_count + ' employees left';
-    animSal('k-sal',   d.avg_salary);
-    animNum('k-age',   d.avg_age,  1, ' yrs');
-    document.getElementById('k-gender').textContent = Math.round(d.male_count/d.total_employees*100) + '/' + Math.round(d.female_count/d.total_employees*100);
-    document.getElementById('k-gendersub').textContent = d.male_count + 'M / ' + d.female_count + 'F';
-    animNum('k-tenure', d.avg_tenure, 1, ' yr');
+    anim('k-attr',  d.attrition_rate,  1, '%');
+    document.getElementById('k-attrn').textContent  = d.attrition_count + ' left';
+    animK('k-sal',  d.avg_salary);
+    anim('k-age',   d.avg_age,          1, ' yrs');
+    document.getElementById('k-gender').textContent    = Math.round(d.male_count/d.total_employees*100)+'/'+ Math.round(d.female_count/d.total_employees*100);
+    document.getElementById('k-gendersub').textContent = d.male_count+'M / '+d.female_count+'F';
+    anim('k-tenure', d.avg_tenure, 1, ' yr');
+  }
+  function anim(id, target, dec, sfx){
+    const el=document.getElementById(id);let cur=0,step=target/50;
+    const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=cur.toFixed(dec)+sfx;if(cur>=target)clearInterval(t);},16);
+  }
+  function animK(id, target){
+    const el=document.getElementById(id);let cur=0,step=target/50;
+    const t=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent='$'+(cur/1000).toFixed(0)+'K';if(cur>=target)clearInterval(t);},16);
   }
 
-  function animNum(id, target, dec, sfx) {
-    const el=document.getElementById(id); let cur=0, step=target/50;
-    const t=setInterval(()=>{ cur=Math.min(cur+step,target); el.textContent=cur.toFixed(dec)+sfx; if(cur>=target)clearInterval(t); },16);
-  }
-  function animSal(id, target) {
-    const el=document.getElementById(id); let cur=0, step=target/50;
-    const t=setInterval(()=>{ cur=Math.min(cur+step,target); el.textContent='$'+(cur/1000).toFixed(0)+'K'; if(cur>=target)clearInterval(t); },16);
+  /* ─── Modal State & Functions ─── */
+  let MS = { filterType:'all', filterValue:'', title:'', sortBy:'', page:1, totalPages:1 };
+
+  function openModal(ft, fv, title, sortBy=''){
+    MS = { filterType:ft, filterValue:fv, title, sortBy, page:1, totalPages:1 };
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-subtitle').textContent = 'Loading…';
+    document.getElementById('modal-tbody').innerHTML = '<tr><td colspan="12" style="text-align:center;padding:2rem;color:#475569">Loading…</td></tr>';
+    document.getElementById('modal-stats').innerHTML = '';
+    document.getElementById('modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    fetchModal(1);
   }
 
-  /* ── Charts ── */
-  async function buildCharts() {
-    const [headcount, gender, age, edu, tenure, attrDept, attrAge, hiring, perf, wlb, overtime, satisfaction, salary, travel] = await Promise.all([
-      fetch('/api/hr/headcount-by-dept').then(r=>r.json()),
-      fetch('/api/hr/gender-distribution').then(r=>r.json()),
-      fetch('/api/hr/age-distribution').then(r=>r.json()),
-      fetch('/api/hr/education-distribution').then(r=>r.json()),
-      fetch('/api/hr/tenure-distribution').then(r=>r.json()),
-      fetch('/api/hr/attrition-by-dept').then(r=>r.json()),
-      fetch('/api/hr/attrition-by-age').then(r=>r.json()),
-      fetch('/api/hr/monthly-hiring').then(r=>r.json()),
-      fetch('/api/hr/performance-distribution').then(r=>r.json()),
-      fetch('/api/hr/worklife-balance').then(r=>r.json()),
-      fetch('/api/hr/overtime-distribution').then(r=>r.json()),
-      fetch('/api/hr/satisfaction-by-dept').then(r=>r.json()),
-      fetch('/api/hr/salary-by-dept').then(r=>r.json()),
-      fetch('/api/hr/travel-distribution').then(r=>r.json()),
-    ]);
+  function closeModal(){
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
-    /* 1. Headcount by Department — horizontal bar */
+  function changePage(delta){
+    const next = MS.page + delta;
+    if(next < 1 || next > MS.totalPages) return;
+    fetchModal(next);
+  }
+
+  async function fetchModal(page){
+    MS.page = page;
+    const url = `/api/hr/employees?filter_type=${encodeURIComponent(MS.filterType)}&filter_value=${encodeURIComponent(MS.filterValue)}&page=${page}&sort_by=${MS.sortBy}`;
+    const d = await fetch(url).then(r=>r.json());
+    MS.totalPages = d.total_pages;
+
+    document.getElementById('modal-subtitle').textContent = `${d.total} employee${d.total!==1?'s':''} · Page ${d.page} of ${d.total_pages}`;
+    document.getElementById('modal-count').textContent = `Showing ${(d.page-1)*15+1}–${Math.min(d.page*15,d.total)} of ${d.total}`;
+
+    // Stats bar
+    document.getElementById('modal-stats').innerHTML = `
+      <div class="mstat"><div class="mstat-val">${d.total}</div><div class="mstat-lbl">Employees</div></div>
+      <div class="mstat"><div class="mstat-val">$${(d.stats.avg_salary/1000).toFixed(0)}K</div><div class="mstat-lbl">Avg Salary</div></div>
+      <div class="mstat"><div class="mstat-val">${d.stats.avg_age}</div><div class="mstat-lbl">Avg Age</div></div>
+      <div class="mstat"><div class="mstat-val">${d.stats.avg_tenure} yr</div><div class="mstat-lbl">Avg Tenure</div></div>
+      <div class="mstat"><div class="mstat-val" style="color:${d.stats.attrition_rate>20?'#fca5a5':'#6ee7b7'}">${d.stats.attrition_rate}%</div><div class="mstat-lbl">Attrition Rate</div></div>
+    `;
+
+    // Table
+    const pfTag = {Low:'tg-low',Good:'tg-good',Excellent:'tg-exc',Outstanding:'tg-out'};
+    const sfTag = {Low:'tg-low',Medium:'tg-med',High:'tg-high','Very High':'tg-vhigh'};
+    const offset = (d.page-1)*15;
+    document.getElementById('modal-tbody').innerHTML = d.records.length
+      ? d.records.map((r,i) => `
+        <tr>
+          <td style="color:#475569">${offset+i+1}</td>
+          <td style="color:#e2e8f0;font-weight:600">${r.name}</td>
+          <td>${r.department}</td>
+          <td style="color:#94a3b8">${r.job_title}</td>
+          <td>${r.age}</td>
+          <td><span class="tag ${r.gender==='Male'?'tg-m':'tg-f'}">${r.gender}</span></td>
+          <td style="color:#fcd34d;font-weight:600">$${(r.salary/1000).toFixed(1)}K</td>
+          <td>${r.years} yr</td>
+          <td><span class="tag ${pfTag[r.performance]||''}">${r.performance}</span></td>
+          <td><span class="tag ${sfTag[r.satisfaction]||''}">${r.satisfaction}</span></td>
+          <td><span class="tag ${r.overtime==='Yes'?'tg-ot':'tg-no'}">${r.overtime}</span></td>
+          <td><span class="tag ${r.attrition==='Yes'?'tg-yes':'tg-no'}">${r.attrition}</span></td>
+        </tr>`)
+        .join('')
+      : '<tr><td colspan="12" style="text-align:center;padding:2rem;color:#475569">No records found</td></tr>';
+
+    // Pagination
+    document.getElementById('pg-prev').disabled = (d.page <= 1);
+    document.getElementById('pg-next').disabled = (d.page >= d.total_pages);
+    document.getElementById('pg-info').textContent = `Page ${d.page} / ${d.total_pages}`;
+  }
+
+  document.getElementById('modal-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+  /* ─── Charts ─── */
+  async function buildCharts(){
+    const [headcount,gender,age,edu,tenure,attrDept,attrAge,hiring,perf,wlb,overtime,satisfaction,salary,travel] = await Promise.all([
+      '/api/hr/headcount-by-dept', '/api/hr/gender-distribution', '/api/hr/age-distribution',
+      '/api/hr/education-distribution', '/api/hr/tenure-distribution', '/api/hr/attrition-by-dept',
+      '/api/hr/attrition-by-age', '/api/hr/monthly-hiring', '/api/hr/performance-distribution',
+      '/api/hr/worklife-balance', '/api/hr/overtime-distribution', '/api/hr/satisfaction-by-dept',
+      '/api/hr/salary-by-dept', '/api/hr/travel-distribution'
+    ].map(u=>fetch(u).then(r=>r.json())));
+
+    /* 1 ── Headcount by Dept — horizontal bar */
     new Chart(document.getElementById('c-headcount'), {
-      type: 'bar',
-      data: {
-        labels: headcount.labels,
-        datasets: [{
-          data: headcount.values,
-          backgroundColor: barColors(headcount.labels.length, P10),
-          borderRadius: 6,
-          borderSkipped: false,
-        }]
-      },
-      options: { ...BASE_OPTS, indexAxis:'y',
-        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw} employees` } } },
-        scales: {
-          x: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} },
-          y: { grid:{display:false}, ticks:{color:'#94a3b8',font:{size:11}} }
-        }
+      type:'bar',
+      data:{ labels:headcount.labels, datasets:[{ data:headcount.values, backgroundColor:P10, borderRadius:5, borderSkipped:false }] },
+      options:{
+        ...BASE, indexAxis:'y',
+        plugins:{ ...BASE.plugins,
+          tooltip:{ callbacks:{ label: c=>` ${c.raw} employees` } },
+          datalabels:{
+            display:true, anchor:'end', align:'start',
+            color:'#e2e8f0', font:{ size:10, weight:'700' },
+            formatter: v => v,
+            padding:{ left:6 },
+          }
+        },
+        scales:{
+          x:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} },
+          y:{ grid:{display:false}, ticks:{color:'#94a3b8'} }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('department',headcount.labels[el[0].index],'🏢 '+headcount.labels[el[0].index],''); }
       }
     });
 
-    /* 2. Gender Distribution — doughnut */
+    /* 2 ── Gender — doughnut */
+    const gTotal = gender.values.reduce((a,b)=>a+b,0);
     new Chart(document.getElementById('c-gender'), {
-      type: 'doughnut',
-      data: {
-        labels: gender.labels,
-        datasets: [{
-          data: gender.values,
-          backgroundColor: ['#06b6d4','#ec4899'],
-          borderColor: 'rgba(5,11,26,.8)',
-          borderWidth: 3,
-          hoverOffset: 8,
-        }]
-      },
-      options: {
-        ...BASE_OPTS, cutout:'68%',
-        plugins: {
-          legend: { display:true, position:'bottom' },
-          tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw} (${Math.round(c.raw/gender.values.reduce((a,b)=>a+b,0)*100)}%)` } }
-        }
+      type:'doughnut',
+      data:{ labels:gender.labels, datasets:[{ data:gender.values, backgroundColor:['#06b6d4','#ec4899'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
+      options:{
+        ...BASE, cutout:'68%',
+        plugins:{ ...BASE.plugins,
+          legend:{ display:true, position:'bottom' },
+          tooltip:{ callbacks:{ label: c=>` ${c.label}: ${c.raw} (${Math.round(c.raw/gTotal*100)}%)` } },
+          datalabels:{
+            display:true, color:'#fff', font:{ size:12, weight:'700' },
+            formatter:(v)=>Math.round(v/gTotal*100)+'%',
+          }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('gender',gender.labels[el[0].index],'⚖️ Gender — '+gender.labels[el[0].index],''); }
       }
     });
 
-    /* 3. Age Distribution — vertical bar */
+    /* 3 ── Age Distribution — vertical bar */
     new Chart(document.getElementById('c-age'), {
-      type: 'bar',
-      data: {
-        labels: age.labels,
-        datasets: [{
-          data: age.values,
-          backgroundColor: age.values.map((_,i)=>`hsla(${190+i*8},75%,55%,.75)`),
-          borderRadius: 5,
-          borderSkipped: false,
-        }]
-      },
-      options: { ...BASE_OPTS,
-        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw} employees` } } },
-        scales: {
-          x: { grid:{display:false}, ticks:{color:'#64748b'} },
-          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-        }
+      type:'bar',
+      data:{ labels:age.labels, datasets:[{ data:age.values, backgroundColor:age.values.map((_,i)=>`hsla(${190+i*8},75%,55%,.78)`), borderRadius:5, borderSkipped:false }] },
+      options:{
+        ...BASE,
+        plugins:{ ...BASE.plugins,
+          tooltip:{ callbacks:{ label: c=>` ${c.raw} employees` } },
+          datalabels:{ display:true, anchor:'end', align:'top', color:'#94a3b8', font:{ size:10, weight:'700' }, formatter:v=>v }
+        },
+        scales:{
+          x:{ grid:{display:false}, ticks:{color:'#64748b'} },
+          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('age_group',age.labels[el[0].index],'🎂 Age Group — '+age.labels[el[0].index],''); }
       }
     });
 
-    /* 4. Education Level — doughnut */
+    /* 4 ── Education — doughnut */
+    const eduTotal = edu.values.reduce((a,b)=>a+b,0);
     new Chart(document.getElementById('c-edu'), {
-      type: 'doughnut',
-      data: {
-        labels: edu.labels,
-        datasets: [{
-          data: edu.values,
-          backgroundColor: ['#6b21a8','#7c3aed','#8b5cf6','#a78bfa','#c4b5fd'],
-          borderColor: 'rgba(5,11,26,.8)',
-          borderWidth: 3, hoverOffset:8,
-        }]
-      },
-      options: { ...BASE_OPTS, cutout:'62%',
-        plugins: { legend:{display:true,position:'bottom'} }
+      type:'doughnut',
+      data:{ labels:edu.labels, datasets:[{ data:edu.values, backgroundColor:['#6b21a8','#7c3aed','#8b5cf6','#a78bfa','#c4b5fd'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
+      options:{
+        ...BASE, cutout:'62%',
+        plugins:{ ...BASE.plugins,
+          legend:{ display:true, position:'bottom' },
+          datalabels:{
+            display:(ctx)=>ctx.dataset.data[ctx.dataIndex]/eduTotal>0.05,
+            color:'#fff', font:{ size:10, weight:'700' },
+            formatter:(v)=>Math.round(v/eduTotal*100)+'%',
+          }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('education',edu.labels[el[0].index],'🎓 Education — '+edu.labels[el[0].index],''); }
       }
     });
 
-    /* 5. Tenure Distribution — vertical bar */
+    /* 5 ── Tenure — vertical bar */
     new Chart(document.getElementById('c-tenure'), {
-      type: 'bar',
-      data: {
-        labels: tenure.labels,
-        datasets: [{
-          data: tenure.values,
-          backgroundColor: tenure.values.map((_,i)=>`hsla(${145+i*10},65%,50%,.75)`),
-          borderRadius: 5,
-          borderSkipped: false,
-        }]
-      },
-      options: { ...BASE_OPTS,
-        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw} employees` } } },
-        scales: {
-          x: { grid:{display:false}, ticks:{color:'#64748b'} },
-          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-        }
+      type:'bar',
+      data:{ labels:tenure.labels, datasets:[{ data:tenure.values, backgroundColor:tenure.values.map((_,i)=>`hsla(${145+i*10},65%,50%,.78)`), borderRadius:5, borderSkipped:false }] },
+      options:{
+        ...BASE,
+        plugins:{ ...BASE.plugins,
+          tooltip:{ callbacks:{ label: c=>` ${c.raw} employees` } },
+          datalabels:{ display:true, anchor:'end', align:'top', color:'#94a3b8', font:{ size:10, weight:'700' }, formatter:v=>v }
+        },
+        scales:{
+          x:{ grid:{display:false}, ticks:{color:'#64748b'} },
+          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('tenure',tenure.labels[el[0].index],'📅 Tenure — '+tenure.labels[el[0].index],''); }
       }
     });
 
-    /* 6. Attrition by Department — horizontal bar (red palette) */
+    /* 6 ── Attrition by Dept — horizontal bar */
     new Chart(document.getElementById('c-attrDept'), {
-      type: 'bar',
-      data: {
-        labels: attrDept.labels,
-        datasets: [{
-          data: attrDept.values,
-          backgroundColor: attrDept.labels.map((_,i)=>`hsla(${0+i*10},80%,60%,.75)`),
-          borderRadius: 6,
-          borderSkipped: false,
-        }]
-      },
-      options: { ...BASE_OPTS, indexAxis:'y',
-        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw}% attrition rate` } } },
-        scales: {
-          x: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'}, max: Math.ceil(Math.max(...attrDept.values)*1.2) },
-          y: { grid:{display:false}, ticks:{color:'#94a3b8'} }
-        }
+      type:'bar',
+      data:{ labels:attrDept.labels, datasets:[{ data:attrDept.values, backgroundColor:attrDept.labels.map((_,i)=>`hsla(${5+i*10},82%,60%,.78)`), borderRadius:5, borderSkipped:false }] },
+      options:{
+        ...BASE, indexAxis:'y',
+        plugins:{ ...BASE.plugins,
+          tooltip:{ callbacks:{ label: c=>` ${c.raw}% attrition` } },
+          datalabels:{
+            display:true, anchor:'end', align:'start',
+            color:'#fca5a5', font:{ size:10, weight:'700' },
+            formatter:v=>v.toFixed(1)+'%', padding:{ left:4 },
+          }
+        },
+        scales:{
+          x:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'}, max:Math.ceil(Math.max(...attrDept.values)*1.25) },
+          y:{ grid:{display:false}, ticks:{color:'#94a3b8'} }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('attrition_dept',attrDept.labels[el[0].index],'🚨 Attrited — '+attrDept.labels[el[0].index],''); }
       }
     });
 
-    /* 7. Attrition by Age Group — vertical bar */
+    /* 7 ── Attrition by Age — vertical bar */
     new Chart(document.getElementById('c-attrAge'), {
-      type: 'bar',
-      data: {
-        labels: attrAge.labels,
-        datasets: [{
-          data: attrAge.values,
-          backgroundColor: attrAge.values.map(v=> v>25?'rgba(239,68,68,.8)': v>15?'rgba(249,115,22,.75)':'rgba(245,158,11,.7)'),
-          borderRadius: 5,
-          borderSkipped: false,
-        }]
-      },
-      options: { ...BASE_OPTS,
-        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw}% attrition` } } },
-        scales: {
-          x: { grid:{display:false}, ticks:{color:'#64748b',maxRotation:30} },
-          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'} }
-        }
+      type:'bar',
+      data:{ labels:attrAge.labels, datasets:[{ data:attrAge.values, backgroundColor:attrAge.values.map(v=>v>25?'rgba(239,68,68,.82)':v>15?'rgba(249,115,22,.78)':'rgba(245,158,11,.72)'), borderRadius:5, borderSkipped:false }] },
+      options:{
+        ...BASE,
+        plugins:{ ...BASE.plugins,
+          tooltip:{ callbacks:{ label: c=>` ${c.raw}% attrition` } },
+          datalabels:{ display:true, anchor:'end', align:'top', color:'#fca5a5', font:{ size:10, weight:'700' }, formatter:v=>v.toFixed(1)+'%' }
+        },
+        scales:{
+          x:{ grid:{display:false}, ticks:{color:'#64748b',maxRotation:30} },
+          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'} }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('attrition_age',attrAge.labels[el[0].index],'🚨 Attrited — Age '+attrAge.labels[el[0].index],''); }
       }
     });
 
-    /* 8. Monthly Hiring Trend — line with gradient fill */
+    /* 8 ── Monthly Hiring — line (no data labels to avoid clutter) */
     const hiringCtx = document.getElementById('c-hiring').getContext('2d');
-    const hiringGrad = hiringCtx.createLinearGradient(0, 0, 0, 280);
-    hiringGrad.addColorStop(0,   'rgba(6,182,212,.45)');
-    hiringGrad.addColorStop(.7,  'rgba(6,182,212,.08)');
-    hiringGrad.addColorStop(1,   'rgba(6,182,212,0)');
+    const hiGrad = hiringCtx.createLinearGradient(0,0,0,220);
+    hiGrad.addColorStop(0,'rgba(6,182,212,.45)'); hiGrad.addColorStop(.7,'rgba(6,182,212,.08)'); hiGrad.addColorStop(1,'rgba(6,182,212,0)');
     new Chart(hiringCtx, {
-      type: 'line',
-      data: {
-        labels: hiring.labels,
-        datasets: [{
-          data: hiring.values,
-          borderColor: '#06b6d4',
-          backgroundColor: hiringGrad,
-          pointBackgroundColor: '#06b6d4',
-          pointRadius: 4, pointHoverRadius: 7,
-          tension: .4, fill: true, borderWidth: 2.5,
-        }]
-      },
-      options: { ...BASE_OPTS,
-        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` ${c.raw} hires` } } },
-        scales: {
-          x: { grid:{display:false}, ticks:{color:'#64748b',maxTicksLimit:12,maxRotation:30} },
-          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-        }
+      type:'line',
+      data:{ labels:hiring.labels, datasets:[{ data:hiring.values, borderColor:'#06b6d4', backgroundColor:hiGrad, pointBackgroundColor:'#06b6d4', pointRadius:4, pointHoverRadius:7, tension:.4, fill:true, borderWidth:2.5 }] },
+      options:{
+        ...BASE,
+        plugins:{ ...BASE.plugins,
+          tooltip:{ callbacks:{ label: c=>` ${c.raw} hires` } },
+          datalabels:{ display:false }
+        },
+        scales:{
+          x:{ grid:{display:false}, ticks:{color:'#64748b',maxTicksLimit:12,maxRotation:30} },
+          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('hire_month',hiring.labels[el[0].index],'📅 Hired in '+hiring.labels[el[0].index],''); }
       }
     });
 
-    /* 9. Performance Distribution — doughnut */
+    /* 9 ── Performance — doughnut */
+    const pfTotal = perf.values.reduce((a,b)=>a+b,0);
     new Chart(document.getElementById('c-perf'), {
-      type: 'doughnut',
-      data: {
-        labels: perf.labels,
-        datasets: [{
-          data: perf.values,
-          backgroundColor: ['#6b7280','#f59e0b','#10b981','#7c3aed'],
-          borderColor: 'rgba(5,11,26,.8)',
-          borderWidth:3, hoverOffset:8,
-        }]
-      },
-      options: { ...BASE_OPTS, cutout:'65%',
-        plugins: { legend:{display:true,position:'bottom'} }
+      type:'doughnut',
+      data:{ labels:perf.labels, datasets:[{ data:perf.values, backgroundColor:['#6b7280','#f59e0b','#10b981','#7c3aed'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
+      options:{
+        ...BASE, cutout:'65%',
+        plugins:{ ...BASE.plugins,
+          legend:{ display:true, position:'bottom' },
+          datalabels:{ display:true, color:'#fff', font:{ size:11, weight:'700' }, formatter:v=>Math.round(v/pfTotal*100)+'%' }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('performance',perf.labels[el[0].index],'⭐ Performance — '+perf.labels[el[0].index],''); }
       }
     });
 
-    /* 10. Work-Life Balance — doughnut */
+    /* 10 ── Work-Life Balance — doughnut */
+    const wlbTotal = wlb.values.reduce((a,b)=>a+b,0);
     new Chart(document.getElementById('c-wlb'), {
-      type: 'doughnut',
-      data: {
-        labels: wlb.labels,
-        datasets: [{
-          data: wlb.values,
-          backgroundColor: ['#ef4444','#f97316','#06b6d4','#10b981'],
-          borderColor: 'rgba(5,11,26,.8)',
-          borderWidth:3, hoverOffset:8,
-        }]
-      },
-      options: { ...BASE_OPTS, cutout:'65%',
-        plugins: { legend:{display:true,position:'bottom'} }
+      type:'doughnut',
+      data:{ labels:wlb.labels, datasets:[{ data:wlb.values, backgroundColor:['#ef4444','#f97316','#06b6d4','#10b981'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
+      options:{
+        ...BASE, cutout:'65%',
+        plugins:{ ...BASE.plugins,
+          legend:{ display:true, position:'bottom' },
+          datalabels:{ display:true, color:'#fff', font:{ size:11, weight:'700' }, formatter:v=>Math.round(v/wlbTotal*100)+'%' }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('wlb',wlb.labels[el[0].index],'💚 Work-Life Balance — '+wlb.labels[el[0].index],''); }
       }
     });
 
-    /* 11. Overtime — doughnut */
+    /* 11 ── Overtime — doughnut */
+    const otTotal = overtime.values.reduce((a,b)=>a+b,0);
     new Chart(document.getElementById('c-overtime'), {
-      type: 'doughnut',
-      data: {
-        labels: overtime.labels,
-        datasets: [{
-          data: overtime.values,
-          backgroundColor: ['#ef4444','#10b981'],
-          borderColor: 'rgba(5,11,26,.8)',
-          borderWidth:3, hoverOffset:8,
-        }]
-      },
-      options: { ...BASE_OPTS, cutout:'65%',
-        plugins: { legend:{display:true,position:'bottom'},
-          tooltip: { callbacks: { label: c => ` ${c.label}: ${c.raw} employees` } }
-        }
+      type:'doughnut',
+      data:{ labels:overtime.labels, datasets:[{ data:overtime.values, backgroundColor:['#ef4444','#10b981'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
+      options:{
+        ...BASE, cutout:'65%',
+        plugins:{ ...BASE.plugins,
+          legend:{ display:true, position:'bottom' },
+          tooltip:{ callbacks:{ label: c=>` ${c.label}: ${c.raw}` } },
+          datalabels:{ display:true, color:'#fff', font:{ size:11, weight:'700' }, formatter:v=>Math.round(v/otTotal*100)+'%' }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('overtime',overtime.labels[el[0].index],'⏰ Overtime — '+overtime.labels[el[0].index],''); }
       }
     });
 
-    /* 12. Job Satisfaction by Dept — grouped bar */
+    /* 12 ── Job Satisfaction by Dept — grouped bar */
     const satColors = ['#ef4444','#f59e0b','#06b6d4','#10b981'];
-    const satDatasets = Object.entries(satisfaction.datasets).map(([label, data], i) => ({
-      label,
-      data,
-      backgroundColor: satColors[i] + 'cc',
+    const satDatasets = Object.entries(satisfaction.datasets).map(([label,data],i)=>({
+      label, data,
+      backgroundColor: satColors[i]+'cc',
       borderColor: satColors[i],
-      borderWidth: 1,
-      borderRadius: 4,
+      borderWidth:1, borderRadius:3,
     }));
     new Chart(document.getElementById('c-satisfaction'), {
-      type: 'bar',
-      data: { labels: satisfaction.labels, datasets: satDatasets },
-      options: { ...BASE_OPTS,
-        plugins: { legend: { display:true, position:'top', labels:{color:'#94a3b8'} } },
-        scales: {
-          x: { grid:{display:false}, ticks:{color:'#64748b'} },
-          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'}, stacked:false }
+      type:'bar',
+      data:{ labels:satisfaction.labels, datasets:satDatasets },
+      options:{
+        ...BASE,
+        plugins:{
+          legend:{ display:true, position:'top', labels:{ color:'#94a3b8' } },
+          datalabels:{
+            display:(ctx)=> ctx.dataset.data[ctx.dataIndex] > 4,
+            anchor:'center', align:'center',
+            color:'#fff', font:{ size:9, weight:'700' },
+            formatter:v=>v,
+          }
+        },
+        scales:{
+          x:{ grid:{display:false}, ticks:{color:'#64748b'} },
+          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
+        },
+        onClick:(e,el)=>{
+          if(!el.length)return;
+          const dept = satisfaction.labels[el[0].index];
+          const satLevel = Object.keys(satisfaction.datasets)[el[0].datasetIndex];
+          openModal('satisfaction', satLevel, '😊 Satisfaction: '+satLevel+' — '+dept, '');
         }
       }
     });
 
-    /* 13. Salary by Department — vertical bar */
+    /* 13 ── Salary by Dept — vertical bar */
     new Chart(document.getElementById('c-salary'), {
-      type: 'bar',
-      data: {
-        labels: salary.labels,
-        datasets: [{
-          data: salary.values,
-          backgroundColor: salary.labels.map((_,i)=>`hsla(${38+i*6},90%,${50+i*2}%,.75)`),
-          borderRadius: 6,
-          borderSkipped: false,
-        }]
-      },
-      options: { ...BASE_OPTS,
-        plugins: { ...BASE_OPTS.plugins, tooltip: { callbacks: { label: c => ` $${(c.raw/1000).toFixed(1)}K avg` } } },
-        scales: {
-          x: { grid:{display:false}, ticks:{color:'#64748b',maxRotation:20} },
-          y: { grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b', callback:v=>'$'+(v/1000)+'K'} }
-        }
+      type:'bar',
+      data:{ labels:salary.labels, datasets:[{ data:salary.values, backgroundColor:salary.labels.map((_,i)=>`hsla(${38+i*5},88%,${52+i*2}%,.78)`), borderRadius:5, borderSkipped:false }] },
+      options:{
+        ...BASE,
+        plugins:{ ...BASE.plugins,
+          tooltip:{ callbacks:{ label: c=>` $${(c.raw/1000).toFixed(1)}K avg` } },
+          datalabels:{ display:true, anchor:'end', align:'top', color:'#fcd34d', font:{ size:10, weight:'700' }, formatter:v=>'$'+(v/1000).toFixed(0)+'K' }
+        },
+        scales:{
+          x:{ grid:{display:false}, ticks:{color:'#64748b',maxRotation:20} },
+          y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>'$'+(v/1000)+'K'} }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('department',salary.labels[el[0].index],'💰 '+salary.labels[el[0].index]+' — Salary View','salary'); }
       }
     });
 
-    /* 14. Business Travel — doughnut */
+    /* 14 ── Business Travel — doughnut */
+    const tvTotal = travel.values.reduce((a,b)=>a+b,0);
     new Chart(document.getElementById('c-travel'), {
-      type: 'doughnut',
-      data: {
-        labels: travel.labels,
-        datasets: [{
-          data: travel.values,
-          backgroundColor: ['#8b5cf6','#f97316','#ef4444'],
-          borderColor: 'rgba(5,11,26,.8)',
-          borderWidth:3, hoverOffset:8,
-        }]
-      },
-      options: { ...BASE_OPTS, cutout:'62%',
-        plugins: { legend:{display:true,position:'bottom'} }
+      type:'doughnut',
+      data:{ labels:travel.labels, datasets:[{ data:travel.values, backgroundColor:['#8b5cf6','#f97316','#ef4444'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:8 }] },
+      options:{
+        ...BASE, cutout:'62%',
+        plugins:{ ...BASE.plugins,
+          legend:{ display:true, position:'bottom' },
+          datalabels:{ display:true, color:'#fff', font:{ size:11, weight:'700' }, formatter:v=>Math.round(v/tvTotal*100)+'%' }
+        },
+        onClick:(e,el)=>{ if(!el.length)return; openModal('travel',travel.labels[el[0].index],'✈️ Travel — '+travel.labels[el[0].index],''); }
       }
     });
   }
 
-  /* ── Init ── */
   loadKPIs();
   buildCharts();
   </script>
