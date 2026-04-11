@@ -280,6 +280,168 @@
     .modal-error { color:#ef4444;font-size:.8rem;padding:2rem;text-align:center; }
 
     footer { position:relative;z-index:2;text-align:center;padding:1.75rem;color:var(--muted);font-size:.73rem;border-top:1px solid var(--bdr);margin-top:1rem; }
+
+    /* ═══════════════════════════════════════════════════════════
+       EMPLOYEE TABLE — Excel-style beautiful dark table
+    ═══════════════════════════════════════════════════════════ */
+    .emp-table-section {
+      position:relative;
+      background:rgba(8,18,40,.82);
+      border:1px solid rgba(124,58,237,.22);
+      border-radius:20px;
+      overflow:hidden;
+      backdrop-filter:blur(24px);
+      box-shadow:0 24px 64px rgba(0,0,0,.5), 0 0 0 1px rgba(124,58,237,.08);
+      animation:cardIn .5s ease .35s both;
+    }
+
+    /* ── Toolbar ── */
+    .emp-table-toolbar {
+      display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;
+      padding:1rem 1.4rem .9rem;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(6,182,212,.04));
+    }
+    .emp-table-title {
+      font-size:.92rem;font-weight:800;color:var(--text);
+      display:flex;align-items:center;gap:.55rem;white-space:nowrap;
+      margin-right:.4rem;
+    }
+    .emp-count-badge {
+      font-size:.66rem;font-weight:700;
+      background:rgba(124,58,237,.22);
+      border:1px solid rgba(124,58,237,.35);
+      color:#a78bfa;
+      padding:.2rem .6rem;border-radius:100px;
+    }
+    .emp-search-wrap {
+      flex:1;min-width:180px;max-width:360px;
+      position:relative;display:flex;align-items:center;
+    }
+    .emp-search-icon {
+      position:absolute;left:.7rem;font-size:.85rem;pointer-events:none;
+    }
+    .emp-search {
+      width:100%;padding:.48rem .8rem .48rem 2.1rem;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:10px;
+      color:var(--text);font-family:'Inter',sans-serif;font-size:.8rem;
+      outline:none;transition:border-color .2s,box-shadow .2s;
+    }
+    .emp-search:focus {
+      border-color:rgba(124,58,237,.6);
+      box-shadow:0 0 0 3px rgba(124,58,237,.15);
+    }
+    .emp-search::placeholder { color:var(--muted); }
+    .emp-table-actions { display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-left:auto; }
+    .emp-filter-select {
+      padding:.44rem .75rem;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:9px;
+      color:var(--text);font-family:'Inter',sans-serif;font-size:.78rem;
+      outline:none;cursor:pointer;
+      transition:border-color .2s;
+    }
+    .emp-filter-select:focus,
+    .emp-filter-select:hover { border-color:rgba(124,58,237,.5); }
+    .emp-filter-select option { background:#0f1e3d;color:#e2e8f0; }
+
+    /* ── Table wrap ── */
+    .emp-table-wrap {
+      overflow-x:auto;overflow-y:auto;
+      max-height:calc(100vh - 280px);
+      min-height:320px;
+    }
+    /* Custom scrollbar */
+    .emp-table-wrap::-webkit-scrollbar { width:6px;height:6px; }
+    .emp-table-wrap::-webkit-scrollbar-track { background:rgba(255,255,255,.02); }
+    .emp-table-wrap::-webkit-scrollbar-thumb { background:rgba(124,58,237,.4);border-radius:3px; }
+    .emp-table-wrap::-webkit-scrollbar-thumb:hover { background:rgba(124,58,237,.65); }
+
+    /* ── Table itself ── */
+    .emp-table { width:100%;border-collapse:collapse;font-size:.78rem;min-width:900px; }
+
+    .emp-table thead tr {
+      background:rgba(5,11,26,.97);
+      position:sticky;top:0;z-index:10;
+    }
+    .emp-table th {
+      padding:.62rem .75rem;
+      text-align:left;
+      color:#64748b;
+      font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;
+      border-bottom:1px solid rgba(124,58,237,.25);
+      white-space:nowrap;
+      cursor:pointer;
+      user-select:none;
+      transition:color .18s;
+    }
+    .emp-table th:hover { color:#a78bfa; }
+    .emp-table th:first-child { padding-left:1.2rem; }
+    .emp-table th:last-child  { padding-right:1.2rem; }
+
+    .sort-icon { margin-left:.3rem;opacity:.45;font-size:.65rem; }
+    .sort-asc  .sort-icon { opacity:1;color:#a78bfa; }
+    .sort-desc .sort-icon { opacity:1;color:#a78bfa; }
+
+    /* ── Body rows ── */
+    .emp-table tbody tr {
+      border-bottom:1px solid rgba(255,255,255,.035);
+      transition:background .14s;
+    }
+    .emp-table tbody tr:nth-child(even) { background:rgba(255,255,255,.016); }
+    .emp-table tbody tr:hover           { background:rgba(124,58,237,.1); }
+
+    .emp-table td {
+      padding:.56rem .75rem;
+      color:#cbd5e1;
+      white-space:nowrap;
+      vertical-align:middle;
+    }
+    .emp-table td:first-child { padding-left:1.2rem;color:#475569;font-size:.7rem; }
+    .emp-table td:last-child  { padding-right:1.2rem; }
+
+    .emp-name-cell  { color:#e2e8f0!important;font-weight:600; }
+    .emp-sal-cell   { color:#fcd34d!important;font-weight:600; }
+    .emp-id-cell    { color:#475569;font-size:.7rem;font-family:'Inter',monospace; }
+
+    /* ── Department color pills ── */
+    .dept-tag {
+      display:inline-block;padding:.2rem .55rem;border-radius:6px;
+      font-size:.65rem;font-weight:700;letter-spacing:.04em;white-space:nowrap;
+    }
+    .dept-rd  { background:rgba(124,58,237,.2);  color:#a78bfa; border:1px solid rgba(124,58,237,.3); }
+    .dept-sal { background:rgba(6,182,212,.18);  color:#67e8f9; border:1px solid rgba(6,182,212,.3); }
+    .dept-hr  { background:rgba(236,72,153,.18); color:#f9a8d4; border:1px solid rgba(236,72,153,.3); }
+    .dept-fin { background:rgba(245,158,11,.18); color:#fcd34d; border:1px solid rgba(245,158,11,.3); }
+    .dept-mkt { background:rgba(16,185,129,.18); color:#6ee7b7; border:1px solid rgba(16,185,129,.3); }
+    .dept-ops { background:rgba(249,115,22,.18); color:#fdba74; border:1px solid rgba(249,115,22,.3); }
+    .dept-def { background:rgba(100,116,139,.18);color:#94a3b8; border:1px solid rgba(100,116,139,.3); }
+
+    /* ── Empty / loading ── */
+    .emp-loading {
+      text-align:center;padding:3rem;color:#475569;font-size:.82rem;
+    }
+
+    /* ── Pagination bar ── */
+    .emp-pagination {
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.75rem 1.4rem;
+      border-top:1px solid rgba(255,255,255,.05);
+      background:rgba(5,11,26,.6);
+      font-size:.72rem;color:var(--muted);
+      flex-wrap:wrap;gap:.5rem;
+    }
+    .emp-pg-btns { display:flex;align-items:center;gap:.4rem; }
+    .emp-pg-btn {
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+      color:#94a3b8;padding:.3rem .7rem;border-radius:7px;cursor:pointer;
+      font-size:.72rem;font-family:'Inter',sans-serif;transition:all .18s;
+    }
+    .emp-pg-btn:hover:not(:disabled) { background:rgba(124,58,237,.2);color:#a78bfa;border-color:rgba(124,58,237,.4); }
+    .emp-pg-btn:disabled { opacity:.3;cursor:not-allowed; }
   </style>
 </head>
 <body>
@@ -345,114 +507,59 @@
       </div>
     </div>
 
-    <!-- Workforce Overview -->
-    <div class="section-hdr">
-      <div class="section-hdr-title">🏢 Workforce Overview</div>
-      <div class="section-hdr-line"></div>
-    </div>
-    <div class="chart-grid">
-      <div class="chart-card span-2" style="animation-delay:.35s">
-        <div class="chart-hdr"><div><div class="chart-title">Headcount by Department</div><div class="chart-sub">Click a bar to explore employees in that dept</div></div><span class="cbadge cb-purple">Headcount</span></div>
-        <div class="chart-wrap"><canvas id="c-headcount"></canvas></div>
+    <!-- Employee Table -->
+    <div class="emp-table-section">
+      <div class="emp-table-toolbar">
+        <div class="emp-table-title">👤 All Employees <span id="emp-count-label" class="emp-count-badge">— records</span></div>
+        <div class="emp-search-wrap">
+          <span class="emp-search-icon">🔍</span>
+          <input id="emp-search" class="emp-search" placeholder="Search name, department, job title…" oninput="filterTable()"/>
+        </div>
+        <div class="emp-table-actions">
+          <select id="emp-dept-filter" class="emp-filter-select" onchange="filterTable()">
+            <option value="">All Departments</option>
+          </select>
+          <select id="emp-attr-filter" class="emp-filter-select" onchange="filterTable()">
+            <option value="">All Status</option>
+            <option value="Yes">Attrited</option>
+            <option value="No">Active</option>
+          </select>
+        </div>
       </div>
-      <div class="chart-card" style="animation-delay:.4s">
-        <div class="chart-hdr"><div><div class="chart-title">Gender Distribution</div><div class="chart-sub">Click a slice to view that group</div></div><span class="cbadge cb-pink">Gender</span></div>
-        <div class="chart-wrap"><canvas id="c-gender"></canvas></div>
+      <div class="emp-table-wrap">
+        <table class="emp-table" id="emp-table">
+          <thead>
+            <tr>
+              <th data-sort="id"         onclick="sortTable('id')">#<span class="sort-icon">⇅</span></th>
+              <th data-sort="name"       onclick="sortTable('name')">Name<span class="sort-icon">⇅</span></th>
+              <th data-sort="department" onclick="sortTable('department')">Department<span class="sort-icon">⇅</span></th>
+              <th data-sort="job_title"  onclick="sortTable('job_title')">Job Title<span class="sort-icon">⇅</span></th>
+              <th data-sort="age"        onclick="sortTable('age')">Age<span class="sort-icon">⇅</span></th>
+              <th>Gender</th>
+              <th data-sort="salary"     onclick="sortTable('salary')">Salary<span class="sort-icon">⇅</span></th>
+              <th data-sort="years"      onclick="sortTable('years')">Tenure<span class="sort-icon">⇅</span></th>
+              <th data-sort="performance" onclick="sortTable('performance')">Performance<span class="sort-icon">⇅</span></th>
+              <th>Satisfaction</th>
+              <th>Overtime</th>
+              <th data-sort="attrition"  onclick="sortTable('attrition')">Status<span class="sort-icon">⇅</span></th>
+            </tr>
+          </thead>
+          <tbody id="emp-tbody">
+            <tr><td colspan="12" class="emp-loading">Loading employees…</td></tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-
-    <!-- Demographics -->
-    <div class="section-hdr">
-      <div class="section-hdr-title">📋 Demographics</div>
-      <div class="section-hdr-line"></div>
-    </div>
-    <div class="chart-grid">
-      <div class="chart-card" style="animation-delay:.45s">
-        <div class="chart-hdr"><div><div class="chart-title">Age Distribution</div><div class="chart-sub">Click an age band to explore</div></div><span class="cbadge cb-cyan">Age</span></div>
-        <div class="chart-wrap"><canvas id="c-age"></canvas></div>
-      </div>
-      <div class="chart-card" style="animation-delay:.5s">
-        <div class="chart-hdr"><div><div class="chart-title">Education Level</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-amber">Education</span></div>
-        <div class="chart-wrap"><canvas id="c-edu"></canvas></div>
-      </div>
-      <div class="chart-card" style="animation-delay:.55s">
-        <div class="chart-hdr"><div><div class="chart-title">Tenure Distribution</div><div class="chart-sub">Click a bar to explore</div></div><span class="cbadge cb-green">Tenure</span></div>
-        <div class="chart-wrap"><canvas id="c-tenure"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Attrition -->
-    <div class="section-hdr">
-      <div class="section-hdr-title">🚨 Attrition Analysis</div>
-      <div class="section-hdr-line"></div>
-    </div>
-    <div class="chart-grid">
-      <div class="chart-card span-2" style="animation-delay:.6s">
-        <div class="chart-hdr"><div><div class="chart-title">Attrition Rate by Department</div><div class="chart-sub">Click to see who left from each dept</div></div><span class="cbadge cb-red">Attrition %</span></div>
-        <div class="chart-wrap"><canvas id="c-attrDept"></canvas></div>
-      </div>
-      <div class="chart-card" style="animation-delay:.65s">
-        <div class="chart-hdr"><div><div class="chart-title">Attrition by Age Group</div><div class="chart-sub">Click an age band to see leavers</div></div><span class="cbadge cb-red">Risk</span></div>
-        <div class="chart-wrap"><canvas id="c-attrAge"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Recruitment -->
-    <div class="section-hdr">
-      <div class="section-hdr-title">📈 Recruitment Trend</div>
-      <div class="section-hdr-line"></div>
-    </div>
-    <div class="chart-grid">
-      <div class="chart-card span-3" style="animation-delay:.7s">
-        <div class="chart-hdr"><div><div class="chart-title">Monthly Hiring Trend</div><div class="chart-sub">Click any point to see employees hired that month</div></div><span class="cbadge cb-cyan">Timeline</span></div>
-        <div class="chart-wrap" style="min-height:145px"><canvas id="c-hiring"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Performance -->
-    <div class="section-hdr">
-      <div class="section-hdr-title">⭐ Performance &amp; Satisfaction</div>
-      <div class="section-hdr-line"></div>
-    </div>
-    <div class="chart-grid">
-      <div class="chart-card" style="animation-delay:.75s">
-        <div class="chart-hdr"><div><div class="chart-title">Performance Ratings</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-amber">Ratings</span></div>
-        <div class="chart-wrap"><canvas id="c-perf"></canvas></div>
-      </div>
-      <div class="chart-card" style="animation-delay:.8s">
-        <div class="chart-hdr"><div><div class="chart-title">Work-Life Balance</div><div class="chart-sub">Click a slice to view group</div></div><span class="cbadge cb-green">Wellbeing</span></div>
-        <div class="chart-wrap"><canvas id="c-wlb"></canvas></div>
-      </div>
-      <div class="chart-card" style="animation-delay:.85s">
-        <div class="chart-hdr"><div><div class="chart-title">Overtime Distribution</div><div class="chart-sub">Click to view overtime employees</div></div><span class="cbadge cb-red">OT</span></div>
-        <div class="chart-wrap"><canvas id="c-overtime"></canvas></div>
-      </div>
-    </div>
-    <div class="chart-grid" style="margin-top:.75rem">
-      <div class="chart-card span-3" style="animation-delay:.9s">
-        <div class="chart-hdr"><div><div class="chart-title">Job Satisfaction by Department</div><div class="chart-sub">Click any bar to explore by satisfaction level</div></div><span class="cbadge cb-purple">Satisfaction</span></div>
-        <div class="chart-wrap" style="min-height:155px"><canvas id="c-satisfaction"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Compensation -->
-    <div class="section-hdr">
-      <div class="section-hdr-title">💼 Compensation &amp; Work Patterns</div>
-      <div class="section-hdr-line"></div>
-    </div>
-    <div class="chart-grid">
-      <div class="chart-card span-2" style="animation-delay:.95s">
-        <div class="chart-hdr"><div><div class="chart-title">Average Salary by Department</div><div class="chart-sub">Click a bar to explore dept employees by salary</div></div><span class="cbadge cb-amber">Salary</span></div>
-        <div class="chart-wrap"><canvas id="c-salary"></canvas></div>
-      </div>
-      <div class="chart-card" style="animation-delay:1s">
-        <div class="chart-hdr"><div><div class="chart-title">Business Travel</div><div class="chart-sub">Click a slice to view travel group</div></div><span class="cbadge cb-cyan">Travel</span></div>
-        <div class="chart-wrap"><canvas id="c-travel"></canvas></div>
+      <!-- Table Pagination -->
+      <div class="emp-pagination">
+        <span id="emp-pg-info" style="color:#475569">Showing all records</span>
+        <div class="emp-pg-btns">
+          <button class="emp-pg-btn" id="emp-pg-prev" onclick="empChangePage(-1)" disabled>← Prev</button>
+          <span id="emp-pg-label" style="color:#64748b;font-size:.72rem;padding:0 .4rem">Page 1 / 1</span>
+          <button class="emp-pg-btn" id="emp-pg-next" onclick="empChangePage(1)" disabled>Next →</button>
+        </div>
       </div>
     </div>
   </main>
-
-  <footer>HR Analytics Dashboard &nbsp;·&nbsp; Flask + Chart.js &nbsp;·&nbsp; Click any card or chart element for drill-down &nbsp;·&nbsp; Use 📥 Export in popup for Excel</footer>
 
   <!-- ── Drill-Down Modal ── -->
   <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true">
@@ -729,272 +836,149 @@
   document.getElementById('modal-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
   document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 
-  /* ─── Charts ─── */
-  async function buildCharts(){
+  /* ─── Employee Table ─── */
+  let allEmployees = [], filteredEmployees = [];
+  let sortField = 'id', sortDir = 1;
+  let empPage = 1;
+  const EMP_PER_PAGE = 50;
+
+  /* Department → CSS class */
+  function deptClass(dept){
+    const d = (dept||'').toLowerCase();
+    if(d.includes('research')||d.includes('r&d')||d.includes('engineer')) return 'dept-rd';
+    if(d.includes('sale')) return 'dept-sal';
+    if(d.includes('hr')||d.includes('human')) return 'dept-hr';
+    if(d.includes('financ')||d.includes('account')) return 'dept-fin';
+    if(d.includes('market')) return 'dept-mkt';
+    if(d.includes('operat')||d.includes('logist')||d.includes('supply')) return 'dept-ops';
+    return 'dept-def';
+  }
+
+  async function loadEmployeeTable(){
     try {
-      const [headcount,gender,age,edu,tenure,attrDept,attrAge,hiring,perf,wlb,overtime,satisfaction,salary,travel] = await Promise.all([
-        '/api/hr/headcount-by-dept','/api/hr/gender-distribution','/api/hr/age-distribution',
-        '/api/hr/education-distribution','/api/hr/tenure-distribution','/api/hr/attrition-by-dept',
-        '/api/hr/attrition-by-age','/api/hr/monthly-hiring','/api/hr/performance-distribution',
-        '/api/hr/worklife-balance','/api/hr/overtime-distribution','/api/hr/satisfaction-by-dept',
-        '/api/hr/salary-by-dept','/api/hr/travel-distribution'
-      ].map(u=>fetch(u).then(r=>r.json())));
-
-      /* 1 ── Headcount — horizontal bar */
-      new Chart(document.getElementById('c-headcount'), {
-        type:'bar',
-        data:{ labels:headcount.labels, datasets:[{ data:headcount.values, backgroundColor:'rgba(124,58,237,.75)', borderRadius:5, borderSkipped:false }] },
-        options:{
-          ...BASE, indexAxis:'y',
-          plugins:{ ...BASE.plugins,
-            tooltip:{ callbacks:{ label:c=>` ${c.raw} employees` } },
-            datalabels:{ display:true, anchor:'end', align:'start', color:'#e2e8f0', font:{size:10,weight:'700'}, formatter:v=>v, padding:{left:6} }
-          },
-          scales:{
-            x:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} },
-            y:{ grid:{display:false}, ticks:{color:'#94a3b8'} }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('department',headcount.labels[el[0].index],'🏢 '+headcount.labels[el[0].index],''); }
-        }
-      });
-
-      /* 2 ── Gender — doughnut */
-      const gTot = gender.values.reduce((a,b)=>a+b,0);
-      new Chart(document.getElementById('c-gender'), {
-        type:'doughnut',
-        data:{ labels:gender.labels, datasets:[{ data:gender.values, backgroundColor:['#06b6d4','#ec4899'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
-        options:{
-          ...BASE, cutout:'68%',
-          plugins:{ ...BASE.plugins,
-            legend:{ display:true, position:'bottom' },
-            tooltip:{ callbacks:{ label:c=>` ${c.label}: ${c.raw} (${Math.round(c.raw/gTot*100)}%)` } },
-            datalabels:{ display:true, color:'#fff', font:{size:12,weight:'700'}, formatter:v=>Math.round(v/gTot*100)+'%' }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('gender',gender.labels[el[0].index],'⚖️ Gender — '+gender.labels[el[0].index],''); }
-        }
-      });
-
-      /* 3 ── Age Distribution — bar */
-      new Chart(document.getElementById('c-age'), {
-        type:'bar',
-        data:{ labels:age.labels, datasets:[{ data:age.values, backgroundColor:'rgba(6,182,212,.75)', borderRadius:5, borderSkipped:false }] },
-        options:{
-          ...BASE,
-          plugins:{ ...BASE.plugins,
-            tooltip:{ callbacks:{ label:c=>` ${c.raw} employees` } },
-            datalabels:{ display:true, anchor:'end', align:'top', color:'#67e8f9', font:{size:10,weight:'700'}, formatter:v=>v }
-          },
-          scales:{
-            x:{ grid:{display:false}, ticks:{color:'#64748b'} },
-            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('age_group',age.labels[el[0].index],'🎂 Age Group — '+age.labels[el[0].index],''); }
-        }
-      });
-
-      /* 4 ── Education — doughnut */
-      const eduTot = edu.values.reduce((a,b)=>a+b,0);
-      new Chart(document.getElementById('c-edu'), {
-        type:'doughnut',
-        data:{ labels:edu.labels, datasets:[{ data:edu.values, backgroundColor:['#6b21a8','#7c3aed','#8b5cf6','#a78bfa','#c4b5fd'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
-        options:{
-          ...BASE, cutout:'62%',
-          plugins:{ ...BASE.plugins,
-            legend:{ display:true, position:'bottom' },
-            datalabels:{ display:(ctx)=>ctx.dataset.data[ctx.dataIndex]/eduTot>0.05, color:'#fff', font:{size:10,weight:'700'}, formatter:v=>Math.round(v/eduTot*100)+'%' }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('education',edu.labels[el[0].index],'🎓 Education — '+edu.labels[el[0].index],''); }
-        }
-      });
-
-      /* 5 ── Tenure — bar */
-      new Chart(document.getElementById('c-tenure'), {
-        type:'bar',
-        data:{ labels:tenure.labels, datasets:[{ data:tenure.values, backgroundColor:'rgba(16,185,129,.75)', borderRadius:5, borderSkipped:false }] },
-        options:{
-          ...BASE,
-          plugins:{ ...BASE.plugins,
-            tooltip:{ callbacks:{ label:c=>` ${c.raw} employees` } },
-            datalabels:{ display:true, anchor:'end', align:'top', color:'#6ee7b7', font:{size:10,weight:'700'}, formatter:v=>v }
-          },
-          scales:{
-            x:{ grid:{display:false}, ticks:{color:'#64748b'} },
-            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('tenure',tenure.labels[el[0].index],'📅 Tenure — '+tenure.labels[el[0].index],''); }
-        }
-      });
-
-      /* 6 ── Attrition by Dept — horizontal bar */
-      new Chart(document.getElementById('c-attrDept'), {
-        type:'bar',
-        data:{ labels:attrDept.labels, datasets:[{ data:attrDept.values, backgroundColor:'rgba(239,68,68,.72)', borderRadius:5, borderSkipped:false }] },
-        options:{
-          ...BASE, indexAxis:'y',
-          plugins:{ ...BASE.plugins,
-            tooltip:{ callbacks:{ label:c=>` ${c.raw}% attrition` } },
-            datalabels:{ display:true, anchor:'end', align:'start', color:'#fca5a5', font:{size:10,weight:'700'}, formatter:v=>v.toFixed(1)+'%', padding:{left:4} }
-          },
-          scales:{
-            x:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'}, max:Math.ceil(Math.max(...attrDept.values)*1.25) },
-            y:{ grid:{display:false}, ticks:{color:'#94a3b8'} }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('attrition_dept',attrDept.labels[el[0].index],'🚨 Attrited — '+attrDept.labels[el[0].index],''); }
-        }
-      });
-
-      /* 7 ── Attrition by Age — bar */
-      new Chart(document.getElementById('c-attrAge'), {
-        type:'bar',
-        data:{ labels:attrAge.labels, datasets:[{ data:attrAge.values, backgroundColor:attrAge.values.map(v=>v>25?'rgba(239,68,68,.82)':v>15?'rgba(249,115,22,.78)':'rgba(245,158,11,.72)'), borderRadius:5, borderSkipped:false }] },
-        options:{
-          ...BASE,
-          plugins:{ ...BASE.plugins,
-            tooltip:{ callbacks:{ label:c=>` ${c.raw}% attrition` } },
-            datalabels:{ display:true, anchor:'end', align:'top', color:'#fca5a5', font:{size:10,weight:'700'}, formatter:v=>v.toFixed(1)+'%' }
-          },
-          scales:{
-            x:{ grid:{display:false}, ticks:{color:'#64748b',maxRotation:30} },
-            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>v+'%'} }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('attrition_age',attrAge.labels[el[0].index],'🚨 Attrited — Age '+attrAge.labels[el[0].index],''); }
-        }
-      });
-
-      /* 8 ── Monthly Hiring — line */
-      const hCtx = document.getElementById('c-hiring').getContext('2d');
-      const hGrad = hCtx.createLinearGradient(0,0,0,220);
-      hGrad.addColorStop(0,'rgba(6,182,212,.45)'); hGrad.addColorStop(.7,'rgba(6,182,212,.08)'); hGrad.addColorStop(1,'rgba(6,182,212,0)');
-      new Chart(hCtx, {
-        type:'line',
-        data:{ labels:hiring.labels, datasets:[{ data:hiring.values, borderColor:'#06b6d4', backgroundColor:hGrad, pointBackgroundColor:'#06b6d4', pointRadius:4, pointHoverRadius:8, tension:.4, fill:true, borderWidth:2.5 }] },
-        options:{
-          ...BASE,
-          plugins:{ ...BASE.plugins,
-            tooltip:{ callbacks:{ label:c=>` ${c.raw} hires` } },
-            datalabels:{ display:false }
-          },
-          scales:{
-            x:{ grid:{display:false}, ticks:{color:'#64748b',maxTicksLimit:12,maxRotation:30} },
-            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('hire_month',hiring.labels[el[0].index],'📅 Hired in '+hiring.labels[el[0].index],''); }
-        }
-      });
-
-      /* 9 ── Performance — doughnut */
-      const pfTot = perf.values.reduce((a,b)=>a+b,0);
-      new Chart(document.getElementById('c-perf'), {
-        type:'doughnut',
-        data:{ labels:perf.labels, datasets:[{ data:perf.values, backgroundColor:['#6b7280','#f59e0b','#10b981','#7c3aed'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
-        options:{
-          ...BASE, cutout:'65%',
-          plugins:{ ...BASE.plugins,
-            legend:{ display:true, position:'bottom' },
-            datalabels:{ display:true, color:'#fff', font:{size:11,weight:'700'}, formatter:v=>Math.round(v/pfTot*100)+'%' }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('performance',perf.labels[el[0].index],'⭐ Performance — '+perf.labels[el[0].index],''); }
-        }
-      });
-
-      /* 10 ── WLB — doughnut */
-      const wlbTot = wlb.values.reduce((a,b)=>a+b,0);
-      new Chart(document.getElementById('c-wlb'), {
-        type:'doughnut',
-        data:{ labels:wlb.labels, datasets:[{ data:wlb.values, backgroundColor:['#ef4444','#f97316','#06b6d4','#10b981'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
-        options:{
-          ...BASE, cutout:'65%',
-          plugins:{ ...BASE.plugins,
-            legend:{ display:true, position:'bottom' },
-            datalabels:{ display:true, color:'#fff', font:{size:11,weight:'700'}, formatter:v=>Math.round(v/wlbTot*100)+'%' }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('wlb',wlb.labels[el[0].index],'💚 Work-Life Balance — '+wlb.labels[el[0].index],''); }
-        }
-      });
-
-      /* 11 ── Overtime — doughnut */
-      const otTot = overtime.values.reduce((a,b)=>a+b,0);
-      new Chart(document.getElementById('c-overtime'), {
-        type:'doughnut',
-        data:{ labels:overtime.labels, datasets:[{ data:overtime.values, backgroundColor:['#ef4444','#10b981'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
-        options:{
-          ...BASE, cutout:'65%',
-          plugins:{ ...BASE.plugins,
-            legend:{ display:true, position:'bottom' },
-            tooltip:{ callbacks:{ label:c=>` ${c.label}: ${c.raw}` } },
-            datalabels:{ display:true, color:'#fff', font:{size:11,weight:'700'}, formatter:v=>Math.round(v/otTot*100)+'%' }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('overtime',overtime.labels[el[0].index],'⏰ Overtime — '+overtime.labels[el[0].index],''); }
-        }
-      });
-
-      /* 12 ── Job Satisfaction — grouped bar */
-      const satColors=['#ef4444','#f59e0b','#06b6d4','#10b981'];
-      const satDS = Object.entries(satisfaction.datasets).map(([label,data],i)=>({
-        label, data, backgroundColor:satColors[i]+'cc', borderColor:satColors[i], borderWidth:1, borderRadius:3,
-      }));
-      new Chart(document.getElementById('c-satisfaction'), {
-        type:'bar',
-        data:{ labels:satisfaction.labels, datasets:satDS },
-        options:{
-          ...BASE,
-          plugins:{
-            legend:{ display:true, position:'top', labels:{color:'#94a3b8'} },
-            datalabels:{ display:(ctx)=>ctx.dataset.data[ctx.dataIndex]>4, anchor:'center', align:'center', color:'#fff', font:{size:9,weight:'700'}, formatter:v=>v }
-          },
-          scales:{
-            x:{ grid:{display:false}, ticks:{color:'#64748b'} },
-            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b'} }
-          },
-          onClick:(e,el)=>{
-            if(!el.length)return;
-            const dept    = satisfaction.labels[el[0].index];
-            const satLvl  = Object.keys(satisfaction.datasets)[el[0].datasetIndex];
-            openModal('satisfaction', satLvl, '😊 Satisfaction: '+satLvl+' — '+dept, '');
-          }
-        }
-      });
-
-      /* 13 ── Salary by Dept — bar */
-      new Chart(document.getElementById('c-salary'), {
-        type:'bar',
-        data:{ labels:salary.labels, datasets:[{ data:salary.values, backgroundColor:'rgba(245,158,11,.75)', borderRadius:5, borderSkipped:false }] },
-        options:{
-          ...BASE,
-          plugins:{ ...BASE.plugins,
-            tooltip:{ callbacks:{ label:c=>` $${(c.raw/1000).toFixed(1)}K avg` } },
-            datalabels:{ display:true, anchor:'end', align:'top', color:'#fcd34d', font:{size:10,weight:'700'}, formatter:v=>'$'+(v/1000).toFixed(0)+'K' }
-          },
-          scales:{
-            x:{ grid:{display:false}, ticks:{color:'#64748b',maxRotation:20} },
-            y:{ grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#64748b',callback:v=>'$'+(v/1000)+'K'} }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('department',salary.labels[el[0].index],'💰 '+salary.labels[el[0].index]+' — Salary View','salary'); }
-        }
-      });
-
-      /* 14 ── Business Travel — doughnut */
-      const tvTot = travel.values.reduce((a,b)=>a+b,0);
-      new Chart(document.getElementById('c-travel'), {
-        type:'doughnut',
-        data:{ labels:travel.labels, datasets:[{ data:travel.values, backgroundColor:['#8b5cf6','#f97316','#ef4444'], borderColor:'rgba(5,11,26,.8)', borderWidth:3, hoverOffset:10 }] },
-        options:{
-          ...BASE, cutout:'62%',
-          plugins:{ ...BASE.plugins,
-            legend:{ display:true, position:'bottom' },
-            datalabels:{ display:true, color:'#fff', font:{size:11,weight:'700'}, formatter:v=>Math.round(v/tvTot*100)+'%' }
-          },
-          onClick:(e,el)=>{ if(!el.length)return; openModal('travel',travel.labels[el[0].index],'✈️ Travel — '+travel.labels[el[0].index],''); }
-        }
-      });
-
+      const res = await fetch('/api/hr/employees?per_page=9999&page=1&filter_type=all&filter_value=');
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const d = await res.json();
+      if(d.error) throw new Error(d.error);
+      allEmployees = d.records || [];
+      populateDeptDropdown(allEmployees);
+      filteredEmployees = [...allEmployees];
+      empPage = 1;
+      renderTable();
     } catch(err){
-      console.error('Chart build error:', err);
+      console.error('Employee table load error:', err);
+      document.getElementById('emp-tbody').innerHTML =
+        `<tr><td colspan="12" class="emp-loading">⚠ Failed to load employees: ${err.message}</td></tr>`;
     }
   }
 
+  function populateDeptDropdown(records){
+    const sel = document.getElementById('emp-dept-filter');
+    const depts = [...new Set(records.map(r=>r.department).filter(Boolean))].sort();
+    depts.forEach(d=>{
+      const o = document.createElement('option');
+      o.value = d; o.textContent = d;
+      sel.appendChild(o);
+    });
+  }
+
+  function filterTable(){
+    const q     = (document.getElementById('emp-search').value||'').trim().toLowerCase();
+    const dept  = document.getElementById('emp-dept-filter').value;
+    const attr  = document.getElementById('emp-attr-filter').value;
+    filteredEmployees = allEmployees.filter(r=>{
+      if(dept && r.department !== dept) return false;
+      if(attr && r.attrition  !== attr) return false;
+      if(q){
+        const hay = `${r.name} ${r.department} ${r.job_title}`.toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+      return true;
+    });
+    empPage = 1;
+    renderTable();
+  }
+
+  function sortTable(field){
+    /* Toggle direction if same field, otherwise reset to asc */
+    if(sortField === field){
+      sortDir *= -1;
+    } else {
+      sortField = field;
+      sortDir   = 1;
+    }
+    /* Update header classes */
+    document.querySelectorAll('.emp-table th').forEach(th=>{
+      th.classList.remove('sort-asc','sort-desc');
+      if(th.dataset.sort === field) th.classList.add(sortDir===1?'sort-asc':'sort-desc');
+    });
+    filteredEmployees.sort((a,b)=>{
+      let av = a[field], bv = b[field];
+      if(typeof av==='string') av=av.toLowerCase();
+      if(typeof bv==='string') bv=bv.toLowerCase();
+      if(av < bv) return -sortDir;
+      if(av > bv) return  sortDir;
+      return 0;
+    });
+    empPage = 1;
+    renderTable();
+  }
+
+  function empChangePage(delta){
+    const totalPages = Math.ceil(filteredEmployees.length / EMP_PER_PAGE);
+    const next = empPage + delta;
+    if(next < 1 || next > totalPages) return;
+    empPage = next;
+    renderTable(false);
+  }
+
+  function renderTable(resetPage=true){
+    if(resetPage && empPage!==1){ empPage=1; }
+    const total      = filteredEmployees.length;
+    const totalPages = Math.max(1, Math.ceil(total / EMP_PER_PAGE));
+    const start      = (empPage-1)*EMP_PER_PAGE;
+    const slice      = filteredEmployees.slice(start, start+EMP_PER_PAGE);
+
+    /* Update count badge */
+    document.getElementById('emp-count-label').textContent = total.toLocaleString()+' records';
+
+    /* Pagination info */
+    const from = total===0 ? 0 : start+1;
+    const to   = Math.min(start+EMP_PER_PAGE, total);
+    document.getElementById('emp-pg-info').textContent  = total===0 ? 'No records' : `Showing ${from}–${to} of ${total.toLocaleString()}`;
+    document.getElementById('emp-pg-label').textContent = `Page ${empPage} / ${totalPages}`;
+    document.getElementById('emp-pg-prev').disabled     = empPage <= 1;
+    document.getElementById('emp-pg-next').disabled     = empPage >= totalPages;
+
+    /* Tag helpers */
+    const pfTag = {Low:'tg-low',Good:'tg-good',Excellent:'tg-exc',Outstanding:'tg-out'};
+    const sfTag = {Low:'tg-low',Medium:'tg-med',High:'tg-high','Very High':'tg-vhigh'};
+
+    if(!slice.length){
+      document.getElementById('emp-tbody').innerHTML =
+        `<tr><td colspan="12" class="emp-loading">No employees match your filters</td></tr>`;
+      return;
+    }
+
+    document.getElementById('emp-tbody').innerHTML = slice.map((r,i)=>`
+      <tr>
+        <td class="emp-id-cell">${start+i+1}</td>
+        <td class="emp-name-cell">${r.name||'—'}</td>
+        <td><span class="dept-tag ${deptClass(r.department)}">${r.department||'—'}</span></td>
+        <td style="color:#94a3b8;font-size:.75rem">${r.job_title||'—'}</td>
+        <td>${r.age||'—'}</td>
+        <td><span class="tag ${r.gender==='Male'?'tg-m':'tg-f'}">${r.gender||'—'}</span></td>
+        <td class="emp-sal-cell">$${r.salary?(r.salary/1000).toFixed(1)+'K':'—'}</td>
+        <td>${r.years!=null?r.years+' yr':'—'}</td>
+        <td><span class="tag ${pfTag[r.performance]||'tg-low'}">${r.performance||'—'}</span></td>
+        <td><span class="tag ${sfTag[r.satisfaction]||'tg-low'}">${r.satisfaction||'—'}</span></td>
+        <td><span class="tag ${r.overtime==='Yes'?'tg-ot':'tg-no'}">${r.overtime||'—'}</span></td>
+        <td><span class="tag ${r.attrition==='Yes'?'tg-yes':'tg-no'}">${r.attrition==='Yes'?'Attrited':'Active'}</span></td>
+      </tr>`).join('');
+  }
+
   loadKPIs();
-  buildCharts();
+  loadEmployeeTable();
   </script>
 </body>
 </html>

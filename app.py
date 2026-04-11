@@ -46,18 +46,30 @@ def dashboard_v2():
 def hr_powerbi():
     """Single endpoint returning all aggregations for the Power BI-style dashboard,
     filtered by optional query params: dept, gender, travel, overtime, attrition."""
-    dept      = request.args.get("dept",     "All")
-    gender    = request.args.get("gender",   "All")
-    travel    = request.args.get("travel",   "All")
-    overtime  = request.args.get("overtime", "All")
-    attrition = request.args.get("attrition","All")
+    dept        = request.args.get("dept",       "All")
+    gender      = request.args.get("gender",     "All")
+    travel      = request.args.get("travel",     "All")
+    overtime    = request.args.get("overtime",   "All")
+    attrition   = request.args.get("attrition",  "All")
+    age_group   = request.args.get("age_group",  "All")
+    perf        = request.args.get("perf",        "All")
+    wlb_level   = request.args.get("wlb_level",  "All")
+    tenure_grp  = request.args.get("tenure_grp", "All")
 
     df = DF.copy()
-    if dept     != "All": df = df[df["Department"]    == dept]
-    if gender   != "All": df = df[df["Gender"]        == gender]
-    if travel   != "All": df = df[df["BusinessTravel"]== travel]
-    if overtime != "All": df = df[df["OverTime"]      == overtime]
-    if attrition!= "All": df = df[df["Attrition"]     == attrition]
+    if dept       != "All": df = df[df["Department"]        == dept]
+    if gender     != "All": df = df[df["Gender"]            == gender]
+    if travel     != "All": df = df[df["BusinessTravel"]    == travel]
+    if overtime   != "All": df = df[df["OverTime"]          == overtime]
+    if attrition  != "All": df = df[df["Attrition"]         == attrition]
+    if age_group  != "All": df = df[df["AgeGroup"].astype(str) == age_group]
+    if perf       != "All":
+        perf_rev = {"Low":1,"Good":2,"Excellent":3,"Outstanding":4}
+        if perf in perf_rev: df = df[df["PerformanceRating"] == perf_rev[perf]]
+    if wlb_level  != "All":
+        wlb_rev  = {"Low":1,"Fair":2,"Good":3,"Excellent":4}
+        if wlb_level in wlb_rev: df = df[df["WorkLifeBalance"] == wlb_rev[wlb_level]]
+    if tenure_grp != "All": df = df[df["TenureGroup"].astype(str) == tenure_grp]
 
     total    = len(df)
     attr_n   = int((df["Attrition"] == "Yes").sum())

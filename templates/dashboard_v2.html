@@ -284,7 +284,10 @@ body{
       <div class="topbar-title">HR Analytics Dashboard</div>
       <div class="topbar-sub">Workforce Intelligence · Flask + Chart.js</div>
     </div>
-    <div id="filter-summary" style="font-size:.68rem;color:var(--muted);margin-left:auto;"></div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:.5rem;">
+      <span id="chart-filter-badge" style="display:none;font-size:.62rem;font-weight:700;color:#06b6d4;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);border-radius:100px;padding:.2rem .6rem;cursor:pointer;" onclick="resetFilters()">🎯 Chart filter — click to clear</span>
+      <div id="filter-summary" style="font-size:.68rem;color:var(--muted);"></div>
+    </div>
   </div>
 
   <!-- Slicers -->
@@ -468,9 +471,43 @@ body{
 Chart.register(ChartDataLabels);
 
 /* ── State ── */
-const filters = { dept:'All', gender:'All', travel:'All', overtime:'All', attrition:'All' };
+const filters = { dept:'All', gender:'All', travel:'All', overtime:'All', attrition:'All',
+                  age_group:'All', perf:'All', wlb_level:'All', tenure_grp:'All' };
 let charts = {};
-let baseData = null; // store unfiltered dept data for sparklines
+let baseData = null;
+
+/* ── Active chart-click filter indicator ── */
+function setChartFilter(key, val){
+  const prev = filters[key];
+  // toggle off if same value clicked again
+  Object.keys(filters).forEach(k => {
+    if(['age_group','perf','wlb_level','tenure_grp'].includes(k)) filters[k]='All';
+    if(k==='dept' && !['gender','travel','overtime','attrition'].includes(k)) filters.dept = 'All';
+  });
+  // also reset dept slicer only if clicking a chart dept
+  if(key==='dept'){
+    filters.dept = (prev===val) ? 'All' : val;
+    document.querySelectorAll('#sl-dept .slicer-chip').forEach(b=>{
+      b.classList.toggle('active', b.dataset.val === filters.dept || (filters.dept==='All' && b.dataset.val==='All'));
+    });
+  } else {
+    filters[key] = (prev===val) ? 'All' : val;
+  }
+  updateFilterBadge();
+  load();
+}
+
+function updateFilterBadge(){
+  const chartKeys = ['age_group','perf','wlb_level','tenure_grp'];
+  const active = Object.entries(filters)
+    .filter(([k,v])=> v!=='All' && !['gender','travel','overtime','attrition'].includes(k))
+    .map(([k,v])=> v);
+  const el = document.getElementById('chart-filter-badge');
+  if(el){
+    el.textContent = active.length ? '🎯 Chart filter: '+active.join(' + ') : '';
+    el.style.display = active.length ? 'inline-flex' : 'none';
+  }
+}
 
 /* ── Slicer wiring ── */
 document.querySelectorAll('.slicer-chip').forEach(btn => {
@@ -490,6 +527,7 @@ function resetFilters(){
   document.querySelectorAll('.slicer-chip').forEach(b => {
     b.classList.toggle('active', b.dataset.val === 'All');
   });
+  updateFilterBadge();
   load();
 }
 
@@ -519,11 +557,15 @@ async function load(){
   const ld = document.getElementById('loader');
   ld.classList.remove('hidden');
   const params = new URLSearchParams({
-    dept:     filters.dept,
-    gender:   filters.gender,
-    travel:   filters.travel,
-    overtime: filters.overtime,
-    attrition:filters.attrition,
+    dept:       filters.dept,
+    gender:     filters.gender,
+    travel:     filters.travel,
+    overtime:   filters.overtime,
+    attrition:  filters.attrition,
+    age_group:  filters.age_group,
+    perf:       filters.perf,
+    wlb_level:  filters.wlb_level,
+    tenure_grp: filters.tenure_grp,
   });
   const d = await fetch('/api/hr/powerbi?'+params).then(r=>r.json());
   buildDeptSlicer(d.filter_options.departments);
@@ -592,72 +634,112 @@ function mkChart(id, cfg){
   charts[id] = new Chart(ctx, cfg);
 }
 
+/* helper: dim all bars except selected */
+function barColors(labels, activeVal, baseColor, dimAlpha='22', fullAlpha='cc'){
+  if(!activeVal || activeVal==='All') return labels.map(()=>baseColor+fullAlpha);
+  return labels.map(l=> l===activeVal ? baseColor+fullAlpha : baseColor+dimAlpha);
+}
+function doughnutColors(labels, activeVal, palette){
+  if(!activeVal || activeVal==='All') return palette;
+  return labels.map((l,i)=> l===activeVal ? palette[i] : palette[i].replace(/cc|99/,'33'));
+}
+
 function updateCharts(d){
   const hc = d.headcount_by_dept;
+  const activeDept = filters.dept !== 'All' ? filters.dept : null;
+  const activeAge  = filters.age_group  !== 'All' ? filters.age_group  : null;
+  const activePerf = filters.perf       !== 'All' ? filters.perf       : null;
+  const activeWlb  = filters.wlb_level  !== 'All' ? filters.wlb_level  : null;
+  const activeTen  = filters.tenure_grp !== 'All' ? filters.tenure_grp : null;
 
-  /* 1 – Headcount + Attrition (combo bar + line) */
+  /* 1 – Headcount + Attrition */
   mkChart('chart-headcount',{
     type:'bar',
     data:{
       labels: hc.labels,
       datasets:[
-        { label:'Headcount', data:hc.headcount, backgroundColor:CYAN+'99',
-          borderColor:CYAN, borderWidth:1.5, borderRadius:4, yAxisID:'y' },
+        { label:'Headcount', data:hc.headcount,
+          backgroundColor: barColors(hc.labels, activeDept, CYAN, '28', 'cc'),
+          borderColor: hc.labels.map(l=>!activeDept||l===activeDept?CYAN:CYAN+'55'),
+          borderWidth:1.5, borderRadius:4, yAxisID:'y' },
         { label:'Attrition %', data:hc.attrition_rate, type:'line',
           borderColor:RED, borderWidth:2, pointRadius:3, pointBackgroundColor:RED,
           fill:false, tension:.4, yAxisID:'y2' }
       ]
     },
-    options: comboOpts('y','Headcount','y2','Attr %')
+    options:{
+      ...comboOpts('y','Headcount','y2','Attr %'),
+      onClick:(e,el)=>{ if(!el.length)return; setChartFilter('dept', hc.labels[el[0].index]); }
+    }
   });
 
-  /* 2 – Salary + Attrition combo */
+  /* 2 – Salary + Attrition */
   mkChart('chart-salary',{
     type:'bar',
     data:{
       labels: hc.labels,
       datasets:[
-        { label:'Avg Salary', data:hc.avg_salary, backgroundColor:AMBER+'99',
-          borderColor:AMBER, borderWidth:1.5, borderRadius:4, yAxisID:'y' },
+        { label:'Avg Salary', data:hc.avg_salary,
+          backgroundColor: barColors(hc.labels, activeDept, AMBER, '28', 'cc'),
+          borderColor: hc.labels.map(l=>!activeDept||l===activeDept?AMBER:AMBER+'55'),
+          borderWidth:1.5, borderRadius:4, yAxisID:'y' },
         { label:'Attrition %', data:hc.attrition_rate, type:'line',
           borderColor:PUR, borderWidth:2, pointRadius:3, pointBackgroundColor:PUR,
           fill:false, tension:.4, yAxisID:'y2' }
       ]
     },
-    options: comboOpts('y','Salary ($)','y2','Attr %', v=>'$'+(v/1000).toFixed(0)+'K')
+    options:{
+      ...comboOpts('y','Salary ($)','y2','Attr %', v=>'$'+(v/1000).toFixed(0)+'K'),
+      onClick:(e,el)=>{ if(!el.length)return; setChartFilter('dept', hc.labels[el[0].index]); }
+    }
   });
 
   /* 3 – Age distribution */
+  const AGE_COLS = [CYAN,BLUE,PUR,PINK,AMBER,RED,GREEN,ORG];
   mkChart('chart-age',{
     type:'bar',
     data:{labels:d.age_dist.labels, datasets:[{
       data:d.age_dist.values,
-      backgroundColor:[CYAN,BLUE,PUR,PINK,AMBER,RED,GREEN,ORG].map(c=>c+'cc'),
+      backgroundColor: d.age_dist.labels.map((l,i)=>
+        !activeAge||l===activeAge ? AGE_COLS[i%AGE_COLS.length]+'cc' : AGE_COLS[i%AGE_COLS.length]+'22'),
       borderRadius:4, borderWidth:0
     }]},
-    options: simpleBarOpts()
+    options:{
+      ...simpleBarOpts(),
+      onClick:(e,el)=>{ if(!el.length)return; setChartFilter('age_group', d.age_dist.labels[el[0].index]); }
+    }
   });
 
   /* 4 – Performance donut */
+  const perfPal = [RED+'cc',AMBER+'cc',CYAN+'cc',GREEN+'cc'];
   mkChart('chart-perf',{
     type:'doughnut',
     data:{labels:d.perf_dist.labels, datasets:[{
       data:d.perf_dist.values,
-      backgroundColor:[RED+'cc',AMBER+'cc',CYAN+'cc',GREEN+'cc'],
+      backgroundColor: d.perf_dist.labels.map((l,i)=>
+        !activePerf||l===activePerf ? perfPal[i] : perfPal[i].replace('cc','28')),
       borderWidth:2, borderColor:'#1c2235', hoverOffset:6
     }]},
-    options: donutOpts()
+    options:{
+      ...donutOpts(),
+      onClick:(e,el)=>{ if(!el.length)return; setChartFilter('perf', d.perf_dist.labels[el[0].index]); }
+    }
   });
 
   /* 5 – WLB donut */
+  const wlbPal = [RED+'cc',AMBER+'cc',BLUE+'cc',GREEN+'cc'];
   mkChart('chart-wlb',{
     type:'doughnut',
     data:{labels:d.wlb.labels, datasets:[{
       data:d.wlb.values,
-      backgroundColor:[RED+'cc',AMBER+'cc',BLUE+'cc',GREEN+'cc'],
+      backgroundColor: d.wlb.labels.map((l,i)=>
+        !activeWlb||l===activeWlb ? wlbPal[i] : wlbPal[i].replace('cc','28')),
       borderWidth:2, borderColor:'#1c2235', hoverOffset:6
     }]},
-    options: donutOpts()
+    options:{
+      ...donutOpts(),
+      onClick:(e,el)=>{ if(!el.length)return; setChartFilter('wlb_level', d.wlb.labels[el[0].index]); }
+    }
   });
 
   /* 6 – Tenure bar */
@@ -665,10 +747,15 @@ function updateCharts(d){
     type:'bar',
     data:{labels:d.tenure.labels, datasets:[{
       data:d.tenure.values,
-      backgroundColor:GREEN+'99', borderColor:GREEN,
+      backgroundColor: d.tenure.labels.map(l=>
+        !activeTen||l===activeTen ? GREEN+'cc' : GREEN+'22'),
+      borderColor: d.tenure.labels.map(l=>!activeTen||l===activeTen?GREEN:GREEN+'44'),
       borderWidth:1.5, borderRadius:4
     }]},
-    options: simpleBarOpts()
+    options:{
+      ...simpleBarOpts(),
+      onClick:(e,el)=>{ if(!el.length)return; setChartFilter('tenure_grp', d.tenure.labels[el[0].index]); }
+    }
   });
 }
 
