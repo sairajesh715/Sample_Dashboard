@@ -248,20 +248,28 @@
     .emp-name { color:#e2e8f0!important;font-weight:600; }
     .sal-cell { color:#fcd34d!important;font-weight:600; }
 
-    /* Tags */
-    .tag { display:inline-block;padding:.18rem .5rem;border-radius:100px;font-size:.64rem;font-weight:700; }
-    .tg-yes   { background:rgba(239,68,68,.2);    color:#fca5a5; }
-    .tg-no    { background:rgba(16,185,129,.2);   color:#6ee7b7; }
-    .tg-low   { background:rgba(107,114,128,.22); color:#9ca3af; }
-    .tg-good  { background:rgba(245,158,11,.22);  color:#fcd34d; }
-    .tg-exc   { background:rgba(6,182,212,.2);    color:#67e8f9; }
-    .tg-out   { background:rgba(124,58,237,.2);   color:#a78bfa; }
-    .tg-med   { background:rgba(249,115,22,.2);   color:#fdba74; }
-    .tg-high  { background:rgba(16,185,129,.15);  color:#6ee7b7; }
-    .tg-vhigh { background:rgba(124,58,237,.2);   color:#a78bfa; }
-    .tg-ot    { background:rgba(239,68,68,.18);   color:#fca5a5; }
-    .tg-m     { background:rgba(6,182,212,.15);   color:#67e8f9; }
-    .tg-f     { background:rgba(236,72,153,.15);  color:#f9a8d4; }
+    /* ── Tags — premium muted palette ── */
+    .tag {
+      display:inline-block;padding:.15rem .46rem;border-radius:4px;
+      font-size:.63rem;font-weight:600;letter-spacing:.02em;
+    }
+    /* Status */
+    .tg-yes   { background:rgba(239,68,68,.09);   color:#f87171; border:1px solid rgba(239,68,68,.18); }
+    .tg-no    { background:rgba(16,185,129,.09);  color:#34d399; border:1px solid rgba(16,185,129,.18); }
+    /* Performance — single indigo/slate family */
+    .tg-low   { background:rgba(100,116,139,.12); color:#64748b; border:1px solid rgba(100,116,139,.18); }
+    .tg-good  { background:rgba(99,102,241,.1);   color:#818cf8; border:1px solid rgba(99,102,241,.18); }
+    .tg-exc   { background:rgba(99,102,241,.15);  color:#a5b4fc; border:1px solid rgba(99,102,241,.22); }
+    .tg-out   { background:rgba(124,58,237,.14);  color:#c4b5fd; border:1px solid rgba(124,58,237,.22); }
+    /* Satisfaction */
+    .tg-med   { background:rgba(100,116,139,.12); color:#6b7280; border:1px solid rgba(100,116,139,.15); }
+    .tg-high  { background:rgba(99,102,241,.1);   color:#818cf8; border:1px solid rgba(99,102,241,.18); }
+    .tg-vhigh { background:rgba(124,58,237,.14);  color:#c4b5fd; border:1px solid rgba(124,58,237,.22); }
+    /* Overtime */
+    .tg-ot    { background:rgba(239,68,68,.08);   color:#f87171; border:1px solid rgba(239,68,68,.14); }
+    /* Gender — minimal text, no background fill */
+    .tg-m     { background:transparent; color:#7dd3fc; border:none; font-weight:500; }
+    .tg-f     { background:transparent; color:#c4b5fd; border:none; font-weight:500; }
 
     .modal-footer {
       display:flex;align-items:center;justify-content:space-between;
@@ -388,11 +396,11 @@
 
     /* ── Body rows ── */
     .emp-table tbody tr {
-      border-bottom:1px solid rgba(255,255,255,.035);
-      transition:background .14s;
+      border-bottom:1px solid rgba(255,255,255,.028);
+      transition:background .12s;
     }
-    .emp-table tbody tr:nth-child(even) { background:rgba(255,255,255,.016); }
-    .emp-table tbody tr:hover           { background:rgba(124,58,237,.1); }
+    .emp-table tbody tr:nth-child(even) { background:rgba(255,255,255,.013); }
+    .emp-table tbody tr:hover           { background:rgba(99,102,241,.08); border-color:rgba(99,102,241,.15); }
 
     .emp-table td {
       padding:.56rem .75rem;
@@ -407,18 +415,22 @@
     .emp-sal-cell   { color:#fcd34d!important;font-weight:600; }
     .emp-id-cell    { color:#475569;font-size:.7rem;font-family:'Inter',monospace; }
 
-    /* ── Department color pills ── */
+    /* ── Department pills — single premium neutral style ── */
     .dept-tag {
-      display:inline-block;padding:.2rem .55rem;border-radius:6px;
-      font-size:.65rem;font-weight:700;letter-spacing:.04em;white-space:nowrap;
+      display:inline-block;padding:.18rem .52rem;border-radius:5px;
+      font-size:.64rem;font-weight:600;letter-spacing:.03em;white-space:nowrap;
+      background:rgba(51,65,85,.55);
+      color:#94a3b8;
+      border:1px solid rgba(148,163,184,.12);
     }
-    .dept-rd  { background:rgba(124,58,237,.2);  color:#a78bfa; border:1px solid rgba(124,58,237,.3); }
-    .dept-sal { background:rgba(6,182,212,.18);  color:#67e8f9; border:1px solid rgba(6,182,212,.3); }
-    .dept-hr  { background:rgba(236,72,153,.18); color:#f9a8d4; border:1px solid rgba(236,72,153,.3); }
-    .dept-fin { background:rgba(245,158,11,.18); color:#fcd34d; border:1px solid rgba(245,158,11,.3); }
-    .dept-mkt { background:rgba(16,185,129,.18); color:#6ee7b7; border:1px solid rgba(16,185,129,.3); }
-    .dept-ops { background:rgba(249,115,22,.18); color:#fdba74; border:1px solid rgba(249,115,22,.3); }
-    .dept-def { background:rgba(100,116,139,.18);color:#94a3b8; border:1px solid rgba(100,116,139,.3); }
+    /* slight accent per dept — only hue shift, never bright */
+    .dept-rd  { color:#a5b4fc; border-color:rgba(165,180,252,.18); }
+    .dept-sal { color:#7dd3fc; border-color:rgba(125,211,252,.18); }
+    .dept-hr  { color:#c4b5fd; border-color:rgba(196,181,253,.18); }
+    .dept-fin { color:#fde68a; border-color:rgba(253,230,138,.14); }
+    .dept-mkt { color:#6ee7b7; border-color:rgba(110,231,183,.14); }
+    .dept-ops { color:#94a3b8; border-color:rgba(148,163,184,.15); }
+    .dept-def { color:#64748b; border-color:rgba(100,116,139,.12); }
 
     /* ── Empty / loading ── */
     .emp-loading {

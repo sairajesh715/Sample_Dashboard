@@ -768,7 +768,12 @@ function comboOpts(yId, yLabel, y2Id, y2Label, yFmt=v=>v){
       datalabels:{
         display:(ctx)=>ctx.datasetIndex===0,
         clamp:true, anchor:'end', align:'top',
-        color:'rgba(255,255,255,.8)', font:{size:8,weight:'700'},
+        color:(ctx)=>{
+          const bg = ctx.dataset.backgroundColor;
+          const c  = Array.isArray(bg) ? bg[ctx.dataIndex] : bg;
+          return (c && c.endsWith('22')) ? 'rgba(255,255,255,.18)' : '#ffffff';
+        },
+        font:{size:11,weight:'700'},
         formatter:(v)=>yFmt(v)
       }
     },
@@ -794,14 +799,24 @@ function donutOpts(){
   return {
     responsive:true, maintainAspectRatio:false,
     cutout:'62%',
+    layout:{ padding:4 },
     plugins:{
       legend:{
         position:'right',
         labels:{color:'#8892a4',font:{size:9},boxWidth:8,padding:6,usePointStyle:true}
       },
       datalabels:{
-        color:'#fff', font:{size:8,weight:'700'},
+        color:(ctx)=>{
+          const bg = ctx.dataset.backgroundColor;
+          const c  = Array.isArray(bg) ? bg[ctx.dataIndex] : bg;
+          /* if color was dimmed to '28' suffix, hide label */
+          return (c && (c.endsWith('28')||c.endsWith('33'))) ? 'rgba(255,255,255,0)' : '#fff';
+        },
+        font:{size:11,weight:'700'},
         formatter:(v,ctx)=>{
+          const bg = ctx.dataset.backgroundColor;
+          const c  = Array.isArray(bg) ? bg[ctx.dataIndex] : bg;
+          if(c && (c.endsWith('28')||c.endsWith('33'))) return '';
           const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);
           return tot?Math.round(v/tot*100)+'%':'';
         }
@@ -814,12 +829,18 @@ function donutOpts(){
 function baseGridOpts(){
   return {
     responsive:true, maintainAspectRatio:false,
-    layout:{ padding:{ top:14 } },
+    layout:{ padding:{ top:18 } },
     plugins:{
       legend:{display:false},
       datalabels:{
         display:true, clamp:true, anchor:'end', align:'top',
-        color:'rgba(255,255,255,.8)', font:{size:8,weight:'700'},
+        color:(ctx)=>{
+          /* Dim label color on dimmed bars — check bg alpha */
+          const bg = ctx.dataset.backgroundColor;
+          const c  = Array.isArray(bg) ? bg[ctx.dataIndex] : bg;
+          return (c && c.endsWith('22')) ? 'rgba(255,255,255,.18)' : '#ffffff';
+        },
+        font:{size:11,weight:'700'},
         formatter:v=>v
       },
       tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.raw}}
@@ -828,6 +849,7 @@ function baseGridOpts(){
 }
 
 /* ── Global Distribution Map (bubble chart over SVG world) ── */
+let mapRendered = false;   // draw only once — data is static
 const REGIONS = [
   { name:'North America', x:.22, y:.30, color:PUR,  employees:112, salary:98000, attrition:14.2 },
   { name:'South America', x:.26, y:.62, color:CYAN, employees:28,  salary:52000, attrition:18.5 },
@@ -839,11 +861,15 @@ const REGIONS = [
 ];
 
 function updateBreakdown(d){
+  if(mapRendered) return;   // static data — only render once
   const cv  = document.getElementById('map-bubbles-canvas');
   if(!cv) return;
   const wrap = cv.parentElement;
-  const W = wrap.clientWidth  || 220;
-  const H = wrap.clientHeight || 160;
+  /* Use offsetWidth/Height for reliable size after layout */
+  const W = wrap.offsetWidth  || 220;
+  const H = wrap.offsetHeight || 160;
+  if(W < 10 || H < 10) { setTimeout(()=>{ mapRendered=false; updateBreakdown(d); }, 120); return; }
+  mapRendered = true;
   cv.width  = W; cv.height = H;
   const ctx = cv.getContext('2d');
   ctx.clearRect(0,0,W,H);
