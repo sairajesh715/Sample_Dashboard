@@ -26,13 +26,23 @@
     body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
 
     /* ── Background ── */
-    #bg-canvas { position:fixed;inset:0;z-index:0;width:100%;height:100%;opacity:.3; }
+    #bg-canvas { position:fixed;inset:0;z-index:0;width:100%;height:100%;opacity:.5; }
+    /* Circuit-board grid overlay */
+    .bg-circuit {
+      position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:
+        linear-gradient(rgba(6,182,212,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6,182,212,.04) 1px, transparent 1px);
+      background-size:48px 48px;
+      mask-image:radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%);
+      -webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 100%);
+    }
     .bg-grad {
       position:fixed;inset:0;z-index:1;pointer-events:none;
       background:
-        radial-gradient(ellipse 55% 45% at 10% 40%,rgba(124,58,237,.12) 0%,transparent 70%),
-        radial-gradient(ellipse 45% 35% at 90% 15%,rgba(6,182,212,.10)  0%,transparent 70%),
-        radial-gradient(ellipse 35% 30% at 70% 90%,rgba(245,158,11,.08) 0%,transparent 60%);
+        radial-gradient(ellipse 55% 45% at 10% 40%,rgba(124,58,237,.15) 0%,transparent 70%),
+        radial-gradient(ellipse 45% 35% at 90% 15%,rgba(6,182,212,.13)  0%,transparent 70%),
+        radial-gradient(ellipse 35% 30% at 70% 90%,rgba(245,158,11,.10) 0%,transparent 60%);
     }
 
     /* ── Navbar ── */
@@ -59,7 +69,7 @@
     main { position:relative;z-index:2;padding:calc(var(--nav-h) + 2rem) 2rem 3rem;max-width:1600px;margin:0 auto; }
 
     /* ── KPI Cards — dramatic pop-out on hover ── */
-    .kpi-grid { display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:2.5rem; }
+    .kpi-grid { display:grid;grid-template-columns:repeat(6,1fr);gap:.7rem;margin-bottom:1.5rem; }
     @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
     @media(max-width:700px) {.kpi-grid{grid-template-columns:repeat(2,1fr);}}
 
@@ -69,7 +79,7 @@
       border:1px solid var(--bdr);
       backdrop-filter:blur(20px);
       border-radius:18px;
-      padding:1.4rem 1.2rem;
+      padding:.85rem 1rem;
       overflow:hidden;
       cursor:pointer;
       will-change:transform;
@@ -93,19 +103,19 @@
     }
     .kpi-card:hover .kpi-shine { opacity:1; }
 
-    .kpi-icon { font-size:1.5rem;margin-bottom:.5rem; }
-    .kpi-val  { font-size:1.85rem;font-weight:800;line-height:1;margin-bottom:.3rem; }
-    .kpi-lbl  { font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600; }
-    .kpi-sub  { font-size:.73rem;color:var(--muted);margin-top:.3rem; }
+    .kpi-icon { font-size:1.1rem;margin-bottom:.3rem; }
+    .kpi-val  { font-size:1.45rem;font-weight:800;line-height:1;margin-bottom:.18rem; }
+    .kpi-lbl  { font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600; }
+    .kpi-sub  { font-size:.68rem;color:var(--muted);margin-top:.18rem; }
     @keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
     /* ── Section headers ── */
-    .section-hdr { display:flex;align-items:center;gap:1rem;margin:2.5rem 0 1.2rem; }
+    .section-hdr { display:flex;align-items:center;gap:1rem;margin:1.5rem 0 .8rem; }
     .section-hdr-line  { flex:1;height:1px;background:var(--bdr); }
     .section-hdr-title { font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:.5rem; }
 
     /* ── Chart grid — pop-out on hover ── */
-    .chart-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem; }
+    .chart-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem; }
     @media(max-width:1000px){.chart-grid{grid-template-columns:repeat(2,1fr);}}
     @media(max-width:650px) {.chart-grid{grid-column:span 1;}}
 
@@ -113,8 +123,8 @@
       background:var(--cbg);
       border:1px solid var(--bdr);
       backdrop-filter:blur(20px);
-      border-radius:18px;
-      padding:1.2rem 1.2rem .9rem;
+      border-radius:14px;
+      padding:.7rem .9rem .55rem;
       display:flex;flex-direction:column;
       cursor:pointer;
       will-change:transform;
@@ -143,9 +153,9 @@
     @media(max-width:1000px){.chart-card.span-2{grid-column:span 1;}.chart-card.span-3{grid-column:span 2;}}
     @media(max-width:650px) {.chart-card.span-2,.chart-card.span-3{grid-column:span 1;}}
 
-    .chart-hdr   { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.9rem;gap:.5rem; }
-    .chart-title { font-size:.85rem;font-weight:700;color:var(--text); }
-    .chart-sub   { font-size:.7rem;color:var(--muted);margin-top:.12rem; }
+    .chart-hdr   { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.5rem;gap:.5rem; }
+    .chart-title { font-size:.78rem;font-weight:700;color:var(--text); }
+    .chart-sub   { font-size:.64rem;color:var(--muted);margin-top:.08rem; }
     .cbadge { font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.22rem .6rem;border-radius:100px;white-space:nowrap; }
     .cb-purple{background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
     .cb-cyan  {background:rgba(6,182,212,.2);color:#67e8f9;border:1px solid rgba(6,182,212,.3);}
@@ -154,8 +164,8 @@
     .cb-green {background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
     .cb-pink  {background:rgba(236,72,153,.2);color:#f9a8d4;border:1px solid rgba(236,72,153,.3);}
 
-    /* 80% chart size */
-    .chart-wrap { flex:1;position:relative;min-height:176px; }
+    /* Chart sizing */
+    .chart-wrap { flex:1;position:relative;min-height:130px; }
     .chart-wrap canvas { width:100%!important; }
 
     /* ── Modal ── */
@@ -274,6 +284,7 @@
 </head>
 <body>
   <canvas id="bg-canvas"></canvas>
+  <div class="bg-circuit"></div>
   <div class="bg-grad"></div>
 
   <!-- Navbar -->
@@ -394,7 +405,7 @@
     <div class="chart-grid">
       <div class="chart-card span-3" style="animation-delay:.7s">
         <div class="chart-hdr"><div><div class="chart-title">Monthly Hiring Trend</div><div class="chart-sub">Click any point to see employees hired that month</div></div><span class="cbadge cb-cyan">Timeline</span></div>
-        <div class="chart-wrap" style="min-height:192px"><canvas id="c-hiring"></canvas></div>
+        <div class="chart-wrap" style="min-height:145px"><canvas id="c-hiring"></canvas></div>
       </div>
     </div>
 
@@ -417,10 +428,10 @@
         <div class="chart-wrap"><canvas id="c-overtime"></canvas></div>
       </div>
     </div>
-    <div class="chart-grid" style="margin-top:1.2rem">
+    <div class="chart-grid" style="margin-top:.75rem">
       <div class="chart-card span-3" style="animation-delay:.9s">
         <div class="chart-hdr"><div><div class="chart-title">Job Satisfaction by Department</div><div class="chart-sub">Click any bar to explore by satisfaction level</div></div><span class="cbadge cb-purple">Satisfaction</span></div>
-        <div class="chart-wrap" style="min-height:208px"><canvas id="c-satisfaction"></canvas></div>
+        <div class="chart-wrap" style="min-height:155px"><canvas id="c-satisfaction"></canvas></div>
       </div>
     </div>
 
@@ -732,7 +743,7 @@
       /* 1 ── Headcount — horizontal bar */
       new Chart(document.getElementById('c-headcount'), {
         type:'bar',
-        data:{ labels:headcount.labels, datasets:[{ data:headcount.values, backgroundColor:P10, borderRadius:5, borderSkipped:false }] },
+        data:{ labels:headcount.labels, datasets:[{ data:headcount.values, backgroundColor:'rgba(124,58,237,.75)', borderRadius:5, borderSkipped:false }] },
         options:{
           ...BASE, indexAxis:'y',
           plugins:{ ...BASE.plugins,
@@ -766,12 +777,12 @@
       /* 3 ── Age Distribution — bar */
       new Chart(document.getElementById('c-age'), {
         type:'bar',
-        data:{ labels:age.labels, datasets:[{ data:age.values, backgroundColor:age.values.map((_,i)=>`hsla(${190+i*8},75%,55%,.78)`), borderRadius:5, borderSkipped:false }] },
+        data:{ labels:age.labels, datasets:[{ data:age.values, backgroundColor:'rgba(6,182,212,.75)', borderRadius:5, borderSkipped:false }] },
         options:{
           ...BASE,
           plugins:{ ...BASE.plugins,
             tooltip:{ callbacks:{ label:c=>` ${c.raw} employees` } },
-            datalabels:{ display:true, anchor:'end', align:'top', color:'#94a3b8', font:{size:10,weight:'700'}, formatter:v=>v }
+            datalabels:{ display:true, anchor:'end', align:'top', color:'#67e8f9', font:{size:10,weight:'700'}, formatter:v=>v }
           },
           scales:{
             x:{ grid:{display:false}, ticks:{color:'#64748b'} },
@@ -799,12 +810,12 @@
       /* 5 ── Tenure — bar */
       new Chart(document.getElementById('c-tenure'), {
         type:'bar',
-        data:{ labels:tenure.labels, datasets:[{ data:tenure.values, backgroundColor:tenure.values.map((_,i)=>`hsla(${145+i*10},65%,50%,.78)`), borderRadius:5, borderSkipped:false }] },
+        data:{ labels:tenure.labels, datasets:[{ data:tenure.values, backgroundColor:'rgba(16,185,129,.75)', borderRadius:5, borderSkipped:false }] },
         options:{
           ...BASE,
           plugins:{ ...BASE.plugins,
             tooltip:{ callbacks:{ label:c=>` ${c.raw} employees` } },
-            datalabels:{ display:true, anchor:'end', align:'top', color:'#94a3b8', font:{size:10,weight:'700'}, formatter:v=>v }
+            datalabels:{ display:true, anchor:'end', align:'top', color:'#6ee7b7', font:{size:10,weight:'700'}, formatter:v=>v }
           },
           scales:{
             x:{ grid:{display:false}, ticks:{color:'#64748b'} },
@@ -817,7 +828,7 @@
       /* 6 ── Attrition by Dept — horizontal bar */
       new Chart(document.getElementById('c-attrDept'), {
         type:'bar',
-        data:{ labels:attrDept.labels, datasets:[{ data:attrDept.values, backgroundColor:attrDept.labels.map((_,i)=>`hsla(${5+i*10},82%,60%,.78)`), borderRadius:5, borderSkipped:false }] },
+        data:{ labels:attrDept.labels, datasets:[{ data:attrDept.values, backgroundColor:'rgba(239,68,68,.72)', borderRadius:5, borderSkipped:false }] },
         options:{
           ...BASE, indexAxis:'y',
           plugins:{ ...BASE.plugins,
@@ -947,7 +958,7 @@
       /* 13 ── Salary by Dept — bar */
       new Chart(document.getElementById('c-salary'), {
         type:'bar',
-        data:{ labels:salary.labels, datasets:[{ data:salary.values, backgroundColor:salary.labels.map((_,i)=>`hsla(${38+i*5},88%,${52+i*2}%,.78)`), borderRadius:5, borderSkipped:false }] },
+        data:{ labels:salary.labels, datasets:[{ data:salary.values, backgroundColor:'rgba(245,158,11,.75)', borderRadius:5, borderSkipped:false }] },
         options:{
           ...BASE,
           plugins:{ ...BASE.plugins,

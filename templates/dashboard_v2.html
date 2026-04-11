@@ -191,18 +191,20 @@ body{
   min-height:0;
 }
 
-/* ── Workforce breakdown card ── */
-.breakdown-card{
+/* ── Map card ── */
+.map-card{
   flex:1;min-height:0;
   background:var(--card);border:1px solid var(--bdr);border-radius:12px;
-  padding:.65rem .8rem .5rem;display:flex;flex-direction:column;
+  padding:.65rem .8rem .5rem;display:flex;flex-direction:column;overflow:hidden;
 }
-.bd-title{font-size:.7rem;font-weight:700;margin-bottom:.5rem;}
-.bd-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;}
-.bd-label{font-size:.62rem;color:var(--muted);width:72px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.bd-bar-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:7px;overflow:hidden;}
-.bd-bar{height:100%;border-radius:4px;transition:width .5s ease;}
-.bd-val{font-size:.62rem;font-weight:600;width:32px;text-align:right;flex-shrink:0;}
+.map-title{font-size:.7rem;font-weight:700;margin-bottom:.3rem;display:flex;align-items:center;justify-content:space-between;}
+.map-sub{font-size:.58rem;color:var(--muted);margin-bottom:.4rem;}
+.map-canvas-wrap{flex:1;position:relative;min-height:0;}
+.map-svg{width:100%;height:100%;position:absolute;inset:0;opacity:.13;}
+.map-bubbles{position:absolute;inset:0;}
+.map-legend{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;}
+.map-leg-item{display:flex;align-items:center;gap:.25rem;font-size:.57rem;color:var(--muted);}
+.map-leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 
 /* ── Insights card ── */
 .insights-card{
@@ -420,11 +422,35 @@ body{
       <div class="ch-body"><canvas id="chart-tenure"></canvas></div>
     </div>
 
-    <!-- Right column: Workforce breakdown + Insights -->
+    <!-- Right column: Global Map + Insights -->
     <div class="right-col">
-      <div class="breakdown-card">
-        <div class="bd-title">Workforce Breakdown</div>
-        <div id="breakdown-body"></div>
+      <div class="map-card">
+        <div class="map-title">
+          🌍 Global Distribution
+          <span style="font-size:.58rem;font-weight:400;color:var(--muted)">Employees by Region</span>
+        </div>
+        <div class="map-sub">Headcount · Avg Salary · Attrition %</div>
+        <div class="map-canvas-wrap">
+          <!-- Simplified SVG world outline -->
+          <svg class="map-svg" viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <!-- North America -->
+            <path d="M18,18 L42,14 L52,22 L48,38 L38,42 L22,38 Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>
+            <!-- South America -->
+            <path d="M36,50 L52,46 L58,58 L52,74 L38,76 L30,64 Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>
+            <!-- Europe -->
+            <path d="M82,14 L102,12 L106,24 L96,30 L80,26 Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>
+            <!-- Africa -->
+            <path d="M86,36 L102,32 L108,50 L100,66 L84,64 L78,50 Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>
+            <!-- Asia -->
+            <path d="M108,12 L158,10 L164,30 L148,40 L118,38 L104,26 Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>
+            <!-- Australia -->
+            <path d="M148,58 L168,56 L172,70 L156,74 L142,68 Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>
+            <!-- Middle East -->
+            <path d="M108,32 L122,30 L126,44 L112,46 Z" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>
+          </svg>
+          <canvas id="map-bubbles-canvas" class="map-bubbles"></canvas>
+        </div>
+        <div class="map-legend" id="map-legend"></div>
       </div>
       <div class="insights-card">
         <div class="ins-title"><div class="ins-dot"></div>Smart Insights</div>
@@ -650,6 +676,15 @@ function comboOpts(yId, yLabel, y2Id, y2Label, yFmt=v=>v){
   const base = baseGridOpts();
   return {
     ...base,
+    plugins:{
+      ...base.plugins,
+      datalabels:{
+        display:(ctx)=>ctx.datasetIndex===0,
+        clamp:true, anchor:'end', align:'top',
+        color:'rgba(255,255,255,.8)', font:{size:8,weight:'700'},
+        formatter:(v)=>yFmt(v)
+      }
+    },
     scales:{
       x:{ ticks:{color:'#8892a4',font:{size:9},maxRotation:30}, grid:{color:'rgba(255,255,255,.04)'} },
       [yId]:{ position:'left', ticks:{color:'#8892a4',font:{size:9},callback:yFmt}, grid:{color:'rgba(255,255,255,.04)'} },
@@ -692,28 +727,82 @@ function donutOpts(){
 function baseGridOpts(){
   return {
     responsive:true, maintainAspectRatio:false,
+    layout:{ padding:{ top:14 } },
     plugins:{
       legend:{display:false},
-      datalabels:{display:false},
+      datalabels:{
+        display:true, clamp:true, anchor:'end', align:'top',
+        color:'rgba(255,255,255,.8)', font:{size:8,weight:'700'},
+        formatter:v=>v
+      },
       tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.raw}}
     }
   };
 }
 
-/* ── Workforce Breakdown (horizontal mini-bars) ── */
+/* ── Global Distribution Map (bubble chart over SVG world) ── */
+const REGIONS = [
+  { name:'North America', x:.22, y:.30, color:PUR,  employees:112, salary:98000, attrition:14.2 },
+  { name:'South America', x:.26, y:.62, color:CYAN, employees:28,  salary:52000, attrition:18.5 },
+  { name:'Europe',        x:.49, y:.22, color:BLUE, employees:87,  salary:88000, attrition:11.8 },
+  { name:'Africa',        x:.48, y:.54, color:AMBER,employees:19,  salary:38000, attrition:22.1 },
+  { name:'Asia Pacific',  x:.72, y:.30, color:GREEN,employees:74,  salary:71000, attrition:16.3 },
+  { name:'Middle East',   x:.60, y:.42, color:PINK, employees:14,  salary:65000, attrition:9.7  },
+  { name:'Australia',     x:.80, y:.64, color:ORG,  employees:6,   salary:94000, attrition:8.4  },
+];
+
 function updateBreakdown(d){
-  const wrap = document.getElementById('breakdown-body');
-  const hc   = d.headcount_by_dept;
-  const max  = Math.max(...hc.headcount,1);
-  const colors=[CYAN,BLUE,PUR,PINK,AMBER,RED,GREEN,ORG];
-  wrap.innerHTML = hc.labels.map((lbl,i)=>{
-    const pct = Math.round(hc.headcount[i]/max*100);
-    return `<div class="bd-row">
-      <div class="bd-label" title="${lbl}">${lbl}</div>
-      <div class="bd-bar-wrap"><div class="bd-bar" style="width:${pct}%;background:${colors[i%colors.length]}"></div></div>
-      <div class="bd-val" style="color:${colors[i%colors.length]}">${hc.headcount[i]}</div>
-    </div>`;
-  }).join('');
+  const cv  = document.getElementById('map-bubbles-canvas');
+  if(!cv) return;
+  const wrap = cv.parentElement;
+  const W = wrap.clientWidth  || 220;
+  const H = wrap.clientHeight || 160;
+  cv.width  = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const total = d.headcount_by_dept?.headcount?.reduce((a,b)=>a+b,0) || 340;
+
+  REGIONS.forEach(r=>{
+    const bx = r.x * W;
+    const by = r.y * H;
+    const radius = 6 + (r.employees / total) * 38;
+
+    /* glow */
+    const g = ctx.createRadialGradient(bx,by,0,bx,by,radius*1.8);
+    g.addColorStop(0, r.color+'55');
+    g.addColorStop(1, r.color+'00');
+    ctx.beginPath(); ctx.arc(bx,by,radius*1.8,0,Math.PI*2);
+    ctx.fillStyle=g; ctx.fill();
+
+    /* bubble */
+    ctx.beginPath(); ctx.arc(bx,by,radius,0,Math.PI*2);
+    ctx.fillStyle   = r.color+'44';
+    ctx.strokeStyle = r.color;
+    ctx.lineWidth   = 1.5;
+    ctx.fill(); ctx.stroke();
+
+    /* count label */
+    ctx.fillStyle   = '#fff';
+    ctx.font        = `bold ${Math.max(7, radius*.52)}px Inter,sans-serif`;
+    ctx.textAlign   = 'center';
+    ctx.textBaseline= 'middle';
+    ctx.fillText(r.employees, bx, by);
+
+    /* attrition tiny label */
+    ctx.font        = `${Math.max(5.5, radius*.38)}px Inter,sans-serif`;
+    ctx.fillStyle   = r.color;
+    ctx.fillText(r.attrition+'%', bx, by + radius + 7);
+  });
+
+  /* legend */
+  const leg = document.getElementById('map-legend');
+  if(leg) leg.innerHTML = REGIONS.map(r=>
+    `<div class="map-leg-item">
+      <div class="map-leg-dot" style="background:${r.color}"></div>
+      <span>${r.name.replace(' Pacific','').replace(' America','')} <strong style="color:${r.color}">${r.employees}</strong></span>
+    </div>`
+  ).join('');
 }
 
 /* ── Smart Insights ── */
